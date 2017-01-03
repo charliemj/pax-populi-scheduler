@@ -47,6 +47,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(function (req, res, next) {
+    // stores env so it is accessible in other routes
+    req.devMode = app.get('env') === 'development';
+    next();
+});
+
+// setup csurf middlewares 
+var csrfProtection = csrf({ cookie: true });
+var parseForm = bodyParser.urlencoded({ extended: false });
+
+// parse cookies since "cookie" is true in csrfProtection 
+app.use(cookieParser())
+app.use(csrfProtection);
+
 app.use('/', routes);
 app.use('/users', users);
 

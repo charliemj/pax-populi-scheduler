@@ -1,0 +1,18 @@
+<div id='login-container'>
+  <div class="login-warning">
+    {{message}}
+  </div>
+  <form id='login-form' action='/login' method='post'>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <div class='row'>
+      <input id='username-box' class='form-control' type='text' name='username' placeholder='username' required autofocus></input><br>
+    </div>
+    <div class='row'>
+      <input id='password-box' class='form-control' type='password' name='password' placeholder='password' required></input><br>
+    </div>
+    <div class='row'>
+      <input type="submit" id='login-button' class='btn btn-primary btn-sm' value="LOG IN">
+      <input type="button" class='btn btn-info btn-sm' data-toggle="modal" data-target="#register-modal" value='SIGN UP'></input>
+    </div>
+  </form>
+</div>
