@@ -119,8 +119,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var email = req.body.requestedEmail.trim();
     var firstName = req.body.firstName.trim();
     var lastName = req.body.lastName.trim();
-
-    console.log('Hello', username, password, email, firstName, lastName);
+    var status = req.body.status.trim();
 
     data = {title: 'Pax Populi Scheduler',
             csrfToken: req.csrfToken()}
@@ -133,30 +132,39 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
         User.count({ username: username },
             function (err, count) {
                 if (count > 0) {
-                    data.message = 'There is already an account with this Username, '
-                                    + 'make sure you enter your Username correctly';
+                    data.message = 'There is already an account with this username, '
+                                    + 'make sure you enter your username correctly';
                     res.render('home', data);
                 } else {
-                    authentication.createUserJSON(username, password, email, firstName, lastName,
-                        function (err, userJSON) {
-                            if (err) {
-                                data.message = err.message;
-                                res.render('home', data);
-                            } else {
-                            	User.signUp(userJSON, req.devMode, function (err, user) {
+                	User.count({ email: email },
+            			function (err, count) {
+		                if (count > 0) {
+		                    data.message = 'There is already an account with this email address, '
+		                                    + 'make sure you enter your email address correctly';
+		                    res.render('home', data);
+		                } else {
+		                    authentication.createUserJSON(username, password, email, firstName, lastName, status,
+		                        function (err, userJSON) {
 		                            if (err) {
-		                                res.json({'success': false, 'message': err.message});
+		                                data.message = err.message;
+		                                res.render('home', data);
 		                            } else {
-		                                res.render('home', {title: 'Pax Populi Scheduler',
-		                                                    message: 'Sign up successful! We have sent you a verification email.'
-		                                                              + 'Please check your email.',
-		                                                    csrfToken: req.csrfToken()});
-		                            }
-                        		});
-                            }	
-                        });
-                    }
-                });
+		                            	User.signUp(userJSON, req.devMode, function (err, user) {
+				                            if (err) {
+				                                res.json({'success': false, 'message': err.message});
+				                            } else {
+				                                res.render('home', {title: 'Pax Populi Scheduler',
+				                                                    message: 'Sign up successful! We have sent you a verification email.'
+				                                                              + 'Please check your email.',
+				                                                    csrfToken: req.csrfToken()});
+				                            }
+		                        		});
+		                            }	
+		                        });
+		                }
+		            });
+				}
+            });
     }
 });
 

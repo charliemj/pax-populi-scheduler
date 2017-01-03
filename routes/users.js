@@ -15,6 +15,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
 	var user = req.session.passport.user;
     res.render('dashboard', { title: 'Dashboard',
                               username: user.username,
+                              tutor: user.tutor,
                               fullName: user.fullName,
                               csrfToken: req.csrfToken()});
 });
@@ -24,6 +25,7 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
     User.findOne({'username': req.params.username}, function(err, user){
         res.render('profile', {title: 'Profile Page',
                                username: req.params.username,
+                               tutor: user.tutor,
                                fullName: fullName,
                                email: user.email,
                                csrfToken: req.csrfToken()

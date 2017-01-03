@@ -123,9 +123,19 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
         if (err) {
             callback({success: false, message: 'Database error'});
         } else if (count === 0) {
-            that.create(userJSON, function(err, user){
-                that.sendVerificationEmail(user.username, devMode, callback);
-            });
+            that.count({ email: userJSON.email }, function (err, count) {
+                if (err) {
+                    callback({success: false, message: 'Database error'});
+                } else if (count === 0) {
+                    that.create(userJSON, function(err, user){
+                        that.sendVerificationEmail(user.username, devMode, callback);
+                    });
+                } else {
+                    callback({message: 'There is already an account with this email address.' 
+                        + 'Please make sure you have entered your email address correctly'});
+                }   
+            })
+            
         } else {
             callback({message: 'There is already an account with this username'});
         }
