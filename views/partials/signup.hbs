@@ -1,0 +1,45 @@
+<div id="register-modal" class="modal fade" role="dialog">
+  <div class="modal-messages"></div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Sign Up</h4>
+      </div>
+      <div class="modal-body">
+        <form id='register-form' action='/signup' method='post'>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <div class='row'>
+            <div class='col-xs-8 col-md-6'>
+              <div>
+                <input id='username-register-box' class='form-control signup-input' type='text' name='requestedUsername' placeholder='username' required></input>
+              </div>
+              <div>
+                <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
+              </div>
+              <div>
+                <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
+              </div>
+              <div>
+                <input id='email-register-box' class='form-control signup-input' type='text' name='requestedEmail' placeholder='email address' required></input>
+              </div>
+              <div>
+                <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
+              </div>
+              <div>
+                <input id='lastName-register-box' class='form-control signup-input' type='text' name='lastName' placeholder='last name' required></input>
+              </div>
+              <div>
+                <select name='status' class='form-control signup-input'>
+                  <option>Student</option>
+                  <option>Tutor</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP">
+        </form>
+      </div>     
+    </div>
+  </div>
+</div>

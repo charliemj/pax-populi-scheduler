@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="/stylesheets/home.css"/>
+<script src='/javascripts/login.js'></script>
+<div class="welcome-container">
+  <h1>Welcome to {{title}}</h1><br>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-10 col-sm-4 col-md-3 col-lg-3 col-md-offset-1 login-column">
+        {{#if verificationToken}}
+          <div class="col-xs-offset-3 col-sm-offset-1 col-md-offset-1 col-lg-2">
+            <br><br class='hidden-xs hidden-ms'>
+            <input id='username' type="hidden" value="{{username}}"></input>
+            <input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
+            <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+            <button id='verify-button' class='btn btn-primary btn-hg'>Verify Account</button>
+          </div>
+        {{else if isValidAccount}}
+          <div class="login-warning">
+            {{message}}
+          </div>
+          <form id='verification-form' action='/verify/{{username}}/resend' method='get'>
+            <input id='send-verification-button' class='btn btn-primary btn-hg' type='submit' value='Send Verification Email'></input>
+          </form>
+        {{else}}
+          {{>login_register}}
+          {{> signup}}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
