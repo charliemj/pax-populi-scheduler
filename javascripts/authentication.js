@@ -55,9 +55,10 @@ var Authentication = function() {
     * @param {String} email - the user's email address
     * @param {String} firstName - the user's first name
     * @param {String} lastName - the user's last name
+    * @param {String} status - the login status of the student - must be either 'Student' or 'Tutor'
     * @param  {Function} callback - the function that takes in an object and is called once this function is done
     */
-    that.createUserJSON = function (username, password, email, firstName, lastName, callback) {
+    that.createUserJSON = function (username, password, email, firstName, lastName, status, callback) {
         if (password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
             callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character."})
         } else {
@@ -69,7 +70,8 @@ var Authentication = function() {
                             password: hash,
                             firstName: firstName,
                             lastName: lastName,
-                            email: email};
+                            email: email,
+                            tutor: status === 'Tutor'};
                     callback(null, user);
                 }      
             });

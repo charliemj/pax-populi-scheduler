@@ -12,6 +12,7 @@ var UserSchema = mongoose.Schema({
     lastName: {type: String, required: true},
     email: {type: String, required: true},
     verified: {type:Boolean, default: false},
+    tutor: {type: Boolean, default: false},
     verificationToken: {type:String, default: null}
 });
 
@@ -97,6 +98,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                     callback(null, {username: username,
                                     _id: user._id,
                                     verified: user.verified,
+                                    tutor: user.tutor,
                                     fullName: user.firstName + ' ' + user.lastName});
                 } else {
                     callback({message:'Please enter a correct password'});

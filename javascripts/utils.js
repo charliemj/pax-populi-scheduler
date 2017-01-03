@@ -1,5 +1,3 @@
-// Author: Cheahuychou Mao
-
 var dateFormat = require('dateformat');
 
 var Utils = function() {
