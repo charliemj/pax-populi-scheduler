@@ -1,8 +1,6 @@
 // used under MIT license 
 // original source: https://github.com/artsy/day-schedule-selector
 
-//I think this is written using backbone.js
-
 (function ($) {
   'use strict';
 
