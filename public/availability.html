@@ -1,0 +1,28 @@
+<!doctype html>
+<html ng-app="availability">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
+    <title>My Availability</title>
+    
+    <link href="./stylesheets/style.css" rel="stylesheet">
+    <link href="./stylesheets/avail_sel.css" rel="stylesheet">
+    <script src="./javascripts/jquery-3.1.1.min.js"></script><!-- load jquery -->
+    <script src="./javascripts/angular.min.js"></script><!-- load angular -->
+    <script src="./javascripts/avail_client.js" type="text/javascript"></script>
+    <script src="./javascripts/avail_sel.js" type="text/javascript"></script>
+
+</head>
+
+<body ng-controller="mainController">
+    
+    <div id="day-schedule"></div>
+    <!-- calander UI is populated here -->
+
+    <input type="button" value="Submit" id="target" ng-click="submitAvail()">
+
+      
+</body>
+
+
+</html>

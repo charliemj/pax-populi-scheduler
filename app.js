@@ -23,6 +23,12 @@ db.once('open', function (callback) {
 
 var app = express();
 
+
+//ROUTES
+
+var availability = require('./routes/available_routes.js');
+app.use('/availability', availability); 
+
 // view engine setup
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
