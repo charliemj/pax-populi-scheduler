@@ -45,7 +45,7 @@ router.put('/avail/:avail_id', function(req, res){
             //do something
         }//end else
     });//end update
-};//end put request
+});//end put request
 
 
 module.exports = router; //keep at the bottom of the file
