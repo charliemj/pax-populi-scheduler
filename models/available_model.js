@@ -6,9 +6,8 @@ var User = require("");  //user model file hookup
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var availableSchema = mongoose.Schema({
-    isMatched: Boolean,
     user: {type: ObjectId, ref:"User"},
-    times: [{type: Date, validate: [validators.isDate()]}]
+    times: [] //this is a list of lists object
 });
 
 
