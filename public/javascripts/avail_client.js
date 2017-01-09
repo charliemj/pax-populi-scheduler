@@ -13,7 +13,13 @@ avail.controller('mainController', ['$scope','$http', function($scope,$http){
         console.log("Here's the availablity");
         console.log(avail);
         
-        $http.post('/avail', avail);
+        $http.post('/avail', avail)
+        .success(function(data){
+            $scope.avail = data;
+        })
+        .error(function(data){
+            console.log("Error: " + data); //<-- is this what we want?
+        });
 
         // $http.post('/avail',lol)
         // .success(function(data){

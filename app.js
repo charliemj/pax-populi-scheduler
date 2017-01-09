@@ -27,7 +27,7 @@ var app = express();
 //ROUTES
 
 var availability = require('./routes/available_routes.js');
-app.use('/availability', availability); 
+app.use('/avail', availability); 
 
 // view engine setup
 // view engine setup

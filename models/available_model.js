@@ -1,13 +1,13 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 
-var User = require("");  //user model file hookup
+// var User = require("");  //user model file hookup
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var availableSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User"},
-    times: [] //this is a list of lists object
+    times: [] //this is a list of lists object,
 });
 
 
