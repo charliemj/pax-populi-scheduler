@@ -21,12 +21,7 @@ avail.controller('mainController', ['$scope','$http', function($scope,$http){
             console.log("Error: " + data); //<-- is this what we want?
         });
 
-        // $http.post('/avail',lol)
-        // .success(function(data){
-        //     $scope.availability = data;
-        // })
-        // .error(function(data){
-        //     console.log("Error: " + data);
-        // });
+
+
     };
 }]);
