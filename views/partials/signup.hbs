@@ -8,32 +8,104 @@
       </div>
       <div class="modal-body">
         <form id='register-form' action='/signup' method='post'>
-          <input type="hidden" name="_csrf" value="{{csrfToken}}">
-          <div class='row'>
-            <div class='col-xs-8 col-md-6'>
-              <div>
-                <input id='username-register-box' class='form-control signup-input' type='text' name='requestedUsername' placeholder='username' required></input>
-              </div>
-              <div>
-                <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
-              </div>
-              <div>
-                <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
-              </div>
-              <div>
-                <input id='email-register-box' class='form-control signup-input' type='text' name='requestedEmail' placeholder='email address' required></input>
-              </div>
-              <div>
-                <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
-              </div>
-              <div>
-                <input id='lastName-register-box' class='form-control signup-input' type='text' name='lastName' placeholder='last name' required></input>
-              </div>
-              <div>
-                <select name='status' class='form-control signup-input'>
+        <div class='row'>
+          <div class='col-xs-8 col-md-8'>
+            <div class="form-group">
+                <label class="control-label">Register as</label>
+                <div>
+                  <select name='status' class='form-control signup-input'>
                   <option>Student</option>
                   <option>Tutor</option>
                 </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <input type="hidden" name="_csrf" value="{{csrfToken}}">
+          <div class='instructions'>
+            <p>
+              Pax Populi is the people-to-people peacemaking program of the nonprofit organization Applied Ethics, Inc.  Pax Populi’s mission is to put the tools of peacemaking into the hands of ordinary people through initiatives to advance peace through education and economic development within a framework of human rights. By participating you agree to abide by the principles of peace and cross-cultural understanding that guide our program .
+              We welcome your participation, but before please be sure that you have the time and dedication needed to participate.
+            </p>
+            <p>
+              We are very thankful for your support, and hope that you and your tutor forge a lasting positive and strong relationship.
+            </p>
+            <p>
+              Please note: although the information you supply will be kept confidential, relevant information such as email address, gender, etc. will be shared with your tutor.
+            </p>
+          </div>
+          <br>
+          <div class='row'>
+            <div class='col-xs-8 col-md-8'>
+              <div class="form-group">
+                <label class="control-label">Username</label>
+                <div>
+                  <input id='username-register-box' class='form-control signup-input' type='text' name='requestedUsername' placeholder='username' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Password</label>
+                <div>
+                  <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Email Address</label>
+                <div>
+                  <input id='email-register-box' class='form-control signup-input' type='email' name='requestedEmail' placeholder='email address' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Fist Name</label>
+                <div>
+                  <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Middle Name or Initial</label>
+                <div>
+                  <input id='middleName-register-box' class='form-control signup-input' type='text' name='lastName' placeholder='middle name' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Last Name</label>
+                <div>
+                  <input id='lastName-register-box' class='form-control signup-input' type='text' name='lastName' placeholder='last name' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Gender</label>
+                <div>
+                  <select name='gender' class='form-control signup-input'>
+                    <option>Female</option>
+                    <option>Male</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Date of Birth</label>
+                <div>
+                  <input id='dob-register-box' class='form-control signup-input' type='date' name='dateOfBirth' placeholder='Date of Birth' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Alternative Email Address</label>
+                <div>
+                  <input id='alternative-email-register-box' class='form-control signup-input' type='email' name='requestedAlternativeEmail' placeholder='alternative email address' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Telephone number</label>
+                <div>
+                  <input id='phone-number-box' class='form-control signup-input' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Skype ID</label>
+                <div>
+                  <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
+                </div>
               </div>
             </div>
           </div>
