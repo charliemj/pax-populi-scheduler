@@ -28,7 +28,7 @@ class DayOfWeekTime:
 		return self.day_of_week + ' ' + str(self.time)
 
 """
-Represents weekly availability.
+Represents a weekly availability.
 """
 class Availability:
 	DAYS_PER_WEEK = 7
@@ -64,31 +64,31 @@ class Availability:
 		# boolean array, i-th entry is whether or not user is available for self.CLASS_SLOT_TIMES[i]
 		self.free_class_slots = []
 		for i in range(self.SLOTS_PER_WEEK):
-			avail = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK] for j in range(self.SLOTS_PER_CLASS))
-			self.free_class_slots.append(avail)
+			is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK] for j in range(self.SLOTS_PER_CLASS))
+			self.free_class_slots.append(is_free)
 		
 	def class_intersect_indices(self, other_availability):
-		"""Computes indices of class time slots for which both users are available.
+		"""Computes indices of class time slots for which both users are free.
 
 		Args:
 			other_availability: An Availability object.
 
 		Returns:
 			A list of class slot indices such that self and other_availability
-				are both available. 
+				are both free.
 		"""
 		return [i for i in range(self.SLOTS_PER_WEEK)
 				if self.free_class_slots[i] and other_availability.free_class_slots[i]]
 
 	def class_intersects(self, other_availability):
-		"""Returns whether or not two users share at least one class slot.
+		"""Returns whether or not two users are both free for least one class slot.
 
 		Args:
 			other_availability: An Availability object.
 
 		Returns:
-			A boolean whether or not self and other_availability share at least
-				one class slot.			
+			A boolean whether or not self and other_availability are both free
+				for at least one class slot.	
 		"""
 		return any(self.free_class_slots[i] and other_availability.free_class_slots[i]
 				   for i in range(self.SLOTS_PER_WEEK))
