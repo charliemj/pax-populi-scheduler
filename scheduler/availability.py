@@ -94,7 +94,8 @@ class Availability:
 				   for i in range(self.SLOTS_PER_WEEK))
 
 if __name__ == '__main__':
-	a = Availability(range(5, 20))
-	a2 = Availability(range(13))
-	print a.free_slots
+	#a = Availability(range(5, 20))
+	#a2 = Availability(range(13))
+	#print a.free_slots
+	print 1
 		
