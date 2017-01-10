@@ -7,6 +7,7 @@
     <div ng-controller="mainController">
         <div id="day-schedule"></div>
         <!-- calander UI is populated here -->
+        <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
         <input type="button" value="Submit" id="target" ng-click="submitAvail()">    
     </div>
 </div>

@@ -57,8 +57,6 @@ app.use(function (req, res, next) {
     next();
 });
 
-// app.use('/avail', availability);
-
 
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
@@ -69,8 +67,7 @@ app.use(cookieParser());
 app.use(csrfProtection);
 
 
-//ROUTES
-
+//ROUTES (needs to stay below the csurf code)
 app.use('/', routes);
 app.use('/users', users);
 app.use('/avail', availability);
