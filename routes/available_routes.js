@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
+var csrf = require('csurf');
 
 var Avail = require("../models/available_model.js");
 
@@ -17,8 +18,11 @@ router.get('/',function(req, res){
 //submit button
 
 router.post('/', function(req, res){
-    thing = req.body;
+    thing = req.body.avail; //how get data?
+    console.log("Hi");
     console.log(thing);
+
+
     // Avail.create({
     //     //params to save to DB
     //     times: req.body}, //I think
