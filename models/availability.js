@@ -12,5 +12,5 @@ var availableSchema = mongoose.Schema({
 
 
 //keep at bottom of file
-var Available = mongoose.model("Available", availableSchema);
-module.exports = Available;
+var Availability = mongoose.model("Availability", availableSchema);
+module.exports = Availability;
