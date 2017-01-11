@@ -11,6 +11,8 @@ var passportLocal = require('passport-local');
 var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var availabilities= require('./routes/availabilities.js');
+
 
 // database setup
 var mongoose = require('mongoose');
@@ -22,6 +24,8 @@ db.once('open', function (callback) {
 });
 
 var app = express();
+
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -52,16 +56,20 @@ app.use(function (req, res, next) {
     next();
 });
 
+
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
 
 // parse cookies since "cookie" is true in csrfProtection 
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(csrfProtection);
 
+
+//ROUTES (needs to stay below the csurf code)
 app.use('/', routes);
 app.use('/users', users);
+app.use('/availabilities', availabilities);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -69,6 +77,7 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
 
 // error handlers
 
@@ -93,6 +102,8 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+ 
 
 
 module.exports = app; //keep at bottom of the file
