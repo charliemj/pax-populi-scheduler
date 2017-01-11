@@ -8,8 +8,9 @@ var Availability = require("../models/availability.js");
 //GET request for displaying the availablities form
 //there will be a link to "register for a class"
 
-router.get('/',function(req, res){
-    res.render('availability', {title: 'Register',
+router.get('/',function(req, res, next){
+  var user = req.session.passport.user;
+  res.render('availability', {title: 'Register',
                                         csrfToken: req.csrfToken(),
                                         username: user.username,
                                         tutor: user.tutor,
@@ -20,7 +21,7 @@ router.get('/',function(req, res){
 
 //POST request for submitting the availablities from submit button
 
-router.post('/', function(req, res){
+router.post('/', function(req, res, next){
     var times = req.body.avail; 
     console.log("Hi");
     console.log(times);
@@ -51,7 +52,7 @@ router.post('/', function(req, res){
 
 //PUT request for updating availablities (only available via the confirmation of a schedule page!)
 
-router.put('/availability/:user_id', function(req, res){
+router.put('/availability/:user_id', function(req, res, next){
     //find user, go to their avail, update it
     Availability.update({_id: req.params.user_id}, 
     function(err, avail){
