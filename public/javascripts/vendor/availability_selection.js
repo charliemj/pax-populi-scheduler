@@ -1,5 +1,5 @@
-// used under MIT license 
-// original source: https://github.com/artsy/day-schedule-selector
+// Used under MIT license 
+// Original source: https://github.com/artsy/day-schedule-selector
 
 (function ($) {
   'use strict';
