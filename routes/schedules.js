@@ -3,7 +3,7 @@ var router = express.Router();
 var mongoose = require("mongoose");
 
 
-var Schedule = require("../models/schedule_model.js");
+var Schedule = require("../models/schedule.js");
 
 //csrf stuff?
 //var csrf = require('csurf');
