@@ -11,7 +11,7 @@ var passportLocal = require('passport-local');
 var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var availability = require('./routes/available_routes.js');
+var availabilities= require('./routes/availabilities.js');
 
 
 // database setup
@@ -70,7 +70,7 @@ app.use(csrfProtection);
 //ROUTES (needs to stay below the csurf code)
 app.use('/', routes);
 app.use('/users', users);
-app.use('/avail', availability);
+app.use('/availabilities', availabilities);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

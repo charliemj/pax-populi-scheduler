@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
 var csrf = require('csurf');
-var Avail = require("../models/available_model.js");
+var Availability = require("../models/availability.js");
 
 
 //GET request for displaying the availablities form
@@ -29,7 +29,7 @@ router.post('/', function(req, res){
       // '5': [],
       // '6': [[ '23:00', '24:00' ] }
 
-    Avail.create({times: times}, 
+    Availability.create({times: times}, 
     function(err, avail){
         if (err){
             res.send({
@@ -46,7 +46,7 @@ router.post('/', function(req, res){
 
 //PUT request for updating availablities (only available via the confirmation of a schedule page!)
 
-router.put('/avail/:user_id', function(req, res){
+router.put('/availability/:user_id', function(req, res){
     //find user, go to their avail, update it
     Avail.update({_id: req.params.user_id}, 
     function(err, avail){

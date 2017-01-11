@@ -19,7 +19,7 @@ avail.controller('mainController', ['$scope','$http', function($scope,$http){
         var csrf = $('#csrf').val();
         var result = {_csrf:csrf, avail:avail};
 
-        $http.post('/avail', result).then(
+        $http.post('/availabilities', result).then(
             function(data){$scope.avail = data;}, 
             function(data){console.log("Error: " + data);});
     };//end submitAvail
