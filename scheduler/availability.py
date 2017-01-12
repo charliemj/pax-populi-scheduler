@@ -35,13 +35,14 @@ class Availability:
 	HOURS_PER_DAY = 24
 	MINUTES_PER_HOUR = 60
 	MINUTES_PER_WEEK = DAYS_PER_WEEK * HOURS_PER_DAY * MINUTES_PER_HOUR
-	MINUTES_PER_SLOT = 15
+	MINUTES_PER_SLOT = 30
 	if MINUTES_PER_HOUR % MINUTES_PER_SLOT != 0:
 		raise ValueError('MINUTES_PER_SLOT must be a divisor of 60')
 	SLOTS_PER_HOUR = MINUTES_PER_HOUR / MINUTES_PER_SLOT
+	SLOTS_PER_DAY = SLOTS_PER_HOUR * HOURS_PER_DAY
+	SLOTS_PER_WEEK = MINUTES_PER_WEEK / MINUTES_PER_SLOT
 	MINUTES_PER_CLASS = 90
 	SLOTS_PER_CLASS = int(math.ceil(MINUTES_PER_CLASS / float(MINUTES_PER_SLOT)))
-	SLOTS_PER_WEEK = MINUTES_PER_WEEK / MINUTES_PER_SLOT
 	SLOT_START_TIMES = []
 	for day in range(DAYS_PER_WEEK):
 		for hour in range(HOURS_PER_DAY):
@@ -53,20 +54,47 @@ class Availability:
 						 SLOT_START_TIMES[(i+SLOTS_PER_CLASS)%SLOTS_PER_WEEK])
 					     for i in range(SLOTS_PER_WEEK)]
 
-	def __init__(self, free_slots_indices):
-		"""
-		Args:
-			free_slots_indices: A list of indices i such that the user is free
-				during self.SLOT_TIMES[i]
-		"""
+	def __init__(self, availability_dict):
 		# boolean array, i-th entry is whether or not user is available for self.SLOT_TIMES[i]
+		free_slots_indices = self.parse_dict(availability_dict)
 		self.free_slots = [(i in free_slots_indices) for i in range(self.SLOTS_PER_WEEK)]
 		# boolean array, i-th entry is whether or not user is available for self.CLASS_SLOT_TIMES[i]
 		self.free_class_slots = []
 		for i in range(self.SLOTS_PER_WEEK):
 			is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK] for j in range(self.SLOTS_PER_CLASS))
 			self.free_class_slots.append(is_free)
-		
+
+		for i in range(self.SLOTS_PER_WEEK):
+			if self.free_slots[i]:
+				print self.SLOT_TIMES[i]
+	
+	def time_string_to_index(self, time_string):
+		hours = int(time_string.split(':')[0])
+		minutes = int(time_string.split(':')[1])
+		return (hours * self.MINUTES_PER_HOUR + minutes) / self.MINUTES_PER_SLOT
+
+	def parse_dict(self, availability_dict):
+		"""
+		Returns:
+			free_slots_indices: A set of indices i such that the user is free
+				during self.SLOT_TIMES[i]
+		"""	
+		free_slots_indices = set([])
+		for day_string in availability_dict.keys():
+			intervals = availability_dict[day_string]
+			day_slot_index = int(day_string) * self.SLOTS_PER_DAY
+			for interval in intervals:
+				if len(interval) == 1:
+					index = day_slot_index + self.time_string_to_index(interval[0])
+					free_slots_indices.add(index)
+				elif len(interval) == 2:
+					start_index = day_slot_index + self.time_string_to_index(interval[0])
+					end_index = day_slot_index + self.time_string_to_index(interval[1])
+					free_slots_indices.update(range(start_index, end_index+1))
+				else:
+					raise ValueError('time interval in availability dict must have length 1 or 2')
+		return free_slots_indices
+
 	def class_intersect_indices(self, other_availability):
 		"""Computes indices of class time slots for which both users are free.
 
@@ -96,6 +124,12 @@ class Availability:
 if __name__ == '__main__':
 	#a = Availability(range(5, 20))
 	#a2 = Availability(range(13))
-	#print a.free_slots
-	print 1
+	availability_dict = {'0':  [ ['4:00' ], ['5:00', '5:30'] ,['8:00','11:00']],
+      					 '1': [],
+      					 '2': [],
+						 '3': [],
+						 '4': [],
+						 '5': [],
+						 '6': [] }
+    a = Availability(availability_dict)
 		
