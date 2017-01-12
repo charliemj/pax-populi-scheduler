@@ -1,0 +1,54 @@
+.schedule-rows td {
+  width: 80px;
+  height: 30px;
+  margin: 3px;
+  padding: 5px;
+  background-color: #eee;
+  cursor: pointer;
+}
+.schedule-rows td:first-child {
+  background-color: transparent;
+  text-align: right;
+  position: relative;
+  top: -12px;
+}
+.schedule-rows td[data-selected],
+.schedule-rows td[data-selecting] {
+  background-color: #6a0bc1;
+}
+.schedule-rows td[data-disabled] {
+  opacity: 0.55;
+}
+
+table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 2px;
+    -webkit-border-horizontal-spacing: 2px;
+    -webkit-border-vertical-spacing: 2px;
+    border-color: grey;
+}
+
+th {
+    font-weight: bold;
+    text-align: -internal-center;
+}
+
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+    text-align: center;
+}
+
