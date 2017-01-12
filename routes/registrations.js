@@ -28,7 +28,8 @@ router.post('/', function(req, res, next){
     var genderPref = req.body.genderPref;
     var course = req.body.course;
     var username = user.username;
-    var userId = user._id;
+    
+
     Registration.createRegistration(user, genderPref, times,
       function(err,registration){
         if (err){

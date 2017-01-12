@@ -7,32 +7,43 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var genders = ["Male","Female","Other", "NoPref"]; 
 
-// times and UTCtimes are objects like
-      // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:30am
+// times are objects like
+      // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
       // '1': [],
       // '2': [],
       // '3': [],
       // '4': [],
       // '5': [],
-      // '6': [[ '06:00', '08:30' ] } //Saturday from 6 am to 9 am
+      // '6': [[ '06:00', '08:30' ] } //Saturday from 6 am to 8:30am
 
 var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     times: {type: Array, required:true},
     genderPref: {type: String, enum: genders, required:true},
-    course: {type: String, required:true}, //TODO get this
+    course: {type: String, required:true},
+    //is it currently DST?
     UTCtimes: {type:Array, require:false}
 });
 
 
 //make a schema method for taking in the time zone info from User and converting to UTC
 /*
- * Converts the inputed available times for a user to UTC. 
+ * Converts the inputed available times for a user to UTC with daylight savings. 
  * @param {String} username - The username of the query user. 
  * @param {Array} times - An array of times the user is available to meet.
  * @param {Function} callback - The function to execute after the times are converted and saved to database.
  */
-registrationSchema.statics.convertToUTC = function(username,times,callback){
+registrationSchema.statics.convertToUTCWithDS = function(username,times,callback){
+
+};
+
+/*
+ * Converts the inputed available times for a user to UTC WITHOUT daylight savings. 
+ * @param {String} username - The username of the query user. 
+ * @param {Array} times - An array of times the user is available to meet.
+ * @param {Function} callback - The function to execute after the times are converted and saved to database.
+ */
+registrationSchema.statics.convertToUTCWithOutDS = function(username,times,callback){
 
 };
 

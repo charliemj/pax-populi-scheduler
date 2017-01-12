@@ -5,10 +5,8 @@ var utils = require("../javascripts/utils.js");
 var email = require('../javascripts/email.js');
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
-var _countries = require("countries.js");
 
 var genders = ["Male","Female","Other"]; 
-var countries = _countries.COUNTRIES;
 
 
 var UserSchema = mongoose.Schema({
@@ -19,9 +17,10 @@ var UserSchema = mongoose.Schema({
     email: {type: String, required: true},
     verified: {type:Boolean, default: false},
     tutor: {type: Boolean, default: false}, //is either a tutor or student
-    gender: {type: String, enum: genders},
-    country:{type: String, enum:countries},
-    bio: {type: String, required:false},
+    gender: {type: String, enum: genders, require: true},
+    country:{type: String, require: true},
+    region: {type: String, require: true},
+    bio: {type: String, require: false},
     verificationToken: {type:String, default: null}
 });
 
