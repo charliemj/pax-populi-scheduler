@@ -35,13 +35,14 @@ var registrationSchema = mongoose.Schema({
 registrationSchema.statics.createRegistration = function(username, genderPref, times, course, callback){
     
     User.getUser(username, function(err,user){
-        
+        console.log("Trying to get user");
         if (err) {res.send(err + "Problem with getting user");}
         
         else{
             console.log(user);
             Registration.create({times: times, user: user, genderPref: genderPref, course: course, isMatched:false}, 
             function(err, registration){
+                console.log("Trying to create registration");
                 if (err){
                     console.log("Problem creating reg");
                     res.send({

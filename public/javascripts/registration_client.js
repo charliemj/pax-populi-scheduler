@@ -18,8 +18,9 @@ registration.controller('mainController', ['$scope','$http', function($scope,$ht
         var result = {_csrf:csrf, availability:availability, course:course, genderPref:genderPref};
         console.log(result);
         //submits the user's availablity/registration info (data) to server
+        console.log("now trying to make post req inside client");
         $http.post('/registrations', result).then(
-            function(data){}, 
+            function(data){console.log("client code sucessful");}, 
             function(data){console.log("Error: " + data);});
     };//end submitRegistration
 }]);//end controller
