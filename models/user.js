@@ -6,7 +6,7 @@ var email = require('../javascripts/email.js');
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
 
-var genders = ["Male","Female","Other"]; 
+var genders = ["Male","Female"]; 
 
 
 var UserSchema = mongoose.Schema({
@@ -234,7 +234,7 @@ UserSchema.statics.changePassword = function(username, newPassword, callback){
  * @param {Function} callback - The function to execute after the user is found. Callback
  * function takes 1 parameter: an error when the request is not properly claimed
  */
-UserSchema.statics.getUserByUsername = function(username,callback){
+UserSchema.statics.getUser = function(username, callback){
     User.findOne({username: username}, function(err,user){
         if (err) {
             callback(new Error("Invalid username."));

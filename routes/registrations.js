@@ -23,14 +23,13 @@ router.get('/',function(req, res, next){
 
 router.post('/', function(req, res, next){
     var times = req.body.registration;
-    var gender_pref = req.body.gender_pref;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
     var course = req.body.course;
     var username = user.username;
     
 
-    Registration.createRegistration(user, genderPref, times,
+    Registration.createRegistration(username, genderPref, times, course, 
       function(err,registration){
         if (err){
           console.log("error submitting registration " + err);

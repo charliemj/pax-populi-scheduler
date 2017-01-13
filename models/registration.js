@@ -5,7 +5,7 @@ var User = require('../models/user.js');
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var genders = ["Male","Female","Other", "NoPref"]; 
+var genders = ["Male","Female", "NoPref"]; 
 
 // times are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -21,7 +21,7 @@ var registrationSchema = mongoose.Schema({
     times: {type: mongoose.Schema.Types.Mixed, required:true}, 
     genderPref: {type: String, enum: genders, required:true},
     course: {type: String, required:true},
-    isMatched:{type: Boolean, default: false}
+    isMatched:{type: Boolean, required: true,  default: false}
 });
 
 
@@ -32,22 +32,25 @@ var registrationSchema = mongoose.Schema({
  * @param {Array} times - An array of times the user is available to meet (in their local times).
  * @param {Function} callback - The function to execute after the registration is created. 
  */
-registrationSchema.statics.createRegistration = function(username,gender_pref, times, callback){
+registrationSchema.statics.createRegistration = function(username, genderPref, times, course, callback){
     
-    User.getUserByUsername(username, function(err,user,times){
+    User.getUser(username, function(err,user){
         
-        if (err) {res.send(err);}
+        if (err) {res.send(err + "Problem with getting user");}
         
         else{
-            Registration.create({times: times, user: user, genderPref: genderPref, course: course}, 
+            console.log(user);
+            Registration.create({times: times, user: user, genderPref: genderPref, course: course, isMatched:false}, 
             function(err, registration){
                 if (err){
+                    console.log("Problem creating reg");
                     res.send({
                     success: false,
-                    message: err
+                    message: err + "Problem creating registration"
                   }); 
                 }//end if
                 else{
+                    console.log(registration);
                     res.status(200); //everything worked! 
                 }//end else
             });//end create

@@ -16,7 +16,7 @@ registration.controller('mainController', ['$scope','$http', function($scope,$ht
         var course = $("#course").val();
         var genderPref = $("#genderPref").val();
         var result = {_csrf:csrf, availability:availability, course:course, genderPref:genderPref};
-
+        console.log(result);
         //submits the user's availablity/registration info (data) to server
         $http.post('/registrations', result).then(
             function(data){}, 
