@@ -26,11 +26,11 @@ router.get('/', function(req, res, next) {
 // Use passport.js for login authentication and bcrypt to encrypt passwords
 passport.use(new LocalStrategy(function (username, password, callback) {
     User.authenticate(username.toLowerCase(), password, callback);
-}))
+}));
 
 passport.serializeUser(function (user, callback) {
     callback(null, user);
-})
+});
 
 passport.deserializeUser(function (user, callback) {
     User.find({username: user.username}, function(err, user) {
@@ -77,7 +77,7 @@ router.get('/verify/:username/resend', function(req, res, next) {
     var username = req.params.username;
     data = {title: 'Pax Populi Scheduler',
             username: username,
-            csrfToken: req.csrfToken()}
+            csrfToken: req.csrfToken()};
     User.sendVerificationEmail(username, req.devMode, function (err, user) {
         if (err) {
             return res.render('home', data);
@@ -92,7 +92,7 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
     data = {title: 'Pax Populi Scheduler',
             username: req.params.username,
             verificationToken: req.params.verificationToken,
-            csrfToken: req.csrfToken()}
+            csrfToken: req.csrfToken()};
     res.render('home', data);      
 });
 
@@ -100,16 +100,16 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
 router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, function(req, res, next) {
     User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
-                csrfToken: req.csrfToken()}
+                csrfToken: req.csrfToken()};
         if (err && !err.isVerified) {
             data.message = err.message;
             return res.json({'success': false, message: err.message});
         }
         data.message = 'Your account has been verified. You can now log in';
         data.success = true;
-        data.redirect = '/'
+        data.redirect = '/';
         res.json(data);
-    })
+    });
 });
 
 // Signs up a new account
@@ -120,9 +120,13 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var firstName = req.body.firstName.trim();
     var lastName = req.body.lastName.trim();
     var status = req.body.status.trim();
+    var gender = req.body.gender.trim();
+    var country = req.body.country.trim();
+    var region = req.body.region.trim();
+    var bio = req.body.bio.trim();
 
     data = {title: 'Pax Populi Scheduler',
-            csrfToken: req.csrfToken()}
+            csrfToken: req.csrfToken()};
 
     if (username.length === 0 || password.length === 0 || email.length === 0
     	|| firstName === 0 || lastName === 0) {
@@ -176,11 +180,8 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         csrfToken: req.csrfToken()});
 });
 
-module.exports = router;
 
-
-
-/* GET home page. */
+/* GET home page. */ // <---- What is this doing here? -km
 router.get('/', function(req, res, next) {
   res.render('dashboard', { title: 'Pax-Populi Scheduler' });
 });

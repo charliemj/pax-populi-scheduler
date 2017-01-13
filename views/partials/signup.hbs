@@ -1,3 +1,4 @@
+<script src="/javascripts/vendor/crs.min.js"></script>
 <div id="register-modal" class="modal fade" role="dialog">
   <div class="modal-messages"></div>
   <div class="modal-dialog">
@@ -106,6 +107,21 @@
                 <div>
                   <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
                 </div>
+              </div>
+              <div>
+                <select name='gender' class='form-control signup-input'>
+                  <option value="">Select Your Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div>
+                <!--Source: https://github.com/benkeen/country-region-selector-->
+                Country: <select name="country" class="crs-country" data-region-id="regionHere"></select>
+                Region: <select name="region" id="regionHere"></select>
+              </div>
+              <div>
+                <input id='bio-register-box' class='form-control signup-input' type='text' name='bio' placeholder='bio'></input>
               </div>
             </div>
           </div>

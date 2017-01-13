@@ -16,7 +16,7 @@
     days        : [0, 1, 2, 3, 4, 5, 6],  // Sun - Sat
     startTime   : '00:00',                // HH:mm format
     endTime     : '24:00',                // HH:mm format
-    interval    : 30,                     // minutes
+    interval    : 15,                     // minutes
     stringDays  : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     template    : '<div class="day-schedule-selector">'         +
                     '<table class="schedule-table">'            +
