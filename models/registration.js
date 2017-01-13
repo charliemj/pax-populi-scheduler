@@ -33,7 +33,7 @@ var registrationSchema = mongoose.Schema({
  * @param {Function} callback - The function to execute after the registration is created. 
  */
 registrationSchema.statics.createRegistration = function(username, genderPref, times, course, callback){
-    
+    console.log("trying to do createRegistration");
     User.getUser(username, function(err,user){
         console.log("Trying to get user");
         if (err) {res.send(err + "Problem with getting user");}
