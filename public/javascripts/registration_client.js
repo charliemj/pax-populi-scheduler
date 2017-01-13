@@ -15,12 +15,11 @@ registration.controller('mainController', ['$scope','$http', function($scope,$ht
         var csrf = $('#csrf').val(); //all posts requests need an _csrf param
         var course = $("#course").val();
         var genderPref = $("#genderPref").val();
+
         var result = {_csrf:csrf, availability:availability, course:course, genderPref:genderPref};
-        console.log(result);
-        //submits the user's availablity/registration info (data) to server
-        console.log("now trying to make post req inside client");
+    
         $http.post('/registrations', result).then(
-            function(data){console.log("client code sucessful");}, 
+            function(data){}, 
             function(data){console.log("Error: " + data);});
     };//end submitRegistration
 }]);//end controller

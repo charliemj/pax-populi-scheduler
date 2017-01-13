@@ -22,14 +22,14 @@ router.get('/',function(req, res, next){
 //POST request for submitting the availablities from submit button
 
 router.post('/', function(req, res, next){
-    var times = req.body.registration;
+    var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
     var course = req.body.course;
     var username = user.username;
     
 
-    Registration.createRegistration(username, genderPref, times, course, 
+    Registration.createRegistration(username, genderPref, availability, course, 
       function(err,registration){
         if (err){
           console.log("error submitting registration " + err);
@@ -39,7 +39,7 @@ router.post('/', function(req, res, next){
           });//end send
         }//end if
         else {
-          res.send(200,{success:"Registration has been submitted!"});
+          res.status(200).send({success:"Registration has been submitted!"});
         }//end else
     });//end createRegistration
 });//end POST request

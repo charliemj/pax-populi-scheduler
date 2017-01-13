@@ -18,7 +18,7 @@ var genders = ["Male","Female", "NoPref"];
 
 var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
-    times: {type: mongoose.Schema.Types.Mixed, required:true}, 
+    availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
     genderPref: {type: String, enum: genders, required:true},
     course: {type: String, required:true},
     isMatched:{type: Boolean, required: true,  default: false}
@@ -32,27 +32,20 @@ var registrationSchema = mongoose.Schema({
  * @param {Array} times - An array of times the user is available to meet (in their local times).
  * @param {Function} callback - The function to execute after the registration is created. 
  */
-registrationSchema.statics.createRegistration = function(username, genderPref, times, course, callback){
-    console.log("trying to do createRegistration");
+registrationSchema.statics.createRegistration = function(username, genderPref, availability, course, callback){
+    
     User.getUser(username, function(err,user){
-        console.log("Trying to get user");
         if (err) {res.send(err + "Problem with getting user");}
         
         else{
-            console.log(user);
-            Registration.create({times: times, user: user, genderPref: genderPref, course: course, isMatched:false}, 
+            Registration.create({availability: availability, user: user, genderPref: genderPref, course: course, isMatched:false}, 
             function(err, registration){
-                console.log("Trying to create registration");
                 if (err){
-                    console.log("Problem creating reg");
-                    res.send({
-                    success: false,
-                    message: err + "Problem creating registration"
-                  }); 
+                    console.log("Problem creating registration");
+                    callback(err); 
                 }//end if
                 else{
-                    console.log(registration);
-                    res.status(200); //everything worked! 
+                    callback(null,registration); //everything worked! 
                 }//end else
             });//end create
         }

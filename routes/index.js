@@ -180,9 +180,6 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         csrfToken: req.csrfToken()});
 });
 
-module.exports = router;
-
-
 
 /* GET home page. */ // <---- What is this doing here? -km
 router.get('/', function(req, res, next) {
