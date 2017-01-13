@@ -180,10 +180,4 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         csrfToken: req.csrfToken()});
 });
 
-
-/* GET home page. */ // <---- What is this doing here? -km
-router.get('/', function(req, res, next) {
-  res.render('dashboard', { title: 'Pax-Populi Scheduler' });
-});
-
 module.exports = router;

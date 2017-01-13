@@ -97,15 +97,6 @@ var Email = function() {
         });
     }
 
-    /**
-    * Makes the body of the email that a requester receives when a shopper claims his/her delivery
-    * @param {Object} delivery - the delivery object of the delivery that just got claimed
-    * @return {String} the body of the email to the requester
-    */
-    var claimEmailContent = function (delivery) {
-        return  '{}<p> Hi {}!<br><br>{} {} has bought {} ({}) you recently requested and is ready to deliver it to you. Please contact him/her at {} to setup a pickup time.<br>{}</p>'.format(that.welcomeMessage, delivery.requester.firstName, delivery.shopper.firstName, delivery.shopper.lastName, delivery.itemName, delivery.itemQuantity, delivery.shopper.phoneNumber, that.signature);       
-    }
-
     Object.freeze(that);
     return that;
 };
