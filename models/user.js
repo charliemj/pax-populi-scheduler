@@ -4,18 +4,25 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
 var email = require('../javascripts/email.js');
 var authentication = require('../javascripts/authentication.js');
+var validators = require("mongoose-validators");
+
+var genders = ["Male","Female"]; 
+
 
 var UserSchema = mongoose.Schema({
-    username: {type: String, required: true, index: true},
+    username: {type: String, required: true, index: true}, //Are we limiting the length? Should we?
     password: {type: String, required: true}, // should be just the hash
     firstName: {type: String, required: true},
     lastName: {type: String, required: true},
     email: {type: String, required: true},
     verified: {type:Boolean, default: false},
-    tutor: {type: Boolean, default: false},
+    tutor: {type: Boolean, default: false}, //is either a tutor or student
+    gender: {type: String, enum: genders, require: true},
+    country:{type: String, require: true},
+    region: {type: String, require: true},
+    bio: {type: String, require: false},
     verificationToken: {type:String, default: null}
 });
-
 
 UserSchema.path("username").validate(function(username) {
     return username.trim().length > 0;
@@ -35,7 +42,7 @@ UserSchema.path("lastName").validate(function(lastName) {
 
 UserSchema.path("verificationToken").validate(function(verificationToken) {
     if (!this.verificationToken) {
-        return true
+        return true;
     }
     return this.verificationToken.length == utils.numTokenDigits();
 }, "Verification token must have the correct number of digits");
@@ -49,7 +56,7 @@ UserSchema.path("verificationToken").validate(function(verificationToken) {
 UserSchema.methods.setVerificationToken = function (token, callback) {
     this.verificationToken = token;
     this.save(callback);
-}
+};
 
 /**
 * Sets verified to true
@@ -58,7 +65,7 @@ UserSchema.methods.setVerificationToken = function (token, callback) {
 UserSchema.methods.verify = function (callback) {
     this.verified = true;
     this.save(callback);
-}
+};
 
 /**
 * Verifies the account so that user can start using it
@@ -90,11 +97,11 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
 */
 UserSchema.statics.authenticate = function (username, password, callback) {
     this.findOne({ username: username }, function (err, user) {
-        if (err || user == null) {
+        if (err || user === null) {
             callback({message:'Please enter a valid username'});
         } else {
             bcrypt.compare(password, user.password, function (err, response) {
-                if (response == true) {
+                if (response === true) {
                     callback(null, {username: username,
                                     _id: user._id,
                                     verified: user.verified,
@@ -106,7 +113,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
             });
         }
     }); 
-}
+};
 
 /*
 * Registers a new user with the given userJSON (only if there is no user
@@ -134,13 +141,13 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
                     callback({message: 'There is already an account with this email address.' 
                         + 'Please make sure you have entered your email address correctly'});
                 }   
-            })
+            });
             
         } else {
             callback({message: 'There is already an account with this username'});
         }
     });
-}
+};
 
 /*
 * Sends a verification email to the user if there exists an account with such username.
@@ -159,7 +166,7 @@ UserSchema.statics.sendVerificationEmail = function (username, devMode, callback
         } else {
             that.findOne({username: username}, function (err, user) {
                 if (err) {
-                    callback(err)
+                    callback(err);
                 } else if (user && !user.isVerified) {
                     email.sendVerificationEmail(user, devMode, callback);
                 } else {
@@ -168,7 +175,7 @@ UserSchema.statics.sendVerificationEmail = function (username, devMode, callback
             });
         }
     });
-}
+};
 
 /*
  * Edits the profile of a query user. 
@@ -194,7 +201,7 @@ UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, cal
             }
         });
     });
-}
+};
 
 /*
  * Changes the password of a query user. 
@@ -218,7 +225,26 @@ UserSchema.statics.changePassword = function(username, newPassword, callback){
             });
         }
     });
-}
+};
+
+
+/*
+ * Finds a user by their username and returns the whole user object. 
+ * @param {String} username - The username of the query user.  
+ * @param {Function} callback - The function to execute after the user is found. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.statics.getUser = function(username, callback){
+    this.findOne({username: username}, function(err,user){
+        if (err) {
+            console.log("Invalud usernmae");
+            callback(new Error("Invalid username."));
+        } 
+        else {
+            callback(null, user);
+        }
+    });//end findOne
+};
 
 var UserModel = mongoose.model("User", UserSchema);
 
