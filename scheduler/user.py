@@ -43,8 +43,10 @@ class User:
 
 
     def can_match(self, other_user):
-    """
-    Availability matches and gender compatible
-    """
-    return (self.availability.class_intersects(other_user.availability)
-            and self.gender_compatible(other_user)
+        """
+        Availability matches and gender compatible
+        """
+        return (self.availability.class_intersects(other_user.availability)
+                and self.gender_compatible(other_user))
+
+        

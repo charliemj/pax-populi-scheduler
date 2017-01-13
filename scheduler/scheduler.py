@@ -19,32 +19,35 @@ class Scheduler:
         self.tutor_IDs = [tutor.ID for tutor in self.tutors]
         self.ID_to_user = dict(zip(self.student_IDs, self.students))
         self.ID_to_user.update(dict(zip(self.tutor_IDs, self.tutors)))
-        self.network = None
+        self.network = self.create_network()
 
     def create_network(self):
         # Add nodes
-        self.network = nx.DiGraph()
-        self.network.add_node('SOURCE')
-        self.network.add_node('SINK')
-        self.network.add_nodes_from(self.student_IDs)
-        self.network.add_nodes_from(self.tutor_IDs)
+        network = nx.DiGraph()
+        network.add_node('SOURCE')
+        network.add_node('SINK')
+        network.add_nodes_from(self.student_IDs)
+        network.add_nodes_from(self.tutor_IDs)
 
         # Add edges
         for student_ID in self.student_IDs:
-            self.network.add_edge('SOURCE', student_ID, capacity=1)
+            network.add_edge('SOURCE', student_ID, capacity=1)
         for (i, student) in enumerate(self.students):
             for (j, tutor) in enumerate(self.tutors):
                 if student.can_match(tutor):
-                    self.network.add_edge(self.student_IDs[i],
-                                          self.tutor_IDs[j],
-                                          capacity=1)
+                    network.add_edge(self.student_IDs[i],
+                                     self.tutor_IDs[j],
+                                     capacity=1)
         for tutor_ID in self.tutor_IDs:
-            self.network.add_edge(tutor_ID, 'SINK', capacity=1)
+            network.add_edge(tutor_ID, 'SINK', capacity=1)
+        return network
 
     def match(self):
         matched_students_IDs = set([])
         matched_tutors_IDs = set([])
         (max_flow, flow_dict) = nx.maximum_flow(self.network, 'SOURCE', 'SINK')
+        print max_flow
+        print flow_dict
         matches = []
         for student_ID in self.student_IDs:
             edge_dict = flow_dict[student_ID]
@@ -62,6 +65,7 @@ class Scheduler:
                 unmatched_students_IDs, unmatched_tutors_IDs)
 
 if __name__ == '__main__':
+    '''
     G = nx.DiGraph()
     G.add_nodes_from(range(1,6))
     G.add_edge(1, 2, capacity=1)
@@ -70,12 +74,24 @@ if __name__ == '__main__':
     G.add_edge(3, 5, capacity=1)
     G.add_edge(4, 5, capacity=10)
     flow, F = nx.maximum_flow(G, 1, 5)
+    '''
     #import matplotlib.pyplot as plt
     #nx.draw(G, pos=nx.spring_layout(G), with_labels=False)
     #nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
     #plt.show()
-    print flow
-    print F
+    from user import User
+    from availability import Availability
+    students = []
+    tutors = []
+    a1 = Availability({'0':[['23:00','24:00']], '1': [['0:00','2:30'], ['17:00', '17:15']]})
+    a2 = Availability({'0': [['23:45', '24:00']], '1':[['0:00','1:15']]})
+    students.append(User('STUDENT', 'MALE', 'FEMALE', 1,'s1',a1,1,1))
+    students.append(User('STUDENT', 'MALE', 'NONE', 1,'s2',a1,1,1))
+    tutors.append(User('STUDENT', 'MALE', 'NONE', 1,'t1',a2,1,1))
+    tutors.append(User('STUDENT', 'FEMALE', 'FEMALE', 1,'t2',a1,1,1))
+    s = Scheduler(students, tutors)
+    matches = s.match()[0]
+    print matches[0].student.ID
 
 
     

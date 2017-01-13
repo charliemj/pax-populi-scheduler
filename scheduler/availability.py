@@ -54,20 +54,29 @@ class Availability:
                          SLOT_START_TIMES[(i+SLOTS_PER_CLASS)%SLOTS_PER_WEEK])
                          for i in range(SLOTS_PER_WEEK)]
 
-    def __init__(self, availability_dict):
+    def __init__(self, availability_dict=None, free_slots=None, availability_dict_input=True):
         # boolean array, i-th entry is whether or not user is available for self.SLOT_TIMES[i]
-        free_slots_indices = self.parse_dict(availability_dict)
-        self.free_slots = [(i in free_slots_indices) for i in range(self.SLOTS_PER_WEEK)]
+        if availability_dict_input:
+            free_slots_indices = self.parse_dict(availability_dict)
+            self.free_slots = [(i in free_slots_indices) for i in range(self.SLOTS_PER_WEEK)]
+        else:
+            if len(free_slots) != self.SLOTS_PER_WEEK:
+                raise ValueError('free_slots must have length SLOTS_PER_WEEK')
+            self.free_slots = free_slots
         # boolean array, i-th entry is whether or not user is available for self.CLASS_SLOT_TIMES[i]
         self.free_class_slots = []
         for i in range(self.SLOTS_PER_WEEK):
             is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK] for j in range(self.SLOTS_PER_CLASS))
             self.free_class_slots.append(is_free)
-
+    
+    def __str__(self):
+        lines = []
         for i in range(self.SLOTS_PER_WEEK):
             if self.free_slots[i]:
-                print self.SLOT_TIMES[i][0], self.SLOT_TIMES[i][1]
-    
+                lines.append(str(self.SLOT_TIMES[i][0]) + ' - '
+                             + str(self.SLOT_TIMES[i][1]))
+        return '\n'.join(lines)
+
     def time_string_to_index(self, time_string):
         hours = int(time_string.split(':')[0])
         minutes = int(time_string.split(':')[1])
@@ -117,6 +126,29 @@ class Availability:
         return any(self.free_class_slots[i] and other_availability.free_class_slots[i]
                    for i in range(self.SLOTS_PER_WEEK))
 
+    def shifted(self, forward_shift_minutes):
+        """
+        Shifts an availability forward in time.
+
+        Args:
+            forward_shift_minutes: An integer representing the number of
+                minutes to shift self forward in time. This must be a multiple
+                of self.MINUTES_PER_SLOT.
+
+        Returns:
+            shifted_availability: An Availability object representing self
+                after shifting all time slots forward by forward_shift_minutes
+                minutes.
+        """
+        if forward_shift_minutes % self.MINUTES_PER_SLOT != 0:
+            raise ValueError('MINUTES_PER_SLOT must be a divisor of forward_shift_minutes')
+        n_slots = forward_shift_minutes / self.MINUTES_PER_SLOT
+        shifted_free_slots = [self.free_slots[(i-n_slots)%self.SLOTS_PER_WEEK]
+                              for i in range(self.SLOTS_PER_WEEK)]
+        shifted_availability = Availability(free_slots=shifted_free_slots,
+                                            availability_dict_input=False)
+        return shifted_availability
+
 if __name__ == '__main__':
     #a = Availability(range(5, 20))
     #a2 = Availability(range(13))
@@ -128,3 +160,4 @@ if __name__ == '__main__':
                      '5': [],
                      '6': [['22:00','24:00']]}
     a = Availability(availability_dict)
+    print a.shifted(7*24*60)
