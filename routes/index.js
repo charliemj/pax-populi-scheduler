@@ -122,6 +122,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var status = req.body.status.trim();
     var gender = req.body.gender.trim();
     var country = req.body.country.trim();
+    var region = req.body.region.trim();
     var bio = req.body.bio.trim();
 
     data = {title: 'Pax Populi Scheduler',

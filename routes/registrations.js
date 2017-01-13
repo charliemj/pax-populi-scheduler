@@ -55,7 +55,7 @@ router.put('/registration/:user_id', function(req, res, next){
     var genderPref = req.body.genderPref;
     var course = req.body.course;
 
-    Registration.updateAvailabilty(user, gender_pref, times,
+    Registration.updateAvailabilty(user, genderPref, times,
       function(err,availabilty){
         if (err){
           console.log("error updating availablity " + err);

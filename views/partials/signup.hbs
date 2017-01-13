@@ -32,12 +32,14 @@
               </div>
               <div>
                 <select name='status' class='form-control signup-input'>
-                  <option>Student</option>
-                  <option>Tutor</option>
+                  <option value="">Sign up as...</option>
+                  <option value="Student">Student</option> <!--Should these have value fields?-->
+                  <option value="Tutor">Tutor</option>
                 </select>
               </div>
               <div>
                 <select name='gender' class='form-control signup-input'>
+                  <option value="">Select Your Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
@@ -45,8 +47,8 @@
               </div>
               <div>
                 <!--Source: https://github.com/benkeen/country-region-selector-->
-                Country: <select class="crs-country" data-region-id="regionHere"></select>
-                Region: <select id="regionHere"></select>
+                Country: <select name="country" class="crs-country" data-region-id="regionHere"></select>
+                Region: <select name="region" id="regionHere"></select>
               </div>
               <div>
                 <input id='bio-register-box' class='form-control signup-input' type='text' name='bio' placeholder='bio'></input>

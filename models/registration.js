@@ -18,44 +18,18 @@ var genders = ["Male","Female","Other", "NoPref"];
 
 var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
-    times: {type: Array, required:true},
+    times: {type: mongoose.Schema.Types.Mixed, required:true}, 
     genderPref: {type: String, enum: genders, required:true},
     course: {type: String, required:true},
-    //is it currently DST?
-    UTCtimes: {type:Array, require:false}
+    isMatched:{type: Boolean, default: false}
 });
 
 
-//make a schema method for taking in the time zone info from User and converting to UTC
-/*
- * Converts the inputed available times for a user to UTC with daylight savings. 
- * @param {String} username - The username of the query user. 
- * @param {Array} times - An array of times the user is available to meet.
- * @param {Function} callback - The function to execute after the times are converted and saved to database.
- */
-registrationSchema.statics.convertToUTCWithDS = function(username,times,callback){
-
-};
-
-/*
- * Converts the inputed available times for a user to UTC WITHOUT daylight savings. 
- * @param {String} username - The username of the query user. 
- * @param {Array} times - An array of times the user is available to meet.
- * @param {Function} callback - The function to execute after the times are converted and saved to database.
- */
-registrationSchema.statics.convertToUTCWithOutDS = function(username,times,callback){
-
-};
-
-// createRegistration
-//takes username/id->calls user schema method to get User obje
-// takes the times, calls the UTC converter method
-// saves all the info in the DB
 /*
  * Creates a registration object for a user. 
  * @param {String} username - The username of the query user. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
- * @param {Array} times - An array of times the user is available to meet.
+ * @param {Array} times - An array of times the user is available to meet (in their local times).
  * @param {Function} callback - The function to execute after the registration is created. 
  */
 registrationSchema.statics.createRegistration = function(username,gender_pref, times, callback){
@@ -79,11 +53,7 @@ registrationSchema.statics.createRegistration = function(username,gender_pref, t
             });//end create
         }
     });
-
-    
 };
-
-
 
 /*
  * Updates registration info for a user. 

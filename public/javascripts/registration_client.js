@@ -8,7 +8,6 @@ registration.controller('mainController', ['$scope','$http', function($scope,$ht
     
     $("#day-schedule").dayScheduleSelector({}); //function that makes the calendar UI
      
-
     //Submit the schedule-- save availablity to database
     $scope.submitRegistration = function(){
         var availability = $("#day-schedule").data('artsy.dayScheduleSelector').serialize(); //gets the schedule output as an object
