@@ -1,0 +1,17 @@
+{
+  "name": "pax-populi-scheduler",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "TETPA"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/kar-moore/pax-populi-scheduler-2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

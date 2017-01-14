@@ -40,31 +40,70 @@ router.post('/', function(req, res, next){
         }//end if
         else {
           res.status(200).send({success:"Registration has been submitted!"});
+          //TODO redirect
         }//end else
     });//end createRegistration
 });//end POST request
 
 
-//PUT request for updating availablities (only available via the confirmation of a schedule page!)
+// GET request for seeing a submitted registration
+router.get('/:username/:registration_id', function (req, res, next){
+  var regId = req.params.registration_id;
+  var user = req.session.passport.user;
+  var username = user.username;
 
-router.put('/registration/:user_id', function(req, res, next){
-    //find user, go to their avail, update it
-    var times = req.body.registration;
+  //TODO make getRegistration fn in registration model
+  Registration.getRegistration(regId, username, 
+    function (err, registration){
+
+      if(err){
+        console.log("error getting registration " + err);
+        res.send({
+            success: false,
+            message: err
+          });//end send
+      }//end if
+      else{
+          res.render('updateRegistration', {title: 'Update Registration',
+                                        csrfToken: req.csrfToken(),
+                                        username: user.username,
+                                        tutor: user.tutor,
+                                        fullName: user.fullName,
+                                        availability: registration.availability,
+                                        genderPref: registration.genderPref,
+                                        course: registration.course,
+                                        });
+      }//end else
+
+  });//end getRegistration
+  
+});//end GET
+
+//PUT request for updating availablities
+
+router.put('/:username/:registration_id', function(req, res, next){
+    
+  // make sure that user who is logged in is the user who's reg it is
+  // look up registration by reg_id
+  // perform PUT request to update registration
+
+    var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
     var course = req.body.course;
 
-    Registration.updateAvailabilty(user, genderPref, times,
-      function(err,availabilty){
+    Registration.updateRegistration(user, regId, genderPref, availability, course,
+      function (err, registration){
         if (err){
-          console.log("error updating availablity " + err);
+          console.log("error updating registration " + err);
           res.send({
             success: false,
             message: err
           });//end send
         }//end if
         else {
-          res.send(200,{success:"Availabilty has been updated!"});
+          res.send(200,{success:"Registration has been updated!"});
+          // TO DO redirect 
         }//end else
     });//end updateAvailabilty
 });//end PUT request

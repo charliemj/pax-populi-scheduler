@@ -3,13 +3,13 @@
 
 var registration = angular.module("registration",[]);
 
-registration.controller('mainController', ['$scope','$http', function($scope,$http){
+registration.controller('mainController', ['$scope','$http', function($scope, $http){
 
     
     $("#day-schedule").dayScheduleSelector({}); //function that makes the calendar UI
      
     //Submit the schedule-- save availablity to database
-    $scope.submitRegistration = function(){
+    $scope.submitRegistration = function (){
         var availability = $("#day-schedule").data('artsy.dayScheduleSelector').serialize(); //gets the schedule output as an object
         
         var csrf = $('#csrf').val(); //all posts requests need an _csrf param
@@ -19,8 +19,8 @@ registration.controller('mainController', ['$scope','$http', function($scope,$ht
         var result = {_csrf:csrf, availability:availability, course:course, genderPref:genderPref};
     
         $http.post('/registrations', result).then(
-            function(data){}, 
-            function(data){console.log("Error: " + data);});
+            function (data){}, 
+            function (data){console.log("Error: " + data);});
     };//end submitRegistration
 }]);//end controller
 

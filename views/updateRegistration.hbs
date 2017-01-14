@@ -1,0 +1,26 @@
+<link href="/stylesheets/availability_selection.css" rel="stylesheet">
+<script src="/vendor/jquery-3.1.1.min.js"></script><!-- load jquery -->
+<script src="/vendor/angular.min.js"></script><!-- load angular -->
+<script src="/javascripts/client_side_update_registration.js" type="text/javascript"></script>
+<script src="/vendor/availability_selection.js" type="text/javascript"></script>
+<h1>Update Your Registration</h1>
+
+<div ng-app="updateRegistration">
+    <div ng-controller="mainController">
+        <div id="day-schedule"></div>
+        <!-- calander UI is populated here -->
+        <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
+        <select name="course" id="course">
+            <option value="">Select Course...</option>
+            <option value="English1">English1</option>
+            <option value="English2">English2</option>
+        </select>
+        <p>Please indicate if you have a gender preference for your tutor/student.</p>
+        <select name='gender' id="genderPref">
+            <option value="NoPref">No Preference</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+        <input type="button" value="Submit" id="target" ng-click="updateRegistration()">    
+    </div>
+</div>

@@ -53,21 +53,47 @@ registrationSchema.statics.createRegistration = function(username, genderPref, a
 };
 
 /*
+ * Gets registration info about a particular registration for a user. 
+ * @param {String} regId - the registration id number of the particular registration
+ * @param {String} user - The user object of the logged in user 
+ * @param {Function} callback - The function to execute after the registration found. 
+ */
+
+registrationSchema.statics.findRegistration = function (regId, user, callback){
+
+    Registration.findOne({user: user, _id: regId}, function (err, registration){
+
+        if(err){
+            callback(new Error("This registration doesn't belong this logged in user."));
+        }
+
+        else{
+
+            callback(null, registration);
+        }
+
+    });//end findOne
+
+};//end findRegistration
+
+
+/*
  * Updates registration info for a user. 
- * @param {String} username - The username of the query user. 
+ * @param {String} user - The user object of the logged in user 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
  * @param {Array} times - An array of times the user is available to meet.
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
 
-registrationSchema.statics.updateRegistration = function(username, genderPref, times, callback){
-    Registration.update({}, 
-    function(err, registration){
+registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, course, callback){
+    
+    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, course: course}, 
+    function(err, updatedRegistration){
         if (err){
             res.send(err);
         }//end if
         else{
-            //do something
+           callback(null, updatedRegistration); //everything worked! 
         }//end else
     });//end update
 };
