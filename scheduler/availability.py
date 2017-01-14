@@ -77,6 +77,9 @@ class Availability:
                              + str(self.SLOT_TIMES[i][1]))
         return '\n'.join(lines)
 
+    def __eq__(self, other):
+        return self.free_slots == other.free_slots
+
     def time_string_to_index(self, time_string):
         hours = int(time_string.split(':')[0])
         minutes = int(time_string.split(':')[1])
@@ -160,4 +163,3 @@ if __name__ == '__main__':
                      '5': [],
                      '6': [['22:00','24:00']]}
     a = Availability(availability_dict)
-    print a.shifted(7*24*60)
