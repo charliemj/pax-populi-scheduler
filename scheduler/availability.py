@@ -1,5 +1,6 @@
 import math
-from datetime import time
+from datetime import time, datetime
+import pytz
 
 """
 Represents a (day of week, time) pair.
@@ -83,7 +84,7 @@ class Availability:
     def time_string_to_index(self, time_string):
         hours = int(time_string.split(':')[0])
         minutes = int(time_string.split(':')[1])
-        return (hours * self.MINUTES_PER_HOUR + minutes) / self.MINUTES_PER_SLOT
+        return (self.MINUTES_PER_HOUR * hours  + minutes) / self.MINUTES_PER_SLOT
 
     def parse_dict(self, availability_dict):
         """
@@ -129,19 +130,24 @@ class Availability:
         return any(self.free_class_slots[i] and other_availability.free_class_slots[i]
                    for i in range(self.SLOTS_PER_WEEK))
 
-    def shifted(self, forward_shift_minutes):
+    def forward_shifted(self, forward_shift_minutes):
         """
-        Shifts an availability forward in time.
+        Returns a copy of self shifted forward in time.
 
         Args:
             forward_shift_minutes: An integer representing the number of
                 minutes to shift self forward in time. This must be a multiple
-                of self.MINUTES_PER_SLOT.
+                of self.MINUTES_PER_SLOT. 
 
         Returns:
             shifted_availability: An Availability object representing self
                 after shifting all time slots forward by forward_shift_minutes
-                minutes.
+                minutes. For example, if the user is free 1pm-2pm on Tuesday
+                and forward_shift_minutes == 75, then the returned Availability
+                object will be free 2:15pm-3:15pm on Tuesday. If the user is
+                free 1pm-2pm on Tuesday and forward_shift_minutes == -60, then
+                the returned Availability object will be free 12pm-1pm on
+                Tuesday. 
         """
         if forward_shift_minutes % self.MINUTES_PER_SLOT != 0:
             raise ValueError('MINUTES_PER_SLOT must be a divisor of forward_shift_minutes')
@@ -151,6 +157,53 @@ class Availability:
         shifted_availability = Availability(free_slots=shifted_free_slots,
                                             availability_dict_input=False)
         return shifted_availability
+
+    def UTC_offset_minutes(self, localized_datetime):
+        """Converts a localized datetime to the number of minutes offset from
+        from UTC.
+
+        Args:
+            localized_datetime: A localized datetime object containing a time
+                zone.
+
+        Returns:
+            offset_minutes: An integer representing the signed number of
+                minutes that localized_datetime is offset from UTC.
+        """
+        offset_string = localized_datetime.strftime('%z')
+        minutes = self.MINUTES_PER_HOUR * int(offset_string[1:3]) + int(offset_string[3:5])
+        if offset_string[0] == '+':
+            offset_minutes = minutes
+        elif offset_string[0] == '-':
+            offset_minutes = -minutes
+        else:
+            raise ValueError('offset_string must start with "+" or "-"')
+        return offset_minutes
+
+    def new_timezone(self, current_tz_string, new_tz_string,
+                     unlocalized_datetime_in_new_tz):
+        """Returns a copy of self after shifting to a new timezone.
+
+        Args:
+            current_tz_string: A string representing the time zone of self.
+                Must be in the pytz timezone database.
+            new_tz_string: A string representing the new time zone to shift to.
+                Must be in the pytz timezone database.
+            unlocalized_datetime_in_new_tz: An unlocalized datetime object that
+                provides the reference time in the timezone new_tz_string with
+                which to calculate UTC offsets. 
+        """
+        if current_tz_string not in set(pytz.all_timezones):
+            raise ValueError('current_tz must be in the pytz timezone database')
+        if new_tz_string not in set(pytz.all_timezones):
+            raise ValueError('new_tz must be in the pytz timezone databse')
+        current_tz = pytz.timezone(current_tz_string)
+        new_tz = pytz.timezone(new_tz_string)
+        datetime_new_tz = new_tz.localize(unlocalized_datetime_in_new_tz)
+        datetime_current_tz = datetime_new_tz.astimezone(current_tz)
+        forward_shift_minutes = (self.UTC_offset_minutes(datetime_new_tz)
+                                 - self.UTC_offset_minutes(datetime_current_tz))
+        return self.forward_shifted(forward_shift_minutes)
 
 if __name__ == '__main__':
     #a = Availability(range(5, 20))
@@ -163,3 +216,7 @@ if __name__ == '__main__':
                      '5': [],
                      '6': [['22:00','24:00']]}
     a = Availability(availability_dict)
+    et = pytz.timezone('US/Eastern')
+    cairo = pytz.timezone('Africa/Cairo')
+    kat = pytz.timezone('Asia/Katmandu')
+    a.new_timezone('US/Eastern', 'Australia/South', datetime(2016,4,30))

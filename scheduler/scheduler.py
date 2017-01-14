@@ -1,4 +1,5 @@
 import networkx as nx
+from datetime import datetime
 
 """
 Represents a match between a student and a tutor.
@@ -20,6 +21,8 @@ class Scheduler:
         self.ID_to_user = dict(zip(self.student_IDs, self.students))
         self.ID_to_user.update(dict(zip(self.tutor_IDs, self.tutors)))
         self.network = self.create_network()
+        # earliest start date of class
+        self.earliest_start_date = datetime.now() # depends on local timezone, might need to change
 
     def create_network(self):
         # Add nodes
@@ -85,10 +88,11 @@ if __name__ == '__main__':
     tutors = []
     a1 = Availability({'0':[['23:00','24:00']], '1': [['0:00','2:30'], ['17:00', '17:15']]})
     a2 = Availability({'0': [['23:45', '24:00']], '1':[['0:00','1:15']]})
-    students.append(User('STUDENT', 'MALE', 'FEMALE', 1,'s1',a1,1,1))
-    students.append(User('STUDENT', 'MALE', 'NONE', 1,'s2',a1,1,1))
-    tutors.append(User('STUDENT', 'MALE', 'NONE', 1,'t1',a2,1,1))
-    tutors.append(User('STUDENT', 'FEMALE', 'FEMALE', 1,'t2',a1,1,1))
+    a3 = Availability({'0': [['23:45', '24:00']]})
+    students.append(User('s1', 'STUDENT', 'MALE', 'FEMALE',a3,'US/Eastern'))
+    students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a1,'Iran'))
+    tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a2,'Libya'))
+    tutors.append(User('t2', 'TUTOR', 'FEMALE', 'FEMALE', a1,'Poland'))
     s = Scheduler(students, tutors)
     matches = s.match()[0]
     print matches[0].student.ID
