@@ -58,6 +58,12 @@
                 </div>
               </div>
               <div class="form-group">
+                <label class="control-label">Alternative Email Address</label>
+                <div>
+                  <input id='alternative-email-register-box' class='form-control signup-input' type='email' name='requestedAlternativeEmail' placeholder='alternative email address' required></input>
+                </div>
+              </div>
+              <div class="form-group">
                 <label class="control-label">Fist Name</label>
                 <div>
                   <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
@@ -91,12 +97,6 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="control-label">Alternative Email Address</label>
-                <div>
-                  <input id='alternative-email-register-box' class='form-control signup-input' type='email' name='requestedAlternativeEmail' placeholder='alternative email address' required></input>
-                </div>
-              </div>
-              <div class="form-group">
                 <label class="control-label">Telephone number</label>
                 <div>
                   <input id='phone-number-box' class='form-control signup-input' type='text' name='requestedPhoneNumber' placeholder='phone number' required></input>
@@ -108,24 +108,104 @@
                   <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
                 </div>
               </div>
-              <div>
-                <select name='gender' class='form-control signup-input'>
-                  <option value="">Select Your Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
+              <div class="form-group">
+                <label class="control-label">School/Institution</label>
+                <div>
+                  <select name='school' class='form-control signup-input'>
+                  <option>Afghans for Progessive Thinking (APT)</option>
+                  <option>Independent</option>
+                  <option>Kabul Education Advising Center</option>
+                  <option>Kandahar Institute of Modern Studies (KIMS)</option>
+                  <option>Lincoln Learning Center (Kabul)</option>
+                  <option>Horizon Public School and Academy (Quetta)</option>
+                  <option>Other</option>
                 </select>
+                </div>
               </div>
-              <div>
-                <!--Source: https://github.com/benkeen/country-region-selector-->
-                Country: <select name="country" class="crs-country" data-region-id="regionHere"></select>
-                Region: <select name="region" id="regionHere"></select>
+              <div class="form-group">
+                <label class="control-label">If you listed "Other" School or Institution, please write its name</label>
+                <div>
+                  <input id='other-school-register-box' class='form-control signup-input' type='text' name='otherSchool' placeholder='school'></input>
+                </div>
               </div>
-              <div>
-                <input id='bio-register-box' class='form-control signup-input' type='text' name='bio' placeholder='bio'></input>
+              <div class="form-group">
+                <label class="control-label">Educational Level (Current or Highest Completed)</label>
+                <div>
+                  <select name='education-level' class='form-control signup-input'>
+                  <option>Primary Education: Kindergarten through 5th Grade</option>
+                  <option>Middle School: 6th through 8th Grade</option>
+                  <option>9th Grade</option>
+                  <option>10th Grade</option>
+                  <option>11th Grade</option>
+                  <option>12th Grade</option>
+                  <option>Trade School</option>
+                  <option>University Freshman</option>
+                  <option>University Sophomore</option>
+                  <option>University Junior</option>
+                  <option>University Senior</option>
+                  <option>Master's Degree</option>
+                  <option>Doctoral Degree</option>
+                </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Are you currently enrolled in school?</label>
+                <div>
+                  <select name='enrolled' class='form-control signup-input'>
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nationality</label>
+                <div>
+                  <input id='nationality-register-box' class='form-control signup-input' type='text' name='nationality' placeholder='nationality'></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Country</label>
+                <div>
+                  <!--Source: https://github.com/benkeen/country-region-selector-->
+                  <select name="country" class="form-control signup-input crs-country" data-region-id="regionHere"></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Region</label>
+                <div>
+                  <select name="region" class='form-control signup-input ' id="regionHere"></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Interests</label>
+                <div>
+                  <select multiple name='interests' class='form-control signup-input'>
+                    <option>English</option>
+                    <option>Science</option>
+                    <option>Math</option>
+                    <option>History</option>
+                    <option>Current Events</option>
+                    <option>Business</option>
+                    <option>International Relations</option>
+                    <option>Computers and Technology</option>
+                    <option>Fine Arts</option>
+                    <option>Sports</option>
+                    <option>Education</option>
+                    <option>Foreign Languages</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">If you listed "Other" for Interests, please specify</label>
+                <div>
+                  <input id='other-interest-register-box' class='form-control signup-input' type='text' name='otherInterest' placeholder='Other Interest'></input>
+                </div>
               </div>
             </div>
           </div>
-          <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP">
+          {{> agreements}}
+          <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="Sign Up">
         </form>
       </div>     
     </div>
