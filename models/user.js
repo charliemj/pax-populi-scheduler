@@ -19,6 +19,7 @@ var UserSchema = mongoose.Schema({
     rejected: {type: Boolean, default: false},
     requestToken: {type: String, default: null},
     inPoll: {type: Boolean, default: false},
+    onHold: {type: Boolean, default: false},
     isTutor: {type: Boolean, default: false}, // whether is a tutor or student
     email: {type: String, required: true},
     alternativeEmail: {type: String, required: true},
@@ -119,13 +120,23 @@ UserSchema.methods.reject = function (callback) {
 };
 
 /**
-* Puts the user into the matching poll to true
+* Puts the user on hold
+* @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.waitlist = function (callback) {
+    this.onHold = true;
+    this.save(callback);
+};
+
+/**
+* Puts the user to the poll
 * @param {Function} callback - the function that gets called after
 */
 UserSchema.methods.joinPoll = function (callback) {
-    this.inPoll = true;
+    this.onHold = false;
     this.save(callback);
 };
+
 
 /**
 * Verifies the account so that user can start using it
@@ -156,28 +167,31 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
 * @param {Boolean} approve - true 
 * @param {Function} callback - the function that gets called after the account is verified
 */
-UserSchema.statics.respondToAccountRequest = function (username, token, approve, joinPoll, callback) {
+UserSchema.statics.respondToAccountRequest = function (username, token, approve, waitlist, callback) {
     this.findOne({username: username}, function (err, user) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid username'});
         } else if (user.approved) {
-            callback({success:false, isApproved: true, message: 'The account is already approved'});
+            callback({success:false, message: 'The account is already approved'});
         } else if (user.rejected) {
-            callback({success:false, isApproved: false, message: 'The account is already rejected'});
+            callback({success:false, message: 'The account is already rejected'});
         } else if (user.requestToken !== token) {
             callback({success:false, message: 'Invalid request token'});
         } else {
-            if (approve && joinPoll) {
+            if (approve) {
                 user.approve(function (err, user) {
+                    console.log('approved', err)
                     if (err) {
                         callback({success: false, message: 'Failed to approve account'})
+                    } else if (waitlist) {
+                        console.log('put on hold')
+                        user.waitlist(callback);
+                    } else {
+                        callback(null, user)
                     }
-                    user.joinPoll(callback);
                 });    
-            } else if (approve) {
-                // waitlist
-                user.approve(callback);
-            } else if (!joinPoll) {
+            } else {
+                console.log('rejected')
                 user.reject(callback);
             }
         }
@@ -202,7 +216,11 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                     callback(null, {username: username,
                                     _id: user._id,
                                     verified: user.verified,
-                                    tutor: user.tutor,
+                                    approved: user.approved,
+                                    rejected: user.rejected,
+                                    onHold: user.onHold,
+                                    inPoll: user.inPoll,
+                                    isTutor: user.isTutor,
                                     fullName: user.firstName + ' ' + user.lastName});
                 } else {
                     callback({message:'Please enter a correct password'});
@@ -294,7 +312,7 @@ UserSchema.statics.sendApprovalEmail = function (username, devMode, callback) {
             that.findOne({username: username}, function (err, user) {
                 if (err) {
                     callback(err);
-                } else if (user && user.approved && user.inPoll) {
+                } else if (user && user.approved && !user.onHold) {
                     email.sendApprovalEmail(user, devMode, callback);
                 } else {
                     callback({message: 'Cannot send an approval email to an account whose account has not been accepted'});
@@ -320,7 +338,7 @@ UserSchema.statics.sendRejectionEmail = function (username, devMode, callback) {
             that.findOne({username: username}, function (err, user) {
                 if (err) {
                     callback(err);
-                } else if (user && user.rejected && !user.inPoll && !user.approved) {
+                } else if (user && user.rejected && !user.approved) {
                     email.sendRejectionEmail(user, devMode, callback);
                 } else {
                     callback({message: 'Cannot send an approval email to an account whose account has not been rejected'});
@@ -346,7 +364,7 @@ UserSchema.statics.sendWaitlistEmail = function (username, devMode, callback) {
             that.findOne({username: username}, function (err, user) {
                 if (err) {
                     callback(err);
-                } else if (user && user.approved && !user.inPoll) {
+                } else if (user && user.approved && user.onHold) {
                     email.sendWaitlistEmail(user, devMode, callback);
                 } else {
                     callback({message: 'Cannot send an approval email to an account whose account has not been waitlisted'});

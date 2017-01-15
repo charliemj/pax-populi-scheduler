@@ -64,7 +64,7 @@ var Email = function() {
 
     // Adapted from https://www.quora.com/How-can-you-send-a-password-email-verification-link-using-NodeJS-1
     /**
-    * Creates a random enums.BelowBV\\\\           null     umTokenDigits-long token for the spepcified user
+    * Creates a random enums.numTokenDigits-long token for the spepcified user
     * @param {Object} user - the user object for while the verification token is for
     * @param {Function} callback - the function to call after the token has been created
     */

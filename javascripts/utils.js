@@ -19,7 +19,7 @@ var Utils = function() {
     * @return {String} a formatted date string mmm d, h:MM TT
     */
     that.formatDate = function (date) {
-        return dateFormat(date, "mmm d, h:MM TT");
+        return dateFormat(date, "mmm d, yyyy");
     };
 
     /**
