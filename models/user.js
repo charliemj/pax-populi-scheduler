@@ -21,6 +21,7 @@ var UserSchema = mongoose.Schema({
     country:{type: String, require: true},
     region: {type: String, require: true},
     bio: {type: String, require: false},
+    timezone: {type: String, require: true},
     verificationToken: {type:String, default: null}
 });
 

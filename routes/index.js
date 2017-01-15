@@ -125,7 +125,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var country = req.body.country.trim();
     var region = req.body.region.trim();
     var bio = req.body.bio.trim();
-
+    var timezone = req.body.timezone.trim();
 
     data = {title: 'Pax Populi Scheduler',
             csrfToken: req.csrfToken()};
@@ -149,7 +149,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 		                                    + 'make sure you enter your email address correctly';
 		                    res.render('home', data);
 		                } else {
-		                    authentication.createUserJSON(username, password, email, firstName, lastName, status,
+		                    authentication.createUserJSON(username, password, email, firstName, lastName, status, gender, country, region, timezone, bio,
 		                        function (err, userJSON) {
 		                            if (err) {
 		                                data.message = err.message;
