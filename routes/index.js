@@ -114,7 +114,6 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
 
 // Signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
-    console.log(req.body);
     var username = req.body.requestedUsername.trim().toLowerCase();
     var password = req.body.requestedPassword.trim();
     var email = req.body.requestedEmail.trim();

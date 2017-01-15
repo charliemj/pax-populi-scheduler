@@ -13,7 +13,6 @@
           <form id='register-form' action='/signup' method='post'>
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
             <input type="hidden" value="{[{timezone}]}" name="timezone">
-            <div>{[{timezone}]}</div>
             <div class='row'>
               <div class='col-xs-8 col-md-6'>
                 <div>
@@ -62,8 +61,7 @@
                 </div>
               </div>
             </div>
-            <input type="button" value="test" ng-click="formSubmit()">
-            <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP" ng-click="formSubmit()">
+            <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP"">
           </form>
         </div>     
       </div>
@@ -71,6 +69,7 @@
   </div>
 </div>
 
+<!--javascript files needed for running the timezone menu-->
 <script type="text/javascript" src='/vendor/bower_components/jquery/dist/jquery.min.js'></script>
 <script type="text/javascript" src='/vendor/bower_components/moment/moment.js'></script>
 <script type="text/javascript" src='/vendor/bower_components/moment-timezone/builds/moment-timezone-with-data.js'></script>

@@ -25,7 +25,7 @@ var Authentication = function() {
         } else {
             res.render('home', { title: 'Pax Populi Scheduler', message: 'Please log in below', csrfToken: req.csrfToken()});
         }
-    }
+    };
 
     /*
     * Encrypts the password using hashing and salting
@@ -46,7 +46,7 @@ var Authentication = function() {
                 });
             }
         });
-    }
+    };
 
     /*
     * Creates a JSON object whose fields are username, hashed password, first name, last name, email
@@ -60,7 +60,7 @@ var Authentication = function() {
     */
     that.createUserJSON = function (username, password, email, firstName, lastName, status, gender, country, region, timezone, bio, callback) {
         if (password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
-            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character."})
+            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character."});
         } else {
             that.encryptPassword(password, function (err, hash) {
                 if (err) {
@@ -83,7 +83,7 @@ var Authentication = function() {
                 }      
             });
         }
-    }
+    };
 
     Object.freeze(that);
     return that;
