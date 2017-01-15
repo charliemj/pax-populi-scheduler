@@ -21,8 +21,12 @@ class Scheduler:
         self.ID_to_user = dict(zip(self.student_IDs, self.students))
         self.ID_to_user.update(dict(zip(self.tutor_IDs, self.tutors)))
         self.network = self.create_network()
-        # earliest start date of class
-        self.earliest_start_date = datetime.now() # depends on local timezone, might need to change
+        # earliest start datetime of class
+        self.class_start_dt = datetime.now() # depends on local timezone, might need to change
+        self.students_UTC = [student.new_timezone('UTC', self.class_start_dt)
+                             for student in self.students]
+        self.tutors_UTC = [tutor.new_timezone('UTC', self.class_start_dt)
+                             for tutor in self.tutors]
 
     def create_network(self):
         # Add nodes
@@ -68,16 +72,6 @@ class Scheduler:
                 unmatched_students_IDs, unmatched_tutors_IDs)
 
 if __name__ == '__main__':
-    '''
-    G = nx.DiGraph()
-    G.add_nodes_from(range(1,6))
-    G.add_edge(1, 2, capacity=1)
-    G.add_edge(1, 3, capacity=3)
-    G.add_edge(1, 4, capacity=2)
-    G.add_edge(3, 5, capacity=1)
-    G.add_edge(4, 5, capacity=10)
-    flow, F = nx.maximum_flow(G, 1, 5)
-    '''
     #import matplotlib.pyplot as plt
     #nx.draw(G, pos=nx.spring_layout(G), with_labels=False)
     #nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
@@ -87,7 +81,7 @@ if __name__ == '__main__':
     students = []
     tutors = []
     a1 = Availability({'0':[['23:00','24:00']], '1': [['0:00','2:30'], ['17:00', '17:15']]})
-    a2 = Availability({'0': [['23:45', '24:00']], '1':[['0:00','1:15']]})
+    a2 = Availability({'0': [['23:45', '24:00']], '1':[['0:00','1:30']]})
     a3 = Availability({'0': [['23:45', '24:00']]})
     students.append(User('s1', 'STUDENT', 'MALE', 'FEMALE',a3,'US/Eastern'))
     students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a1,'Iran'))
@@ -96,7 +90,5 @@ if __name__ == '__main__':
     s = Scheduler(students, tutors)
     matches = s.match()[0]
     print matches[0].student.ID
-
-
     
     

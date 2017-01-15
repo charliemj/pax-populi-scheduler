@@ -5,7 +5,7 @@ import pytz
 """
 Represents a (day of week, time) pair.
 """
-class DayOfWeekTime:
+class WeeklyTime:
     DAYS_OF_WEEK = ['Sunday',
                     'Monday',
                     'Tuesday',
@@ -48,7 +48,7 @@ class Availability:
     for day in range(DAYS_PER_WEEK):
         for hour in range(HOURS_PER_DAY):
             for k in range(SLOTS_PER_HOUR):
-                SLOT_START_TIMES.append(DayOfWeekTime(day, hour, k*MINUTES_PER_SLOT))
+                SLOT_START_TIMES.append(WeeklyTime(day, hour, k*MINUTES_PER_SLOT))
     SLOT_TIMES = [(SLOT_START_TIMES[i], SLOT_START_TIMES[(i+1)%SLOTS_PER_WEEK])
                    for i in range(SLOTS_PER_WEEK)]
     CLASS_SLOT_TIMES = [(SLOT_START_TIMES[i],
@@ -98,27 +98,15 @@ class Availability:
             day_slot_index = int(day_string) * self.SLOTS_PER_DAY
             for interval in intervals:
                 if len(interval) != 2:
-                    raise ValueError('time interval in availability dict must have length 2')
+                    raise ValueError('time interval in availability_dict must have length 2')
                 start_index = day_slot_index + self.time_string_to_index(interval[0])
                 end_index = day_slot_index + self.time_string_to_index(interval[1])
                 free_slots_indices.update(range(start_index, end_index))
         return free_slots_indices
 
-    def class_intersect_indices(self, other_availability):
-        """Computes indices of class time slots for which both users are free.
-
-        Args:
-            other_availability: An Availability object.
-
-        Returns:
-            A list of class slot indices such that self and other_availability
-                are both free.
-        """
-        return [i for i in range(self.SLOTS_PER_WEEK)
-                if self.free_class_slots[i] and other_availability.free_class_slots[i]]
-
-    def class_intersects(self, other_availability):
-        """Returns whether or not two users are both free for least one class slot.
+    def share_class_start(self, other_availability):
+        """Returns whether or not two Availability objects are both free for
+        least one class slot.
 
         Args:
             other_availability: An Availability object.
@@ -129,6 +117,20 @@ class Availability:
         """
         return any(self.free_class_slots[i] and other_availability.free_class_slots[i]
                    for i in range(self.SLOTS_PER_WEEK))
+
+    def shared_class_start_times(self, other_availability):
+        """Computes weekly times during which both Availability objects are
+        free to start class.
+
+        Args:
+            other_availability: An Availability object.
+
+        Returns:
+            A list of WeeklyTime objects during which self and
+                other_availability are both free to start class.
+        """
+        return [self.SLOT_START_TIMES[i] for i in range(self.SLOTS_PER_WEEK)
+                if self.free_class_slots[i] and other_availability.free_class_slots[i]]
 
     def forward_shifted(self, forward_shift_minutes):
         """
@@ -206,8 +208,6 @@ class Availability:
         return self.forward_shifted(forward_shift_minutes)
 
 if __name__ == '__main__':
-    #a = Availability(range(5, 20))
-    #a2 = Availability(range(13))
     availability_dict = {'0': [['5:00', '5:30'], ['8:00','11:00']],
                      '1': [],
                      '2': [],
@@ -215,8 +215,8 @@ if __name__ == '__main__':
                      '4': [],
                      '5': [],
                      '6': [['22:00','24:00']]}
+    availability_dict2 = {'0':[['5:30', '15:00']]}
     a = Availability(availability_dict)
-    et = pytz.timezone('US/Eastern')
-    cairo = pytz.timezone('Africa/Cairo')
-    kat = pytz.timezone('Asia/Katmandu')
-    a.new_timezone('US/Eastern', 'Australia/South', datetime(2016,4,30))
+    a2 = Availability(availability_dict2)
+    for wt in a.shared_class_start_times(a2):
+        print wt

@@ -30,6 +30,19 @@ class User:
         self.availability = availability
         self.tz_string = tz_string
 
+    def shared_class_start_times(self, other_user):
+        """Computes weekly times during which both users are free to start
+        class.
+
+        Args:
+            other_user: A User object.
+
+        Returns:
+            A list of WeeklyTime objects during which self and other_user are
+                both free to start class.
+        """
+        return self.availability.shared_class_start_times(other_user.availability)
+
     def gender_compatible(self, other_user):
         self_satisfied = (self.gender_preference == 'NONE'
                           or self.gender_preference == other_user.gender)
@@ -41,7 +54,7 @@ class User:
         """
         Availability matches and gender compatible
         """
-        return (self.availability.class_intersects(other_user.availability)
+        return (self.availability.share_class_start(other_user.availability)
                 and self.gender_compatible(other_user))
 
     def new_timezone(self, new_tz_string, unlocalized_datetime_in_new_tz):
