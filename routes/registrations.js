@@ -15,6 +15,9 @@ router.get('/',function(req, res, next){
                                         username: user.username,
                                         tutor: user.tutor,
                                         fullName: user.fullName,
+                                        onHold: user.onHold,
+                                        inPool: user.inPool,
+                                        isTutor: user.isTutor,
                                         });
 });//end GET request
 
