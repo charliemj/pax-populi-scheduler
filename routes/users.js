@@ -14,8 +14,14 @@ router.get('/', function(req, res, next) {
 router.get('/:username', authentication.isAuthenticated, function (req, res, next) {
 	var user = req.session.passport.user;
     res.render('dashboard', { title: 'Dashboard',
-                              username: user.username,
-                              tutor: user.tutor,
+                              _id: user._id,
+                              username: req.params.username,
+                              verified: user.verified,
+                              approved: user.approved,
+                              rejected: user.rejected,
+                              onHold: user.onHold,
+                              inPoll: user.inPoll,
+                              isTutor: user.isTutor,
                               fullName: user.fullName,
                               csrfToken: req.csrfToken()});
 });
@@ -24,11 +30,16 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
 	var fullName = req.session.passport.user.fullName;
     User.findOne({'username': req.params.username}, function(err, user){
         res.render('profile', {title: 'Profile Page',
-                               username: req.params.username,
-                               tutor: user.tutor,
-                               fullName: fullName,
-                               email: user.email,
-                               csrfToken: req.csrfToken()
+                                username: req.params.username,
+                                verified: user.verified,
+                                approved: user.approved,
+                                rejected: user.rejected,
+                                onHold: user.onHold,
+                                inPoll: user.inPoll,
+                                isTutor: user.isTutor,
+                                fullName: fullName,
+                                email: user.email,
+                                csrfToken: req.csrfToken()
                            });
     });
 });

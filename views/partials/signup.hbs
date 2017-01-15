@@ -1,70 +1,246 @@
-<script src="/vendor/crs.min.js"></script>
+<script src="/javascripts/vendor/crs.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/vendor/bower_components/angular-timezone-selector/dist/angular-timezone-selector.css">
 <div ng-app="timezoneSelect" ng-controller="tzControl">
-  <div id="register-modal" class="modal fade" role="dialog">
-    <div class="modal-messages"></div>
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Sign Up</h4>
-        </div>
-        <div class="modal-body">
-          <form id='register-form' action='/signup' method='post'>
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <input type="hidden" value="{[{timezone}]}" name="timezone">
-            <div class='row'>
-              <div class='col-xs-8 col-md-6'>
+<script src="/javascripts/signup.js"></script>
+<div id="register-modal" class="modal fade" role="dialog">
+  <div class="modal-messages"></div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Sign Up</h4>
+      </div>
+      <div class="modal-body">
+        <form id='register-form' action='/signup' method='post' onsubmit="return checkSignUpForm()">
+        <input type="hidden" value="{[{timezone}]}" name="timezone">
+        <div class='row'>
+          <div class='col-xs-8 col-md-8'>
+            <div class="form-group">
+                <label class="control-label">Register as</label>
                 <div>
-                  <input id='username-register-box' class='form-control signup-input' type='text' name='requestedUsername' placeholder='username' required></input>
-                </div>
-                <div>
-                  <input id='password-register-box' class='form-control signup-input' type='password' name='requestedPassword' placeholder='password' required></input>
-                </div>
-                <div>
-                  <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
-                </div>
-                <div>
-                  <input id='email-register-box' class='form-control signup-input' type='text' name='requestedEmail' placeholder='email address' required></input>
-                </div>
-                <div>
-                  <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
-                </div>
-                <div>
-                  <input id='lastName-register-box' class='form-control signup-input' type='text' name='lastName' placeholder='last name' required></input>
-                </div>
-                <div>
-                  <select name='status' class='form-control signup-input'>
-                    <option value="">Sign up as...</option>
-                    <option value="Student">Student</option> <!--Should these have value fields?-->
-                    <option value="Tutor">Tutor</option>
-                  </select>
-                </div>
-                <div>
-                  <select name='gender' class='form-control signup-input'>
-                    <option value="">Select Your Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-                <div>
-                  <!--Source: https://github.com/benkeen/country-region-selector-->
-                  Country: <select name="country" class="crs-country" data-region-id="regionHere"></select>
-                  Region: <select name="region" id="regionHere"></select>
-                </div>
-                <div>
-                  <p>Select your timezone: <b>{[{timezone}]}<b></p>
-                  <timezone-selector ng-model="timezone"/>
-                </div>
-                <div>
-                  <input id='bio-register-box' class='form-control signup-input' type='text' name='bio' placeholder='bio'></input>
+                  <select name='userType' class='form-control signup-input status'>
+                  {{#each userTypes}}
+                      <option>{{this}}</option>
+                    {{/each}}
+                </select>
                 </div>
               </div>
             </div>
-            <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="SIGN UP"">
-          </form>
-        </div>     
-      </div>
+          </div>
+          <br>
+          <input type="
+          
+       " name="_csrf" value="{{csrfToken}}">
+          {{> introduction}}
+          <br>
+          <div class='row'>
+            <div class='col-xs-8 col-md-8'>
+              <div class="form-group">
+                <label class="control-label">Username</label>
+                <div>
+                  <input id='username-register-box' class='form-control signup-input' type='text' name='username' placeholder='username' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Password</label>
+                <div>
+                  <input id='password-register-box' class='form-control signup-input' type='password' name='password' placeholder='password' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Confirm Password</label>
+                <div>
+                  <input id='confirm-password-register-box' class='form-control signup-input' type='password' name='confirmPassword' placeholder='confirm password' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Email Address</label>
+                <div>
+                  <input id='email-register-box' class='form-control signup-input' type='email' name='email' placeholder='email address' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Alternative Email Address</label>
+                <div>
+                  <input id='alternative-email-register-box' class='form-control signup-input' type='email' name='alternativeEmail' placeholder='alternative email address' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Fist Name</label>
+                <div>
+                  <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Middle Name or Initial</label>
+                <div>
+                  <input id='middleName-register-box' class='form-control signup-input' type='text' name='middleName' placeholder='middle name'></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Last Name</label>
+                <div>
+                  <input id='lastName-register-box' class='form-control signup-input' type='text' name='lastName' placeholder='last name' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nickname</label>
+                <div>
+                  <input id='nickName-register-box' class='form-control signup-input' type='text' name='nickname' placeholder='nickname'></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Gender</label>
+                <div>
+                  <select name='gender' class='form-control signup-input'>
+                    {{#each genders}}
+                      <option>{{this}}</option>
+                    {{/each}}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Date of Birth</label>
+                <div>
+                  <input id='dob-register-box' class='form-control signup-input' type='date' name='dateOfBirth' placeholder='Date of Birth' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Telephone Number</label>
+                <div>
+                  <input id='phone-number-box' class='form-control signup-input' type='text' name='phoneNumber' placeholder='phone number' required></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Skype ID</label>
+                <div>
+                  <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
+                </div>
+              </div>
+              <div class='multiple-choice'>
+                <div id='student-schools' class="form-group student">
+                  <label class="control-label">School/Institution</label>
+                  <div>
+                    <select name='studentSchool' class='form-control signup-input choices'>
+                    {{#each studentSchools}}
+                      <option>{{this}}</option>
+                    {{/each}}
+                  </select>
+                  </div>
+                </div>
+                <div id='tutor-schools' class="form-group tutor">
+                  <label class="control-label">School/Institution</label>
+                  <div>
+                    <select name='tutorSchool' class='form-control signup-input'>
+                    {{#each tutorSchools}}
+                      <option>{{this}}</option>
+                    {{/each}}
+                  </select>
+                  </div>
+                </div>
+                {{!<div class="other form-group">
+                  <label class="control-label">Please specify</label>
+                  <div>
+                    <input id='other-school-register-box' class='form-control signup-input' type='text' name='school' placeholder='school'></input>
+                  </div>
+                </div>}}
+              </div>
+              <div id='student-education-level' class="form-group student">
+                <label class="control-label">Education Level (Current or Highest Completed)</label>
+                <div>
+                  <select name='studentEducationLevel' class='form-control signup-input'>
+                  {{#each studentEducationLevels}}
+                    <option>{{this}}</option>
+                  {{/each}}
+                </select>
+                </div>
+              </div>
+              <div id='tutor-education-level' class="form-group tutor">
+                <label class="control-label">Educational Class or Grade (Current or Highest Completed)</label>
+                <div>
+                  <select name='tutorEducationLevel' class='form-control signup-input'>
+                  {{#each tutorEducationLevels}}
+                    <option>{{this}}</option>
+                  {{/each}}
+                </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Are you currently enrolled in school?</label>
+                <div>
+                  <select name='enrolled' class='form-control signup-input'>
+                    {{#each confirmation}}
+                    <option>{{this}}</option>
+                  {{/each}}
+                  </select>
+                </div>
+              </div>
+              <div class='multiple-choice'>
+                <div class="form-group tutor">
+                  <label class="control-label">Major</label>
+                  <div>
+                    <select id='major-register-box' name='major' class='form-control signup-input'>
+                    {{#each majors}}
+                      <option>{{this}}</option>
+                    {{/each}}
+                  </select>
+                  </div>
+                </div>
+                {{!<div class="other form-group">
+                  <label class="control-label">Please specify</label>
+                  <div>
+                    <input id='major-register-box' class='form-control signup-input' type='text' name='major' placeholder='major'></input>
+                  </div>
+                </div>}}
+              </div>
+              <div class="form-group">
+                <label class="control-label">Nationality</label>
+                <div>
+                  <input id='nationality-register-box' class='form-control signup-input' type='text' name='nationality' placeholder='nationality'></input>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Country</label>
+                <div>
+                  <!--Source: https://github.com/benkeen/country-region-selector-->
+                  <select name="country" class="form-control signup-input crs-country" data-region-id="regionHere"></select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Region</label>
+                <div>
+                  <select name="region" class='form-control signup-input ' id="regionHere"></select>
+                </div>
+              </div>
+              <div>
+                  <p>Select your timezone: <b>{[{timezone}]}<b></p>
+                  <timezone-selector ng-model="timezone"/>
+                </div>
+              <div class='mulitple-choice'>
+                <div class="form-group">
+                  <label class="control-label">Interests</label>
+                  <div>
+                    <select multiple name='interests' class='form-control signup-input choices'>
+                      {{#each interests}}
+                      <option>{{this}}</option>
+                    {{/each}}
+                    </select>
+                  </div>
+                </div>
+                {{!<div class="other form-group">
+                  <label class="control-label">If you listed "Other" for Interests, please specify</label>
+                  <div>
+                    <input id='other-interest-register-box' class='form-control signup-input' type='text' name='interests' placeholder='interest'></input>
+                  </div>
+                </div>}}
+              </div>
+            </div>
+          </div>
+          {{> agreements}}
+          <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="Sign Up">
+        </form>
+      </div> 
+    </div>
     </div>
   </div>
 </div>

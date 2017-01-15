@@ -7,12 +7,46 @@ a {
   color: #00B7FF;
 }
 
+label {
+  display:inline-block;
+  *display: inline; 
+  text-align: left;
+}​
+
+input {
+	display:inline-block;
+    *display: inline; 
+}
+
+#register-form {
+	padding-left: 2%;
+	padding-right: 2%;
+}
+
 #main-content {
 	padding: 2%;
+}
+
+.modal-title {
+	font-weight: bold;
+	font-size: 24px;
+	font-family: Arial;
+	padding-left: 2%;
 }
 
 .content {
 	padding: 2%;
 }
 
+.instructions {
+	text-align: justify;
+	text-justify: inter-word;
+}
 
+.modal-messages, #messages {
+   	left: 2%;
+   	max-width: 25%;
+	position: fixed;
+	bottom: 0;
+	z-index: 1050;
+}
