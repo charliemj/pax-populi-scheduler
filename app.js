@@ -16,7 +16,7 @@ var registrations = require('./routes/registrations.js');
 
 // database setup
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/paxpopulidb');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/paxpopulidb11');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {

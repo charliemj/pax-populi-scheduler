@@ -114,6 +114,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
 
 // Signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
+    console.log(req.body);
     var username = req.body.requestedUsername.trim().toLowerCase();
     var password = req.body.requestedPassword.trim();
     var email = req.body.requestedEmail.trim();
@@ -124,6 +125,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     var country = req.body.country.trim();
     var region = req.body.region.trim();
     var bio = req.body.bio.trim();
+
 
     data = {title: 'Pax Populi Scheduler',
             csrfToken: req.csrfToken()};
