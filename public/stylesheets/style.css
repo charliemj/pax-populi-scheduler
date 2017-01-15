@@ -42,3 +42,11 @@ input {
 	text-align: justify;
 	text-justify: inter-word;
 }
+
+.modal-messages, #messages {
+   	left: 2%;
+   	max-width: 25%;
+	position: fixed;
+	bottom: 0;
+	z-index: 1050;
+}
