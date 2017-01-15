@@ -39,6 +39,8 @@ router.post('/', function(req, res, next){
           });//end send
         }//end if
         else {
+          //console.log("registration here:");
+          //console.log(JSON.stringify(registration));
           res.status(200).send({success:"Registration has been submitted!"});
           //TODO redirect
         }//end else
