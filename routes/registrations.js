@@ -11,11 +11,13 @@ var Registration = require("../models/registration.js");
 router.get('/',function(req, res, next){
   var user = req.session.passport.user;
   res.render('registration', {title: 'Register',
-                                        csrfToken: req.csrfToken(),
-                                        username: user.username,
-                                        tutor: user.tutor,
-                                        fullName: user.fullName,
-                                        });
+                              csrfToken: req.csrfToken(),
+                              username: user.username,
+                              isTutor: user.isTutor,
+                              onHold: user.onHold,
+                              inPoll: user.inPoll,
+                              fullName: user.fullName,
+                              });
 });//end GET request
 
 
