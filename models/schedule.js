@@ -1,20 +1,28 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
-
-var User = require("");  //user model file hookup
-
+var User = require("./models/user.js"); 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 
-//TODO need validators
+//TODO check isTutor for tutor/student objects
 var scheduleSchema = mongoose.Schema({
-    student: {type: ObjectId, ref:"User"},
-    tutor: {type: ObjectId, ref:"User"},
-    schedule: [{type: Date, validate: [validators.isDate()]}], //list of dates
+    student: {type: ObjectId, ref:"User", required:true},
+    tutor: {type: ObjectId, ref:"User", required:true},
+    studentClassSchedule: {type: [String], required:true},
+    tutorClassSchedule: {type: [String], required:true},
+    UTCClassSchedule: {type: [String], required:true},
+    adminApproved: {type: Boolean, required: true, default: false},
+    tutorApproved: {type: Boolean, required: true, default: false},
+    studentApproved: {type: Boolean, required: true, default: false},
+    firstDay: {type: String, requied:true},
+    lastDay: {type: String, required: true},
+    classOn : {type: Boolean, required: true, default:false}, //this might be tricky
+
 });
 
 
-//SCHEDULER ALGORITHM 
+//how to run processes in the background like once a day
+
 
 //keep at bottom of file
 var Schedule = mongoose.model("Schedule", scheduleSchema);
