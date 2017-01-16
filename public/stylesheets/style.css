@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
 body {
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px Lato;
+}
+
+.modal-title {
+	font-family: Lato;
 }
 
 a {
@@ -49,4 +55,44 @@ input {
 	position: fixed;
 	bottom: 0;
 	z-index: 1050;
+}
+
+.tab-content {
+	margin-left: 15%;
+	margin-right: 15%;
+	padding-bottom: 5%;
+}
+
+.btn {
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active, .btn-primary {
+  	color: #ffffff;
+  	background-color: #27AE60;
+  	border-color: #27AE60;
+  	background-image: linear-gradient(to bottom,#27AE60 0,#27AE60 100%);;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active,
+.btn-info.active, .btn-info {
+  	color: #ffffff;
+  	background-color: #3498DB;
+  	border-color: #3498DB;
+  	background-image: linear-gradient(to bottom,#3498DB 0,#3498DB 100%);;
+}
+
+.footer {
+	padding-bottom: 10%;
 }
