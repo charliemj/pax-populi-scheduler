@@ -27,7 +27,7 @@ class Match:
         self.class_start_wt_UTC = class_start_wt_UTC
         self.earliest_class_start_UTC = earliest_class_start_UTC
         self.weeks_per_class = weeks_per_class
-        (self.student_class_schedule, self.tutor_class_schedule) = self.get_class_schedules()
+        (self.student_class_schedule, self.tutor_class_schedule, self.UTC_class_schedule) = self.get_class_schedules()
         print self.student.ID, self.tutor.ID, self.is_valid()
 
     def get_class_schedules(self):
@@ -40,6 +40,8 @@ class Match:
                 localized to the student's timezone.
             tutor_class_schedule: A list of datetimes of class start times
                 localized to the tutor's timezone.
+            UTC_class_schedule: A list of datetimes of class start times
+                localized to UTC.
         """
         localized_UTC = pytz.utc.localize(self.earliest_class_start_UTC)
         earliest_class_start_student = localized_UTC.astimezone(self.student.tz)
@@ -54,9 +56,11 @@ class Match:
                                      student_class_schedule_unlocalized) 
         tutor_class_schedule = [student_dt.astimezone(self.tutor.tz)
                                 for student_dt in student_class_schedule]
-        for (s,t) in zip(student_class_schedule, tutor_class_schedule):
-            print str(s), str(t)
-        return (student_class_schedule, tutor_class_schedule)
+        UTC_class_schedule = [student_dt.astimezone(pytz.utc)
+                              for student_dt in student_class_schedule]
+        for (s,t, u) in zip(student_class_schedule, tutor_class_schedule, UTC_class_schedule):
+            print str(s), str(t), str(u)
+        return (student_class_schedule, tutor_class_schedule, UTC_class_schedule)
 
     def is_valid(self):
         """Determines whether or not the match is valid during all weeks of the
@@ -81,6 +85,20 @@ class Match:
                 return False
         return True
 
+    def to_dict(self):
+        dt_format = '%Y-%m-%d %H:%M'
+        student_schedule_strings = [dt.strftime(dt_format)
+                                    for dt in self.student_class_schedule]
+        tutor_schedule_strings = [dt.strftime(dt_format)
+                                  for dt in self.tutor_class_schedule]
+        UTC_schedule_strings = [dt.strftime(dt_format)
+                                for dt in self.UTC_class_schedule]    
+        match_dict = {'student_ID': self.student.ID,
+                      'tutor_ID': self.tutor.ID,
+                      'student_class_schedule': student_schedule_strings,
+                      'tutor_class_schedule': tutor_schedule_strings,
+                      'UTC_class_schedule': UTC_schedule_strings,}
+        return match_dict
 """
 Performs schedule matching between students and tutors.
 """
@@ -147,6 +165,15 @@ class Scheduler:
         matches = filter(lambda x: x.is_valid(), proposed_matches)
         return matches
 
+    def match_output_to_db(self):
+        matches = self.match()
+        ID_to_matched = {ID: False for ID in self.ID_to_user.keys()}
+        for match in matches:
+            ID_to_matched[match.student.ID] = True
+            ID_to_matched[match.tutor.ID] = True
+        match_dicts = [match.to_dict() for match in matches]
+        return (ID_to_matched, match_dicts)
+
 if __name__ == '__main__':
     #import matplotlib.pyplot as plt
     #nx.draw(G, pos=nx.spring_layout(G), with_labels=False)
@@ -164,13 +191,8 @@ if __name__ == '__main__':
     tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a2,'Iran'))
     tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a3,'UTC'))
     s = Scheduler(students, tutors)
-    matches = s.match()
-    print len(matches)
-    match = matches[0]
-    print match.student.ID
-    print match.tutor.ID
-    print match.class_start_wt_UTC
-    print match.earliest_class_start_UTC
-    print match.weeks_per_class
-
+    (ID_to_matched, match_dicts) = s.match_output_to_db()
+    print ID_to_matched
+    print match_dicts
+    
     
