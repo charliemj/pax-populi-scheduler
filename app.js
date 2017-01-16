@@ -13,6 +13,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var registrations = require('./routes/registrations.js');
 var schedule = require('./routes/schedule.js');
+var location = require('./routes/location.js');
 
 // database setup
 var mongoose = require('mongoose');
@@ -70,6 +71,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/registrations', registrations);
 app.use('/schedule', schedule);
+app.use('/location', location);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
