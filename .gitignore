@@ -1,4 +1,6 @@
 node_modules/*
 npm-debug.log
 javascripts/config.js
-availability.html
+public/availability.html
+public/vendor/bower_components
+

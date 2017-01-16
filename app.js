@@ -11,7 +11,7 @@ var passportLocal = require('passport-local');
 var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var availabilities= require('./routes/availabilities.js');
+var registrations = require('./routes/registrations.js');
 
 
 // database setup
@@ -26,8 +26,6 @@ db.once('open', function (callback) {
 var app = express();
 
 
-
-// view engine setup
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', exphbs({extname: '.hbs',
@@ -70,7 +68,7 @@ app.use(csrfProtection);
 //ROUTES (needs to stay below the csurf code)
 app.use('/', routes);
 app.use('/users', users);
-app.use('/availabilities', availabilities);
+app.use('/registrations', registrations);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

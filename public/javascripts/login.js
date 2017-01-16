@@ -10,14 +10,42 @@ $(document).ready(function () {
             data: {username: username, verificationToken: verificationToken, _csrf: csrf},
             success: function(data) {
                 if (data.success) {
-                    addMessage('Verification succeeded! Redirecting you to the homepage...', 'success', false, true);
+                    addMessage(data.message, 'success', false, true);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
-                        }, 1000);   
+                        }, 2500);   
                     }
                 } else {
-                    addMessage('Verification failed!', 'danger', false, true);
+                    addMessage(data.message, 'danger', false, true);
+                }
+            },
+            error: function(err) {
+                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
+            }
+        });
+    });
+
+    $('#approve-button, #reject-button, #waitlist-button').click(function () {
+        var username = $('#username').val();
+        var requestToken = $('#requestToken').val();
+        var csrf = $('#csrf').val();
+        var action = $(this).attr('id').split('-')[0];
+
+        $.ajax({
+            url: '/'+action+'/'+username+'/'+ requestToken,
+            type: 'PUT',
+            data: {username: username, requestToken: requestToken, _csrf: csrf},
+            success: function(data) {
+                if (data.success) {
+                    addMessage(data.message, 'success', false, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect;
+                        }, 2500);   
+                    }
+                } else {
+                    addMessage(data.message, 'danger', false, true);
                 }
             },
             error: function(err) {

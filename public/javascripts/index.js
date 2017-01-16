@@ -1,3 +1,10 @@
+var checkSignUpForm = function () {
+	// TODO: validate all other fields
+	// if (!$('#agreeToTermConditions').checked) {
+	// 	return false;
+	// }
+}
+
 /**
  * Adds the message message to the area with id messages or class modal-messages.
  * @param {String}  message  The message
@@ -14,5 +21,5 @@ var addMessage = function(message, type, isModal, clearOld) {
     messageDiv.text(message);
     // dismiss button. code from bootstrap
     messageDiv.append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
-    $(messageDiv).appendTo($(divSelector)).hide().slideDown("slow");
+    $(messageDiv).appendTo($(divSelector)).hide().slideDown(1000);
 };

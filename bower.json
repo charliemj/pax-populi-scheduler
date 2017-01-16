@@ -1,0 +1,21 @@
+{
+  "name": "pax-populi-scheduler",
+  "description": "",
+  "main": "app.js",
+  "authors": [
+    "TETPA"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/kar-moore/pax-populi-scheduler-2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    ".gitignore",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-timezone-selector": "^1.6.0"
+  }
+}

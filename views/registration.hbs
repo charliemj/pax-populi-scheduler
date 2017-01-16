@@ -1,0 +1,32 @@
+<link href="/stylesheets/availability_selection.css" rel="stylesheet">
+<script src="/vendor/jquery-3.1.1.min.js"></script><!-- load jquery -->
+<script src="/vendor/angular.min.js"></script><!-- load angular -->
+<script src="/javascripts/registration_client.js" type="text/javascript"></script>
+<script src="/vendor/availability_selection.js" type="text/javascript"></script>
+<script src='/javascripts/registration.js'></script>
+{{#if onHold}}
+    You do not have the permisson to register for a class yet. You have to wait for either the next cycle or further notice from the adminstrator.
+{{else}}
+<h1>Submit Your Availability</h1>
+<p>To indicate times when you are free for a tutoring session, click on a rectangle on the schedule. Click twice on a particular rectangle to select a single time,or to select a range, click once on a rectangle at a starting time you are free and drag your cursor within the column to mark a time range in which you are free and click again on the last rectangle in the range to complete marking the range. Any blocks that are purple when you submit will be considered as possible meeting times! </p>
+<div ng-app="registration">
+    <div ng-controller="mainController">
+        <div id="day-schedule"></div>
+        <!-- calander UI is populated here -->
+        <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
+        <select name="course" id="course">
+            <option value="">Select Course...</option>
+            <option value="English1">English1</option>
+            <option value="English2">English2</option>
+        </select>
+        <p>Please indicate if you have a gender preference for your tutor/student.</p>
+        <select name='gender' id="genderPref">
+            <option value="NoPref">No Preference</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+        <input type="button" value="Submit" id="target" ng-click="submitRegistration()">  
+
+    </div>
+{{/if}}
+</div>
