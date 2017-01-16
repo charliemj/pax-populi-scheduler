@@ -5,12 +5,16 @@ var User = require("");  //user model file hookup
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-
-//TODO need validators
+//TODO check is tutor
 var scheduleSchema = mongoose.Schema({
-    student: {type: ObjectId, ref:"User"},
-    tutor: {type: ObjectId, ref:"User"},
-    schedule: [{type: Date, validate: [validators.isDate()]}], //list of dates
+    student: {type: ObjectId, ref:"User", require: true},
+    tutor: {type: ObjectId, ref:"User", require:true},
+    student_class_schedule:{type: [String], require: true}  //list of dates
+   	tutor_class_schedule:{type: [String], require: true}
+   	utc_class_schedule:{type: [String], require: true}
+   	adminApproved: {type:Boolean, default: false}
+   	tutorApproved: {type:Boolean, default: false}
+   	studentApproved: {type: Boolean, default: false}
 });
 
 
