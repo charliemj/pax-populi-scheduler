@@ -13,10 +13,9 @@ router.get('/',function(req, res, next){
   res.render('registration', {title: 'Register',
                                         csrfToken: req.csrfToken(),
                                         username: user.username,
-                                        tutor: user.tutor,
                                         fullName: user.fullName,
                                         onHold: user.onHold,
-                                        inPool: user.inPool,
+                                        inPoll: user.inPoll,
                                         isTutor: user.isTutor,
                                         });
 });//end GET request
