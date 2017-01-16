@@ -353,7 +353,7 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         username: user.username,
                         fullName: user.fullName,
                         onHold: user.onHold,
-                        inPoll: user.inPoll,
+                        inPool: user.inPool,
                         isTutor: user.isTutor,
                         csrfToken: req.csrfToken()});
 });
