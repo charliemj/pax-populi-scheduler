@@ -37,8 +37,10 @@ var UserSchema = mongoose.Schema({
     major: {type: String, required: true, default: 'N/A'},
     country:{type: String, required: true},
     region: {type: String, required: true},
+    timezone: {type: String, require: true},
     nationality: {type: String, required: true},
     interests: [{type: String, required: true}]
+
 });
 
 UserSchema.path("username").validate(function(username) {
