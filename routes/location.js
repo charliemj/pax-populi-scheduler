@@ -5,3 +5,6 @@ var mongoose = require("mongoose");
 var Schedule = require("../models/schedule.js");
 var Location = require("../models/location.js");
 var csrf = require('csurf');
+
+
+module.exports = router;
