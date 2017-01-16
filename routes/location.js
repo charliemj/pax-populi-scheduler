@@ -7,4 +7,6 @@ var Location = require("../models/location.js");
 var csrf = require('csurf');
 
 
-module.exports = router;
+
+module.exports = router; //keep at the bottom of the file
+
