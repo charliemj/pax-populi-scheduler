@@ -14,14 +14,10 @@ router.get('/',function(req, res, next){
 
                                         csrfToken: req.csrfToken(),
                                         username: user.username,
-<<<<<<< HEAD
-=======
                                         isTutor: user.isTutor,
->>>>>>> origin/update-registration
                                         fullName: user.fullName,
                                         onHold: user.onHold,
-                                        inPoll: user.inPoll,
-                                        isTutor: user.isTutor,
+                                        inPoll: user.inPoll
                                         });
 
 });//end GET request
