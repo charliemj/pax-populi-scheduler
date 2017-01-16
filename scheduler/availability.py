@@ -1,9 +1,9 @@
 import math
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 import pytz
 
 """
-Represents a (day of week, time) pair.
+Represents an immutable (day of week, time) pair.
 """
 class WeeklyTime:
     DAYS_OF_WEEK = ['Sunday',
@@ -13,6 +13,7 @@ class WeeklyTime:
                     'Thursday',
                     'Friday',
                     'Saturday']
+    DAYS_PER_WEEK = 7
 
     def __init__(self, day_of_week_index, hour, minute):
         if day_of_week_index not in range(7):
@@ -23,10 +24,50 @@ class WeeklyTime:
             raise ValueError('minute must be in range(60)')
         self.day_of_week_index = day_of_week_index
         self.day_of_week = self.DAYS_OF_WEEK[day_of_week_index]
+        self.hour = hour
+        self.minute = minute
         self.time = time(hour, minute)
 
     def __str__(self):
         return self.day_of_week + ' ' + str(self.time)
+
+    def __eq__(self, other):
+        return (self.day_of_week_index == other.day_of_week_index
+                and self.hour == other.hour and self.minute == other.minute)
+
+    def __hash__(self):
+        return hash((self.day_of_week_index, self.hour, self.minute))
+
+    @classmethod
+    def from_datetime(cls, dt):
+        # In Python, 0 corresponds to Monday
+        day_of_week_index = (dt.weekday() + 1) % cls.DAYS_PER_WEEK
+        return cls(day_of_week_index, dt.hour, dt.minute)
+
+    def first_datetime_after(self, dt):
+        """Computes the first datetime that matches self that is greater or
+        equal to an input datetime.
+
+        Args:
+            dt: A datetime.
+
+        Returns:
+            The first datetime with the same day of week, hour, and minute as 
+                self that is greater or equal to dt.
+        """
+        # In Python, 0 corresponds to Monday
+        input_day_of_week_index = (dt.weekday() + 1) % self.DAYS_PER_WEEK
+        if input_day_of_week_index == self.day_of_week_index:
+            if self.time >= dt.time():
+                first_datetime = datetime.combine(dt.date(), self.time)
+            else:
+                first_datetime = datetime.combine(dt.date() + timedelta(days=self.DAYS_PER_WEEK),
+                                                  self.time)
+        else:
+            shift_days = (self.day_of_week_index - input_day_of_week_index) % self.DAYS_PER_WEEK
+            first_datetime = datetime.combine(dt.date() + timedelta(days=shift_days),
+                                              self.time)
+        return first_datetime
 
 """
 Represents a weekly availability.
@@ -54,16 +95,15 @@ class Availability:
     CLASS_SLOT_TIMES = [(SLOT_START_TIMES[i],
                          SLOT_START_TIMES[(i+SLOTS_PER_CLASS)%SLOTS_PER_WEEK])
                          for i in range(SLOTS_PER_WEEK)]
+    SLOT_START_TIME_TO_INDEX = {}
+    for i in range(SLOTS_PER_WEEK):
+        SLOT_START_TIME_TO_INDEX[SLOT_START_TIMES[i]] = i
 
-    def __init__(self, availability_dict=None, free_slots=None, availability_dict_input=True):
+    def __init__(self, free_slots):
         # boolean array, i-th entry is whether or not user is available for self.SLOT_TIMES[i]
-        if availability_dict_input:
-            free_slots_indices = self.parse_dict(availability_dict)
-            self.free_slots = [(i in free_slots_indices) for i in range(self.SLOTS_PER_WEEK)]
-        else:
-            if len(free_slots) != self.SLOTS_PER_WEEK:
-                raise ValueError('free_slots must have length SLOTS_PER_WEEK')
-            self.free_slots = free_slots
+        if len(free_slots) != self.SLOTS_PER_WEEK:
+            raise ValueError('free_slots must have length SLOTS_PER_WEEK')
+        self.free_slots = free_slots
         # boolean array, i-th entry is whether or not user is available for self.CLASS_SLOT_TIMES[i]
         self.free_class_slots = []
         for i in range(self.SLOTS_PER_WEEK):
@@ -81,28 +121,92 @@ class Availability:
     def __eq__(self, other):
         return self.free_slots == other.free_slots
 
-    def time_string_to_index(self, time_string):
+    @classmethod
+    def time_string_to_index(cls, time_string):
         hours = int(time_string.split(':')[0])
         minutes = int(time_string.split(':')[1])
-        return (self.MINUTES_PER_HOUR * hours  + minutes) / self.MINUTES_PER_SLOT
+        return (cls.MINUTES_PER_HOUR * hours  + minutes) / cls.MINUTES_PER_SLOT
 
-    def parse_dict(self, availability_dict):
+    @classmethod
+    def parse_dict(cls, availability_dict):
         """
         Returns:
             free_slots_indices: A set of indices i such that the user is free
-                during self.SLOT_TIMES[i]
+                during cls.SLOT_TIMES[i]
         """ 
         free_slots_indices = set([])
         for day_string in availability_dict.keys():
             intervals = availability_dict[day_string]
-            day_slot_index = int(day_string) * self.SLOTS_PER_DAY
+            day_slot_index = int(day_string) * cls.SLOTS_PER_DAY
             for interval in intervals:
                 if len(interval) != 2:
                     raise ValueError('time interval in availability_dict must have length 2')
-                start_index = day_slot_index + self.time_string_to_index(interval[0])
-                end_index = day_slot_index + self.time_string_to_index(interval[1])
+                start_index = day_slot_index + cls.time_string_to_index(interval[0])
+                end_index = day_slot_index + cls.time_string_to_index(interval[1])
                 free_slots_indices.update(range(start_index, end_index))
         return free_slots_indices
+
+    @classmethod
+    def from_dict(cls, availability_dict):
+        free_slots_indices = cls.parse_dict(availability_dict)
+        free_slots = [(i in free_slots_indices) for i in range(cls.SLOTS_PER_WEEK)]
+        return cls(free_slots)
+
+    @classmethod
+    def UTC_offset_minutes(cls, localized_datetime):
+        """Converts a localized datetime to the number of minutes offset from
+        from UTC.
+
+        Args:
+            localized_datetime: A localized datetime object containing a time
+                zone.
+
+        Returns:
+            offset_minutes: An integer representing the signed number of
+                minutes that localized_datetime is offset from UTC.
+        """
+        offset_string = localized_datetime.strftime('%z')
+        minutes = cls.MINUTES_PER_HOUR * int(offset_string[1:3]) + int(offset_string[3:5])
+        if offset_string[0] == '+':
+            offset_minutes = minutes
+        elif offset_string[0] == '-':
+            offset_minutes = -minutes
+        else:
+            raise ValueError('offset_string must start with "+" or "-"')
+        return offset_minutes
+
+    # move this to WeeklyTime class
+    @classmethod
+    def new_timezone_wt(cls, wt, localized_dt, new_tz_string):
+        """
+        Shifts a WeeklyTime to a new timezone.
+
+        Args:
+            wt: A WeeklyTime object.
+            localized_dt: A localized datetime whose timezone is the current 
+                timezone of wt. Also used as the reference datetime for the
+                timezone conversion.
+            new_tz_string: A string representing the new time zone to shift to.
+                Must be in the pytz timezone database.
+
+        Returns:
+            new_wt: A WeeklyTime object that represents wt after shifting it to
+                the timezone new_tz_string.
+        """
+        if wt not in cls.SLOT_START_TIMES:
+            raise ValueError('wt must be in SLOT_START_TIMES')
+        if new_tz_string not in set(pytz.all_timezones):
+            raise ValueError('new_tz must be in the pytz timezone databse')
+        new_tz = pytz.timezone(new_tz_string)
+        new_dt = localized_dt.astimezone(new_tz)
+        forward_shift_minutes = (cls.UTC_offset_minutes(new_dt)
+                                 - cls.UTC_offset_minutes(localized_dt))
+        if forward_shift_minutes % cls.MINUTES_PER_SLOT != 0:
+            raise ValueError('MINUTES_PER_SLOT must be a divisor of forward_shift_minutes')
+        n_slots = forward_shift_minutes / cls.MINUTES_PER_SLOT
+        index = cls.SLOT_START_TIME_TO_INDEX[wt]
+        new_wt = cls.SLOT_START_TIMES[(index+n_slots)%cls.SLOTS_PER_WEEK]
+        return new_wt
 
     def share_class_start(self, other_availability):
         """Returns whether or not two Availability objects are both free for
@@ -156,31 +260,8 @@ class Availability:
         n_slots = forward_shift_minutes / self.MINUTES_PER_SLOT
         shifted_free_slots = [self.free_slots[(i-n_slots)%self.SLOTS_PER_WEEK]
                               for i in range(self.SLOTS_PER_WEEK)]
-        shifted_availability = Availability(free_slots=shifted_free_slots,
-                                            availability_dict_input=False)
+        shifted_availability = Availability(shifted_free_slots)
         return shifted_availability
-
-    def UTC_offset_minutes(self, localized_datetime):
-        """Converts a localized datetime to the number of minutes offset from
-        from UTC.
-
-        Args:
-            localized_datetime: A localized datetime object containing a time
-                zone.
-
-        Returns:
-            offset_minutes: An integer representing the signed number of
-                minutes that localized_datetime is offset from UTC.
-        """
-        offset_string = localized_datetime.strftime('%z')
-        minutes = self.MINUTES_PER_HOUR * int(offset_string[1:3]) + int(offset_string[3:5])
-        if offset_string[0] == '+':
-            offset_minutes = minutes
-        elif offset_string[0] == '-':
-            offset_minutes = -minutes
-        else:
-            raise ValueError('offset_string must start with "+" or "-"')
-        return offset_minutes
 
     def new_timezone(self, current_tz_string, new_tz_string,
                      unlocalized_datetime_in_new_tz):
@@ -216,7 +297,17 @@ if __name__ == '__main__':
                      '5': [],
                      '6': [['22:00','24:00']]}
     availability_dict2 = {'0':[['5:30', '15:00']]}
-    a = Availability(availability_dict)
-    a2 = Availability(availability_dict2)
+    a = Availability.from_dict(availability_dict)
+    a2 = Availability.from_dict(availability_dict2)
+    '''
     for wt in a.shared_class_start_times(a2):
         print wt
+    print WeeklyTime.from_datetime(datetime(2017, 1, 14, 2, 00, 49))
+    '''
+    wt = WeeklyTime(0, 12, 15)
+    current_tz = pytz.timezone('US/Eastern')
+    new_tz_string = 'UTC'
+    dt = datetime(2017, 7, 15)
+    localized_dt = current_tz.localize(dt)
+    print Availability.new_timezone_wt(wt, localized_dt, new_tz_string)
+

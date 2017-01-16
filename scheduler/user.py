@@ -29,6 +29,7 @@ class User:
         self.gender_preference = gender_preference
         self.availability = availability
         self.tz_string = tz_string
+        self.tz = pytz.timezone(tz_string)
 
     def shared_class_start_times(self, other_user):
         """Computes weekly times during which both users are free to start
