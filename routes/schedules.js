@@ -16,6 +16,7 @@ var Registration = require("../models/registration.js");
 router.get('/match', function(req, res, next) {
 
 	Registration.getUnmatchedRegistrations(function (err, registrations) {
+		// Inputs to Simon's script, hardcoding for now.
 		var registrations = [{'user': '1111', 'availability': {'0': ['11:00 - 13:00'], '3': ['2:00 - 5:00']},
 							'genderPref': ['Male', 'Female'], 'course': 'Intermediate English',
 							'isMatched': false},
@@ -38,9 +39,8 @@ router.get('/match', function(req, res, next) {
 		  }
 		  // matches is an array consisting of messages collected during execution
 		  console.log('matches:', typeof matches, matches);
+		  // process the JSON objs and write to db
 		});
-
-		// parse the string and write to db
 	});
 });
 
