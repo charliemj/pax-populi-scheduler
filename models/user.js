@@ -13,8 +13,6 @@ var UserSchema = mongoose.Schema({
     password: {type: String, required: true}, // should be just the hash
     verified: {type: Boolean, default: false},
     verificationToken: {type:String, default: null},
-    verified: {type: Boolean, default: false},
-    verificationToken: {type:String, default: null},
     approved: {type: Boolean, default: false},
     rejected: {type: Boolean, default: false},
     requestToken: {type: String, default: null},
@@ -151,12 +149,12 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid username'});
         } else if (user.verified) {
-            console.log('already verified')
+            console.log('already verified');
             callback({success:false, isVerified: true, message: 'The account is already verified, please log in below:'}, user);
         } else if (user.verificationToken !== token) {
             callback({success:false, message: 'Invalid verification token'});
         } else {
-            console.log('verifying...')
+            console.log('verifying...');
             user.verify(callback);
         }
     });
@@ -182,18 +180,18 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
         } else {
             if (approve) {
                 user.approve(function (err, user) {
-                    console.log('approved', err)
+                    console.log('approved', err);
                     if (err) {
-                        callback({success: false, message: 'Failed to approve account'})
+                        callback({success: false, message: 'Failed to approve account'});
                     } else if (waitlist) {
-                        console.log('put on hold')
+                        console.log('put on hold');
                         user.waitlist(callback);
                     } else {
-                        callback(null, user)
+                        callback(null, user);
                     }
                 });    
             } else {
-                console.log('rejected')
+                console.log('rejected');
                 user.reject(callback);
             }
         }
