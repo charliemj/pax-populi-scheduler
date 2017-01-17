@@ -20,7 +20,7 @@ router.get('/',function(req, res, next){
 >>>>>>> refs/remotes/origin/master
                                         fullName: user.fullName,
                                         onHold: user.onHold,
-                                        inPoll: user.inPool
+                                        inPool: user.inPool
                                         });
 
 });//end GET request

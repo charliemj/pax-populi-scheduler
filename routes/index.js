@@ -129,7 +129,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
             } else if (err.isVerified) {
             	data.success = true;
         		data.redirect = '/';
-        		data.message = err.message
+        		data.message = err.message;
         		return res.json(data);
         	}
         }
@@ -166,10 +166,10 @@ router.put('/approve/:username/:requestToken', parseForm, csrfProtection, functi
         }
         User.sendApprovalEmail(user.username, req.devMode, function (err, user) {
 	        if (err) {
-	        	console.log('failed to send')
+	        	console.log('failed to send');
 	            return res.render('home', data);
 	        }
-	        console.log('sent, redirecting')
+	        console.log('sent, redirecting');
 	        data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
 	        data.success = true;
 	        data.redirect = '/';
@@ -251,7 +251,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 		    	country: req.body.country.trim(),
 		    	region: req.body.region.trim(),
 		    	interests: req.body.interests,
-	        timezone: req.body.timezone,}
+	        timezone: req.body.timezone,};
 		if (isTutor) {
 			userJSON['major'] = req.body.major.trim();
 		}
