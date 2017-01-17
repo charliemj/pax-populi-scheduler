@@ -1,8 +1,6 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var User = require('../models/user.js');
-
-
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var genderPrefs = ["Male","Female", "NoPref"]; 

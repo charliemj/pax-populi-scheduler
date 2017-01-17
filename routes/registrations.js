@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
+var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var Registration = require("../models/registration.js");
 
@@ -13,7 +14,10 @@ router.get('/',function(req, res, next){
   res.render('registration', {title: 'Register',
                                         csrfToken: req.csrfToken(),
                                         username: user.username,
+<<<<<<< HEAD
+=======
                                         isTutor: user.isTutor,
+>>>>>>> refs/remotes/origin/master
                                         fullName: user.fullName,
                                         onHold: user.onHold,
                                         inPoll: user.inPool

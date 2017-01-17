@@ -1,15 +1,21 @@
 var express = require("express");
 var router = express.Router();
+var bodyParser = require('body-parser');
 var mongoose = require("mongoose");
 var PythonShell = require('python-shell');
 var Schedule = require("../models/schedule.js");
 var Registration = require("../models/registration.js");
-
-//csrf stuff?
-//var csrf = require('csurf');
-//var csrfProtection = csrf({ cookie: true });
+var csrf = require('csurf');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 //GET request for seeing schedule
+
+// DELETE where should this happen?
+
+// PUT maybe we want ppl to be able to update and then send verifications to Admin/tutor/student
+
+
+
 
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
@@ -31,7 +37,7 @@ router.get('/match', function(req, res, next) {
 			mode: 'json',
 			scriptPath: './scheduler/',
 			args: [JSON.stringify(registrations), JSON.stringify(city_capacity)]
-		}
+		};
 
 		PythonShell.run('match.py', options, function (err, matches) {
 		  if (err) {
