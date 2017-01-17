@@ -11,7 +11,7 @@ def main(registrations, city_capacity):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("registrations", type=string_parser.parse_dictionary,
-	                    help="a dictionary consisting of list of unmatched registrations")
+	                    help="a list of unmatched registrations")
 	parser.add_argument("city_capacity", type=string_parser.parse_dictionary,
 	                    help="dictionary mapping each city to its current capacity")
 	args = parser.parse_args()
