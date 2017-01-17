@@ -436,7 +436,7 @@ UserSchema.statics.changePassword = function(username, newPassword, callback){
 UserSchema.statics.getUser = function(username, callback){
     this.findOne({username: username}, function(err,user){
         if (err) {
-            console.log("Invalud usernmae");
+            console.log("Invalid usernmae");
             callback(new Error("Invalid username."));
         } 
         else {
