@@ -98,6 +98,17 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
     });//end update
 };
 
+
+registrationSchema.statics.getAllUnmatchedRegistrations = function (callback) {
+    Registration.findAll({isMatched: false }, function (err, registrations) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(err, registrations);
+        }
+    });
+}
+
 //keep at bottom of file
 var Registration = mongoose.model("Registration", registrationSchema);
 module.exports = Registration;
