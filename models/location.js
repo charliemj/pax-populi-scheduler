@@ -22,7 +22,8 @@ locationSchema.statics.findLocation = function(locationName, callback){
 	}
 };
 
-locationSchema.statics.findLocation = function (locationName, currentMaxCapacity, callback){
+//find a location object with a certain location name
+locationSchema.statics.findLocation = function (locationName, callback){
     this.findOne({locationName: locationName}, function(err, location){
         if(err){
             callback(new Error("This location doesn't exist."));
@@ -35,7 +36,10 @@ locationSchema.statics.findLocation = function (locationName, currentMaxCapacity
     });
 };
 
-
+//change the max capacity to a different value
+locationSchema.statics.updateMaxCapacity = function(locationName, currentMaxCapacity, callback){
+  //use findLocation function to get the location witht he specified name and then change its max capacity var
+};
 //keep at bottom of file
 var Location = mongoose.model("Location", locationSchema);
 module.exports = Location;

@@ -12,13 +12,15 @@ var Registration = require("../models/registration.js");
 router.get('/',function(req, res, next){
   var user = req.session.passport.user;
   res.render('registration', {title: 'Register',
-
                                         csrfToken: req.csrfToken(),
                                         username: user.username,
+<<<<<<< HEAD
+=======
+                                        isTutor: user.isTutor,
+>>>>>>> refs/remotes/origin/master
                                         fullName: user.fullName,
                                         onHold: user.onHold,
-                                        inPoll: user.inPoll,
-                                        isTutor: user.isTutor,
+                                        inPoll: user.inPool
                                         });
 
 });//end GET request

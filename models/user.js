@@ -18,7 +18,7 @@ var UserSchema = mongoose.Schema({
     approved: {type: Boolean, default: false},
     rejected: {type: Boolean, default: false},
     requestToken: {type: String, default: null},
-    inPoll: {type: Boolean, default: false},
+    inPool: {type: Boolean, default: false},
     onHold: {type: Boolean, default: false},
     isTutor: {type: Boolean, default: false}, // whether is a tutor or student
     email: {type: String, required: true},
@@ -134,7 +134,7 @@ UserSchema.methods.waitlist = function (callback) {
 * Puts the user to the poll
 * @param {Function} callback - the function that gets called after
 */
-UserSchema.methods.joinPoll = function (callback) {
+UserSchema.methods.joinPool = function (callback) {
     this.onHold = false;
     this.save(callback);
 };
@@ -221,7 +221,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                                     approved: user.approved,
                                     rejected: user.rejected,
                                     onHold: user.onHold,
-                                    inPoll: user.inPoll,
+                                    inPool: user.inPool,
                                     isTutor: user.isTutor,
                                     fullName: user.firstName + ' ' + user.lastName});
                 } else {

@@ -13,13 +13,13 @@ var scheduleSchema = mongoose.Schema({
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDay: {type: String, requied:true},
+    firstDay: {type: String, required:true},
     lastDay: {type: String, required: true},
     classOn : {type: Boolean, required: true, default:false}, //this might be tricky
 });
 
 
-//how to run processes in the background like once a day
+//how to run processes in the background like once a day at some time
 
 
 //keep at bottom of file
