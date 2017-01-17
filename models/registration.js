@@ -107,7 +107,7 @@ registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
             callback(err, registrations);
         }
     });
-}
+};
 
 //keep at bottom of file
 var Registration = mongoose.model("Registration", registrationSchema);
