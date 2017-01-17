@@ -299,52 +299,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 					}
 	            });
 	    }
-	})
-
-
-    if (username.length === 0 || password.length === 0 || email.length === 0
-    	|| firstName === 0 || lastName === 0) {
-        data.message = 'Please enter your username and password below';
-        res.render('home', data);
-    } else {
-        User.count({ username: username },
-            function (err, count) {
-                if (count > 0) {
-                    data.message = 'There is already an account with this username, '
-                                    + 'make sure you enter your username correctly';
-                    res.render('home', data);
-                } else {
-                	User.count({ email: email },
-            			function (err, count) {
-		                if (count > 0) {
-		                    data.message = 'There is already an account with this email address, '
-		                                    + 'make sure you enter your email address correctly';
-		                    res.render('home', data);
-		                } else {
-		                    authentication.createUserJSON(username, password, email, firstName, lastName, status, gender, country, region, timezone, bio,
-		                        function (err, userJSON) {
-		                            if (err) {
-		                                data.message = err.message;
-		                                res.render('home', data);
-		                            } else {
-		                            	User.signUp(userJSON, req.devMode, function (err, user) {
-				                            if (err) {
-				                                res.json({'success': false, 'message': err.message});
-				                            } else {
-				                                res.render('home', {title: 'Pax Populi Scheduler',
-				                                                    message: 'Sign up successful! We have sent you a verification email.'
-				                                                              + 'Please check your email.',
-				                                                    csrfToken: req.csrfToken()});
-				                            }
-		                        		});
-		                            }	
-		                        });
-		                }
-		            });
-				}
-            });
-    }
-
+	});
 });
 
 router.get('/faq', authentication.isAuthenticated, function (req, res) {
