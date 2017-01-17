@@ -12,6 +12,7 @@ var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var registrations = require('./routes/registrations.js');
+var schedules = require('./routes/schedules.js');
 
 
 // database setup
@@ -69,6 +70,7 @@ app.use(csrfProtection);
 app.use('/', routes);
 app.use('/users', users);
 app.use('/registrations', registrations);
+app.use('/schedules', schedules);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
