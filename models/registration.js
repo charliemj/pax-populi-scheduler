@@ -5,7 +5,7 @@ var User = require('../models/user.js');
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var genders = ["Male","Female", "NoPref"]; 
+var genders = ["Male","Female"]; 
 
 // times are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -97,6 +97,17 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
         }//end else
     });//end update
 };
+
+
+registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
+    Registration.find({isMatched: false }, function (err, registrations) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(err, registrations);
+        }
+    });
+}
 
 //keep at bottom of file
 var Registration = mongoose.model("Registration", registrationSchema);
