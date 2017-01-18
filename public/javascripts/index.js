@@ -1,9 +1,3 @@
-
-var checkSignUpForm = function () {
-    $("#username-register-box").blur(function(){
-        console.log("clicked out of username box!");
-    });   
-};
 /**
  * Adds the message message to the area with id messages or class modal-messages.
  * @param {String}  message  The message
