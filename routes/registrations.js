@@ -52,6 +52,7 @@ router.post('/', function(req, res, next){
 });//end POST request
 
 
+
 // GET request for seeing a submitted registration
 router.get('/:username/:registration_id', function (req, res, next){
   var regId = req.params.registration_id;
@@ -78,6 +79,7 @@ router.get('/:username/:registration_id', function (req, res, next){
                                         availability: registration.availability,
                                         genderPref: registration.genderPref,
                                         course: registration.course,
+                                        _id : registration._id
                                         });
       }//end else
 

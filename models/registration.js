@@ -50,6 +50,17 @@ registrationSchema.statics.createRegistration = function(username, genderPref, a
     });
 };
 
+//Gets all unmatched registrations for a particular user
+registrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
+    Registration.find({isMatched: false, user: user }, function (err, registrations) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(err, registrations);
+        }
+    });
+};
+
 /*
  * Gets registration info about a particular registration for a user. 
  * @param {String} regId - the registration id number of the particular registration
@@ -97,6 +108,7 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
 };
 
 
+//Gets all unmatched registrations
 registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
     Registration.find({isMatched: false }, function (err, registrations) {
         if (err) {
