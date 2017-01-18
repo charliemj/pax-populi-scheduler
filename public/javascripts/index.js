@@ -1,8 +1,8 @@
 var checkSignUpForm = function () {
 	// TODO: validate all other fields
-	// if (!$('#agreeToTermConditions').checked) {
-	// 	return false;
-	// }
+	if (!$('#agreeToTermConditions').checked) {
+		return false;
+	}
 };
 
 /**
