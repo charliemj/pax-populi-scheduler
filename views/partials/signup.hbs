@@ -18,7 +18,7 @@
             <div class="form-group">
                 <label class="control-label">Register as</label>
                 <div>
-                  <select name='userType' class='form-control signup-input status'>
+                  <select id= "userType" name='userType' class='form-control signup-input status' >
                   {{#each userTypes}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -64,7 +64,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="control-label">Fist Name</label>
+                <label class="control-label">First Name</label>
                 <div>
                   <input id='firstName-register-box' class='form-control signup-input' type='text' name='firstName' placeholder='first name' required></input>
                 </div>
@@ -90,7 +90,7 @@
               <div class="form-group">
                 <label class="control-label">Gender</label>
                 <div>
-                  <select name='gender' class='form-control signup-input'>
+                  <select id= 'gender' name='gender' class='form-control signup-input'>
                     {{#each genders}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -119,9 +119,9 @@
                 <div id='student-schools' class="form-group student">
                   <label class="control-label">School/Institution</label>
                   <div>
-                    <select name='studentSchool' class='form-control signup-input choices'>
+                    <select id= 'studentSchool' name='studentSchool' class='form-control signup-input choices'>
                     {{#each studentSchools}}
-                      <option>{{this}}</option>
+                      <option> {{this}} </option>
                     {{/each}}
                   </select>
                   </div>
@@ -129,7 +129,7 @@
                 <div id='tutor-schools' class="form-group tutor">
                   <label class="control-label">School/Institution</label>
                   <div>
-                    <select name='tutorSchool' class='form-control signup-input'>
+                    <select id="tutorSchool" name='tutorSchool' class='form-control signup-input'>
                     {{#each tutorSchools}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -178,6 +178,8 @@
                   <label class="control-label">Major</label>
                   <div>
                     <select id='major-register-box' name='major' class='form-control signup-input'>
+                      <option>"--"</option>  
+                       <!--try-->
                     {{#each majors}}
                       <option>{{this}}</option>
                     {{/each}}
