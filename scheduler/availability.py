@@ -107,7 +107,8 @@ class Availability:
         # boolean array, i-th entry is whether or not user is available for self.CLASS_SLOT_TIMES[i]
         self.free_class_slots = []
         for i in range(self.SLOTS_PER_WEEK):
-            is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK] for j in range(self.SLOTS_PER_CLASS))
+            is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK]
+                          for j in range(self.SLOTS_PER_CLASS))
             self.free_class_slots.append(is_free)
     
     def __str__(self):
@@ -125,7 +126,7 @@ class Availability:
     def time_string_to_index(cls, time_string):
         hours = int(time_string.split(':')[0])
         minutes = int(time_string.split(':')[1])
-        return (cls.MINUTES_PER_HOUR * hours  + minutes) / cls.MINUTES_PER_SLOT
+        return (cls.MINUTES_PER_HOUR * hours + minutes) / cls.MINUTES_PER_SLOT
 
     @classmethod
     def parse_dict(cls, availability_dict):
@@ -134,6 +135,9 @@ class Availability:
             free_slots_indices: A set of indices i such that the user is free
                 during cls.SLOT_TIMES[i]
         """ 
+        for day_index_str in availability_dict.keys():
+            if day_index_str not in map(str, range(cls.DAYS_PER_WEEK)):
+                raise ValueError('Each key in availability_dict must be a string form of an integer in range(7)')
         free_slots_indices = set([])
         for day_string in availability_dict.keys():
             intervals = availability_dict[day_string]
@@ -148,6 +152,9 @@ class Availability:
 
     @classmethod
     def from_dict(cls, availability_dict):
+        for day_index_str in availability_dict.keys():
+            if day_index_str not in map(str, range(cls.DAYS_PER_WEEK)):
+                raise ValueError('Each key in availability_dict must be a string form of an integer in range(7)')
         free_slots_indices = cls.parse_dict(availability_dict)
         free_slots = [(i in free_slots_indices) for i in range(cls.SLOTS_PER_WEEK)]
         return cls(free_slots)
@@ -221,6 +228,20 @@ class Availability:
         """
         return any(self.free_class_slots[i] and other_availability.free_class_slots[i]
                    for i in range(self.SLOTS_PER_WEEK))
+
+    def shared_class_start_indices(self, other_availability):
+        """Computes indices of self.SLOT_START_TIMES during which both
+        Availability objects are free to start class.
+
+        Args:
+            other_availability: An Availability object.
+
+        Returns:
+            A list of indices into self.SLOT_START_TIMES for which self and
+                other_availability are both free to start class.
+        """
+        return [i for i in range(self.SLOTS_PER_WEEK)
+                if self.free_class_slots[i] and other_availability.free_class_slots[i]]
 
     def shared_class_start_times(self, other_availability):
         """Computes weekly times during which both Availability objects are
@@ -309,5 +330,5 @@ if __name__ == '__main__':
     new_tz_string = 'UTC'
     dt = datetime(2017, 7, 15)
     localized_dt = current_tz.localize(dt)
-    print Availability.new_timezone_wt(wt, localized_dt, new_tz_string)
+    #print Availability.new_timezone_wt(wt, localized_dt, new_tz_string)
 
