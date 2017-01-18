@@ -15,7 +15,7 @@ var Enums = function() {
     }
 
     that.userTypes = function () {
-        return ["Student", "Tutor"];
+        return ["--","Student", "Tutor"];
     }
 
     that.genders = function () {
@@ -27,7 +27,7 @@ var Enums = function() {
     }
 
     that.studentSchools = function () {
-        return ["Afghans for Progessive Thinking (APT)", "Independent" , 
+        return ["Select your school...","Afghans for Progessive Thinking (APT)", "Independent" , 
                 "Kabul Education Advising Center", 
                 "Kandahar Institute of Modern Studies (KIMS)",
                 "Lincoln Learning Center (Kabul)",
@@ -35,7 +35,7 @@ var Enums = function() {
     }
 
     that.tutorSchools = function () {
-        return ["Bentley University", "Salem State University",
+        return ["Select your school...","Bentley University", "Salem State University",
                 "Harvard University", "Other"]
     }
 

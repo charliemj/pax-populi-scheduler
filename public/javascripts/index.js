@@ -1,33 +1,8 @@
+
 var checkSignUpForm = function () {
-	// TODO: validate all other fields
-	if (!$('#agreeToTermConditions').checked) {
-		return false;
-    }
-    //TODO if($('#userType').)
-    if (!$('#username-register-box').val().length>0){
-        return false;
-    }
-    if ($('password-register-box').val() != $('confirm-password-register-box').input()){
-        return false;
-    }
-    if ($('email-register-box').val().search('.edu') != -1){
-        return false;
-    }
-    if ($("#userType option:selected").text()== "--"){
-        return false;
-    }
-    if ($("#gender option:selected").text()== "--"){
-        return false;
-    }
-	if ($("#studentSchool option:selected").text()== "--"){
-        return false;
-    }
-    if ($("#tutorSchool option:selected").text()== "--"){
-        return false;
-    }
-    if ($("#major-register-box option:selected").text()== "--"){
-        return false;
-    }
+    $("#username-register-box").blur(function(){
+        console.log("clicked out of username box!");
+    });   
 };
 /**
  * Adds the message message to the area with id messages or class modal-messages.
