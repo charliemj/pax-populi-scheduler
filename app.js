@@ -12,13 +12,13 @@ var csrf = require('csurf');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var registrations = require('./routes/registrations.js');
-var schedule = require('./routes/schedules.js');
-var location = require('./routes/locations.js');
+var schedules = require('./routes/schedules.js');
+var locations = require('./routes/locations.js');
 
 
 // database setup
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/paxpopulidb12');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/paxpopulidb');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {

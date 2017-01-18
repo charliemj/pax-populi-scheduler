@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var User = require("./models/user.js"); 
+var User = require("../models/user.js"); 
 
 
 

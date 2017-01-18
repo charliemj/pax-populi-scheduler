@@ -1,11 +1,11 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var Mixed= mongoose.Schema.Types.Mixed;
+var Mixed = mongoose.Schema.Types.Mixed;
 
-var locationSchema= mongoose.schema({
+var locationSchema = mongoose.Schema({
 
-	currentCapacity:{type:mongoose.Schema.Types.mixed, require:true}, //a dict of times:slotsFilled 
+	currentCapacity:{type: Mixed, require:true}, //a dict of times:slotsFilled 
 	locationName:{type: String, required: true},
     maxCapacity: {type: Number, default: 1000}, //infinity variable?
 });
@@ -19,7 +19,7 @@ locationSchema.statics.findLocation = function(locationName, callback){
 		else{
 			callback(null, location);
 		}
-	}
+	});
 };
 
 //find a location object with a certain location name
