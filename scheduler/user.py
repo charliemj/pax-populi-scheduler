@@ -1,5 +1,6 @@
 import pytz
 from datetime import datetime
+from match import Match
 
 """
 Represents a student or tutor.
@@ -118,24 +119,62 @@ class User:
                           or other_user.gender_preference == self.gender)
         return self_satisfied and other_satisfied
 
-    def can_match(self, other_user):
+    def shared_class_slots_UTC(self, other_user):
+        earliest_start_dt_UTC = max(self.get_earliest_start_dt_UTC(),
+                                    other_user.get_earliest_start_dt_UTC())
+        self_availability_UTC = self.new_timezone_availability('UTC', earliest_start_dt_UTC)
+        other_availability_UTC = other_user.new_timezone_availability('UTC', earliest_start_dt_UTC)
+        return self_availability_UTC.shared_class_start_times(other_availability_UTC)
+
+    def get_availability_matches(self, tutor, weeks_per_class):
+        """Returns a list of potential matches between two users accounting for
+        their availabilities after taking into account timezones and daylight 
+        saving.
+
+        Requires that self is a student
+        """
+        if self.user_type != 'STUDENT':
+            raise ValueError('self must have user_type of "STUDENT"');
+        if tutor.user_type != 'TUTOR':
+            raise ValueError('tutor must have user_type of "TUTOR"');
+        earliest_start_dt_UTC = max(self.get_earliest_start_dt_UTC(),
+                                    tutor.get_earliest_start_dt_UTC())
+        matches = []
+        for wt_UTC in self.shared_class_slots_UTC(tutor):
+            match = Match(self, tutor, wt_UTC, earliest_start_dt_UTC,
+                          weeks_per_class)
+            if match.daylight_saving_valid():
+                matches.append(match)
+        return matches
+
+    def availability_matches(self, tutor, weeks_per_class):
+        if self.user_type != 'STUDENT':
+            raise ValueError('self must have user_type of "STUDENT"');
+        if tutor.user_type != 'TUTOR':
+            raise ValueError('tutor must have user_type of "TUTOR"');
+        return len(self.get_availability_matches(tutor, weeks_per_class)) > 0
+
+    def can_match(self, other_user, weeks_per_class):
         """Determines whether or not two users can be matched according to the
         availability, course, and gender constraints.
 
         Args:
             other_user: A User object.
+            weeks_per_class: A positive integer representing the number of
+                occurrences of the class, assuming the class meets once per
+                week.
 
         Returns:
             A boolean whether or not self and other_user can be matched.
                 Specifically, both users must share at least one class slot,
                 share at least one course, and be gender compatible.
         """
-        return (self.availability.share_class_start(other_user.availability)
+        return (self.availability_matches(other_user, weeks_per_class)
                 and self.share_course(other_user)
                 and self.gender_compatible(other_user))
 
-    def new_timezone(self, new_tz_string, unlocalized_datetime_in_new_tz):
-        """Creates a copy of self after changing timezones.
+    def new_timezone_availability(self, new_tz_string, unlocalized_datetime_in_new_tz):
+        """Returns an availability in a new timezone.
 
         Args:
             new_tz_string: A string representing the new time zone to shift to.
@@ -145,18 +184,15 @@ class User:
                 which to calculate UTC offsets.
 
         Returns:
-            new_user: A User object that is the same as self after changing the
-                timezone to new_tz_string.
+            new_availability: An Availability object representing
+                self.availability in the timezone new_tz_string using
+                unlocalized_datetime_in_new_tz as a reference.
         """
         if new_tz_string not in set(pytz.all_timezones):
             raise ValueError('new_tz must be in the pytz timezone database')
         new_availability = self.availability.new_timezone(self.tz_string,
                                                           new_tz_string,
                                                           unlocalized_datetime_in_new_tz)
-        new_user = User(self.ID, self.user_type, self.gender,
-                        self.gender_preference, new_availability,
-                        new_tz_string, self.city_ID, self.courses,
-                        self.earliest_start_date)
-        return new_user
+        return new_availability
 
         
