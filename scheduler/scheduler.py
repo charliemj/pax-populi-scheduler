@@ -33,7 +33,7 @@ class Match:
                                             tutor.get_earliest_start_dt_UTC())
         self.weeks_per_class = weeks_per_class
         (self.student_class_schedule, self.tutor_class_schedule, self.UTC_class_schedule) = self.get_class_schedules()
-        print self.student.ID, self.tutor.ID, self.daylight_saving_valid()
+        print self.student.ID, self.tutor.ID, self.daylight_saving_valid(), self.class_start_wt_UTC
 
     def get_class_schedules(self):
         """
@@ -119,9 +119,9 @@ class Scheduler:
             city_ID_to_capacity: A dict that maps each city ID to a list of
                 length AVAILABILITY.SLOTS_PER_WEEK whose i-th entry is the
                 maximum number of users from that city that can be logged in at
-                once at Availability.SLOT_START_TIMES[i]. The set of cities
-                represented in students and tutors must be a subset of the keys
-                of this dict.
+                once at Availability.SLOT_START_TIMES[i] in the city's local
+                time. The set of cities represented in students and tutors must
+                be a subset of the keys of this dict.
         """
         self.students = students
         self.tutors = tutors
@@ -246,6 +246,7 @@ class Scheduler:
         # Each student city has a maximum number of students that can be logged in at once
         for city in city_to_student_indices.keys():
             for k in time_slot_indices:
+                # convert k to local time index, use new_timezone_wt, what dt should we use for reference?
                 constraint_name = 'city {} at time slot {} has a maximum number students'.format(city, k)
                 scheduling_prob += sum(x[(i,j,(k-m)%Availability.SLOTS_PER_WEEK)]
                                        for i in city_to_student_indices[city]
@@ -298,7 +299,7 @@ if __name__ == '__main__':
     a2 = Availability.from_dict({'4': [['0:00', '24:00']], '3': [['3:00','12:00']]})
     a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['0:00','12:00']]})
     a4 = Availability.from_dict({'4': [['0:00', '2:30']]})
-    students.append(User('s1', 'STUDENT', 'MALE', 'NONE',a1,'Iran',1,['a','b','d'],date(2017,1,1)))
+    students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',1,['a','b','d'],date(2017,1,1)))
     students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',1,['b'],date(2015,2,2)))
     tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',1,['a','c','d'],date(2018,4,1)))
     tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',1,['b'],date(2017,1,1)))
