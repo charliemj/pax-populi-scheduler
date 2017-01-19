@@ -68,6 +68,10 @@ var Enums = function() {
                 "Other"]
     }
 
+    that.courses = function(){
+        return ["Math", "Science"]
+    };
+
    	Object.freeze(that);
     return that;
 };

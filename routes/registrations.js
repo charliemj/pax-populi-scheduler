@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var Registration = require("../models/registration.js");
+var enums = require('../javascripts/enums.js');
 
 
 //GET request for displaying the availablities form
@@ -17,7 +18,8 @@ router.get('/',function(req, res, next){
                                         isTutor: user.isTutor,
                                         fullName: user.fullName,
                                         onHold: user.onHold,
-                                        inPool: user.inPool
+                                        inPool: user.inPool,
+                                        courses: enums.courses()
                                         });
 
 });//end GET request

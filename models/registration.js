@@ -18,7 +18,7 @@ var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
     genderPref: {type: String, enum: genderPrefs, required:true},
-    course: {type: String, required:true},
+    course: {type: [String], required:true},
     isMatched:{type: Boolean, required: true,  default: false}
 });
 
