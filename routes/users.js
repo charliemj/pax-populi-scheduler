@@ -28,7 +28,12 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
         });//end send
     }
     else{
-        console.log(registrations);
+        var regList = []; //will be a list of all registration ids for the user
+        for(var i=0; i<registrations.length; i++){
+            regList.push(registrations[i]._id);
+        }
+        //console.log(regList); //list of all registration ids for the user
+        
         res.render('dashboard',{title: 'Dashboard',
                                         csrfToken: req.csrfToken(),
                                         username: req.params.username,
@@ -39,7 +44,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                                         inPool: user.inPool,
                                         isTutor: user.isTutor,                                        
                                         fullName: user.fullName,
-                                        registrations: registrations}                            
+                                        regList: regList}                            
       );
     }//end else
   });//end get unmatched

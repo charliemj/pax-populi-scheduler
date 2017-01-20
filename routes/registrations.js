@@ -91,7 +91,7 @@ router.get('/:username/:registration_id', function (req, res, next){
 
 //PUT request for updating availablities
 
-router.put('/:username/:registration_id', function(req, res, next){
+router.put('update/:username/:registration_id', function(req, res, next){
     
   // make sure that user who is logged in is the user who's reg it is
   // look up registration by reg_id
