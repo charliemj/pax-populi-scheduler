@@ -35,7 +35,7 @@ router.post('/', function(req, res, next){
     var username = user.username;
     var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.createRegistration(username, genderPref, availability, course, 
+    Registration.createRegistration(username, genderPref, availability, course, earliestStartTime,
       function(err,registration){
         if (err){
           console.log("error submitting registration " + err);

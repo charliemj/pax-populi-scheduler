@@ -13,9 +13,9 @@ $(document).ready(function () {
           // loads the registrations into #registrations div and sets all controllers
           
           for(var i=0; i<regIds.length; i++){
-            id = regIds[i];
+            regId = regIds[i];
             //add buttons for each of these and have on click do a get to the url
-            link = "/registrations/update/" + username +"/"+ id;
+            link = "/registrations/update/" + username +"/"+ regId;
             $("#registrations").append("<a href="+link+"> Click here to update your registration </a>");
             $("#registrations").append("<br>");
           }

@@ -19,7 +19,7 @@ var registrationSchema = mongoose.Schema({
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
     genderPref: {type: String, enum: genderPrefs, required: true},
     course: {type: [String], required: true},
-    earliestStartTime: {type: String, required: true},
+    earliestStartTime: {type: Date, required: true},
     isMatched:{type: Boolean, required: true,  default: false}
 });
 
@@ -44,7 +44,7 @@ registrationSchema.statics.createRegistration = function(username, genderPref, a
                     callback(err); 
                 }//end if
                 else{
-                    callback(null,registration); //everything worked! 
+                    callback(null, registration); //everything worked! 
                 }//end else
             });//end create
         }
