@@ -19,13 +19,17 @@
                 <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
                 <div class='row'>
                     <div class="form-group col-md-6">
-                        <label class="control-label">Course Title</label>
-                        <div>
-                            <select name="course" class='form-control' id="course">
-                                <option value="">Select Course...</option>
-                                <option value="English1">English1</option>
-                                <option value="English2">English2</option>
-                            </select>
+                        <div class='mulitple-choice'>
+                            <div class="form-group">
+                                <label class="control-label">Select Courses You're Interested In</label>
+                                    <div>
+                                      <select id="courses" multiple name='courses' class='form-control signup-input choices'>
+                                        {{#each courses}}
+                                        <option>{{this}}</option>
+                                      {{/each}}
+                                      </select>
+                                    </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
@@ -38,6 +42,10 @@
                             </select>
                         </div>
                     </div>
+                </div>
+                <label class="control-label">What is Your Earliest Possible Start Date?</label>
+                <div>
+                    <input id='earliestStartTime' type='date' name='earliestStartTime' placeholder='earliestStartTime' required></input>
                 </div>
                 <div class="form-group">
                         <input type="button" value="Submit" class='btn btn-primary btn-lg' id="target" ng-click="submitRegistration()">

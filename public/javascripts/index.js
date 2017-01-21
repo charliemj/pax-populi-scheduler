@@ -1,10 +1,3 @@
-var checkSignUpForm = function () {
-	// TODO: validate all other fields
-	// if (!$('#agreeToTermConditions').checked) {
-	// 	return false;
-	// }
-};
-
 /**
  * Adds the message message to the area with id messages or class modal-messages.
  * @param {String}  message  The message
