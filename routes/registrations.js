@@ -31,11 +31,11 @@ router.post('/', function(req, res, next){
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
-    var course = req.body.course;
+    var courses = req.body.courses;
     var username = user.username;
     var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.createRegistration(username, genderPref, availability, course, earliestStartTime,
+    Registration.createRegistration(username, genderPref, availability, courses, earliestStartTime,
       function(err,registration){
         if (err){
           console.log("error submitting registration " + err);
@@ -56,12 +56,13 @@ router.post('/', function(req, res, next){
 
 
 // GET request for seeing a submitted registration
+
 router.get('/update/:username/:registration_id', function (req, res, next){
   var regId = req.params.registration_id;
   var user = req.session.passport.user;
   var username = user.username;
 
-  Registration.getRegistration(regId, username, 
+  Registration.findRegistration(regId, user, 
     function (err, registration){
 
       if(err){
@@ -79,8 +80,8 @@ router.get('/update/:username/:registration_id', function (req, res, next){
                                         fullName: user.fullName,
                                         availability: registration.availability,
                                         genderPref: registration.genderPref,
-                                        earliestStartTime:earliestStartTime,
-                                        course: registration.course,
+                                        earliestStartTime: registration.earliestStartTime,
+                                        courses: registration.courses,
                                         _id : registration._id
                                         });
       }//end else
@@ -100,10 +101,10 @@ router.put('update/:username/:registration_id', function(req, res, next){
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
-    var course = req.body.course;
+    var courses = req.body.courses;
     var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.updateRegistration(user, regId, genderPref, availability, course, earliestStartTime,
+    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime,
       function (err, registration){
         if (err){
           console.log("error updating registration " + err);

@@ -10,18 +10,41 @@
     <div ng-controller="mainController">
         <div id="day-schedule"></div>
         <!-- calander UI is populated here -->
-        <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
-        <select name="course" id="course">
-            <option value="">Select Course...</option>
-            <option value="English1">English1</option>
-            <option value="English2">English2</option>
-        </select>
-        <p>Please indicate if you have a gender preference for your tutor/student.</p>
-        <select name='gender' id="genderPref">
-            <option value="NoPref">No Preference</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-        <input type="button" value="Save" id="target" ng-click="updateRegistration()">Save</input>    
+         <form>
+                <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
+                <div class='row'>
+                    <div class="form-group col-md-6">
+                        <div class='mulitple-choice'>
+                            <div class="form-group">
+                                <label class="control-label">Select Courses You're Interested In</label>
+                                    <div>
+                                      <select id="courses" multiple name='courses' class='form-control signup-input choices'>
+                                        {{#each courses}}
+                                        <option>{{this}}</option>
+                                      {{/each}}
+                                      </select>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="control-label">{{#if isTutor}}Student's {{else}}Tutor's{{/if}} gender preference.</label>
+                        <div>
+                            <select name='gender' class='form-control' id="genderPref">
+                                <option value="NoPref">No Preference</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <label class="control-label">What is Your Earliest Possible Start Date?</label>
+                <div>
+                    <input id='earliestStartTime' type='date' name='earliestStartTime' placeholder='earliestStartTime' required></input>
+                </div>
+                <div class="form-group">
+                     <input type="button" value="Save" id="target" ng-click="updateRegistration()">Save</input>   
+                </div>
+            </form>
     </div>
 </div>
