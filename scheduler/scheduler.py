@@ -45,8 +45,6 @@ class Scheduler:
 
     def match_max_flow(self):
         (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(), 'SOURCE', 'SINK')
-        print max_flow
-        print flow_dict
         student_tutor_to_matches = {}
         for student in self.students:
             edge_dict = flow_dict[student.ID]
@@ -58,13 +56,11 @@ class Scheduler:
                     student_tutor_to_matches[(student.ID, tutor.ID)] = matches
         return student_tutor_to_matches
     
-    '''
     def match_output_to_db(self):
-        matches = self.match_max_flow()
-        match_dicts = [match.to_dict() for match in matches]
-        # create dict {(student, tutor): all possible wt's}
-        return match_dicts
-    '''
+        student_tutor_to_matches = self.match_max_flow()
+        student_tutor_to_match_dicts = {pair: map(lambda x: x.to_dict(), student_tutor_to_matches[pair])
+                                        for pair in student_tutor_to_matches.keys()}
+        return student_tutor_to_match_dicts
 
 if __name__ == '__main__':
     #import matplotlib.pyplot as plt
@@ -87,8 +83,8 @@ if __name__ == '__main__':
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
-    d = s.match_max_flow()
+    d = s.match_output_to_db()
     for pair in d.keys():
         print pair
-        for match in d[pair]:
-            print match.to_dict()
+        for match_dict in d[pair]:
+            print match_dict

@@ -30,7 +30,6 @@ class Match:
                                             tutor.get_earliest_start_dt_UTC())
         self.weeks_per_class = weeks_per_class
         (self.student_class_schedule, self.tutor_class_schedule, self.UTC_class_schedule) = self.get_class_schedules()
-        print self.student.ID, self.tutor.ID, self.daylight_saving_valid(), self.class_start_wt_UTC
 
     def get_class_schedules(self):
         """
@@ -60,8 +59,6 @@ class Match:
                                 for student_dt in student_class_schedule]
         UTC_class_schedule = [student_dt.astimezone(pytz.utc)
                               for student_dt in student_class_schedule]
-        for (s,t, u) in zip(student_class_schedule, tutor_class_schedule, UTC_class_schedule):
-            print str(s), str(t), str(u)
         return (student_class_schedule, tutor_class_schedule, UTC_class_schedule)
 
     def daylight_saving_valid(self):
@@ -102,3 +99,4 @@ class Match:
                       'tutor_class_schedule': tutor_schedule_strings,
                       'UTC_class_schedule': UTC_schedule_strings,}
         return match_dict
+
