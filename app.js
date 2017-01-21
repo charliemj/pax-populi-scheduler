@@ -13,7 +13,6 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var registrations = require('./routes/registrations.js');
 var schedules = require('./routes/schedules.js');
-var locations = require('./routes/locations.js');
 
 
 // database setup
@@ -72,7 +71,6 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/registrations', registrations);
 app.use('/schedules', schedules);
-app.use('/locations', locations);
 
 
 // catch 404 and forward to error handler
