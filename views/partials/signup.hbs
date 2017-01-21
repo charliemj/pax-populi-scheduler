@@ -20,6 +20,7 @@
                   <label class="control-label">Register as</label>
                   <div>
                     <select id= "userType" name='userType' class='form-control signup-input status' >
+                    <option>Sign Up As...</option>
                     {{#each userTypes}}
                         <option>{{this}}</option>
                       {{/each}}
@@ -129,6 +130,7 @@
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id= 'studentSchool' name='studentSchool' class='form-control signup-input choices' required>
+                      <option>Select your school...</option>
                       {{#each studentSchools}}
                         <option> {{this}} </option>
                       {{/each}}
@@ -139,6 +141,7 @@
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id="tutorSchool" name='tutorSchool' class='form-control signup-input' required>
+                      <option>Select your school...</option>
                       {{#each tutorSchools}}
                         <option>{{this}}</option>
                       {{/each}}
