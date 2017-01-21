@@ -251,7 +251,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 		    	country: req.body.country.trim(),
 		    	region: req.body.region.trim(),
 		    	interests: req.body.interests,
-	            timezone: req.body.timezone,};
+	            timezone: req.body.timezone};
 		if (isTutor) {
 			userJSON['major'] = req.body.major.trim();
 		}
