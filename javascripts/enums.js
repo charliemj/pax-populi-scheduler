@@ -56,7 +56,7 @@ var Enums = function() {
     }
 
     that.majors = function () {
-        return ["International Relatinos or Global Studies", "Economics",
+        return ["International Relations or Global Studies", "Economics",
                   "Management", "English", "Sociology", "Not Applicable",
                   "Other",]
     }
@@ -69,7 +69,7 @@ var Enums = function() {
     }
 
     that.courses = function(){
-        return ["Math", "Science"]
+        return ["Beginner Math", "Advanced Math", "Beginner English", "Intermediate English", "Advanced English", "Intermediate Math"]
     };
 
    	Object.freeze(that);

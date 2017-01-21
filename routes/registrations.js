@@ -33,7 +33,7 @@ router.post('/', function(req, res, next){
     var genderPref = req.body.genderPref;
     var course = req.body.course;
     var username = user.username;
-    
+    var earliestStartTime = req.body.earliestStartTime;
 
     Registration.createRegistration(username, genderPref, availability, course, 
       function(err,registration){
@@ -80,6 +80,7 @@ router.get('/:username/:registration_id', function (req, res, next){
                                         fullName: user.fullName,
                                         availability: registration.availability,
                                         genderPref: registration.genderPref,
+                                        earliestStartTime:earliestStartTime,
                                         course: registration.course,
                                         _id : registration._id
                                         });
@@ -101,8 +102,9 @@ router.put('update/:username/:registration_id', function(req, res, next){
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
     var course = req.body.course;
+    var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.updateRegistration(user, regId, genderPref, availability, course,
+    Registration.updateRegistration(user, regId, genderPref, availability, course, earliestStartTime,
       function (err, registration){
         if (err){
           console.log("error updating registration " + err);

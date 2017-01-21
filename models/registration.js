@@ -19,6 +19,7 @@ var registrationSchema = mongoose.Schema({
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
     genderPref: {type: String, enum: genderPrefs, required:true},
     course: {type: [String], required:true},
+    earliestStartTime: {type: String, required:true},
     isMatched:{type: Boolean, required: true,  default: false}
 });
 
@@ -36,7 +37,7 @@ registrationSchema.statics.createRegistration = function(username, genderPref, a
         if (err) {res.send(err + "Problem with getting user");}
         
         else{
-            Registration.create({availability: availability, user: user, genderPref: genderPref, course: course, isMatched:false}, 
+            Registration.create({availability: availability, user: user, genderPref: genderPref, course: course, earliestStartTime:earliestStartTime, isMatched:false}, 
             function(err, registration){
                 if (err){
                     console.log("Problem creating registration");
@@ -94,9 +95,9 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
 
-registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, course, callback){
+registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, course, earliestStartTime, callback){
     
-    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, course: course}, 
+    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime:earliestStartTime, course: course}, 
     function(err, updatedRegistration){
         if (err){
             res.send(err);
