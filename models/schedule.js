@@ -19,9 +19,8 @@ var scheduleSchema = mongoose.Schema({
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDay: {type: String, required:true},
+    firstDay: {type: String, required:true}, 
     lastDay: {type: String, required: true},
-    classOn : {type: Boolean, required: true, default:false}, //this might be tricky
 });
 
 
