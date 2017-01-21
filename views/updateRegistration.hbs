@@ -12,6 +12,10 @@
         <!-- calander UI is populated here -->
          <form>
                 <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
+                <input type="hidden" id="availability" name="availability" value="{{availability}}">
+                <input type="hidden" id='oldGenderPref' name="oldGenderPref" value="{{oldGenderPref}}">
+                <input type="hidden" id='oldCourses' name="oldCourses" value="{{oldCourses}}">
+                <input type="hidden" id='oldStartTime' name="oldStartTime" value="{{oldStartTime}}">
                 <div class='row'>
                     <div class="form-group col-md-6">
                         <div class='mulitple-choice'>
@@ -30,7 +34,7 @@
                     <div class="form-group col-md-6">
                         <label class="control-label">{{#if isTutor}}Student's {{else}}Tutor's{{/if}} gender preference.</label>
                         <div>
-                            <select name='gender' class='form-control' id="genderPref">
+                            <select name='genderPref' class='form-control' id="genderPref">
                                 <option value="NoPref">No Preference</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>

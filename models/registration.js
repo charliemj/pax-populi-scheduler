@@ -103,9 +103,9 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
 
-registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, dateAdded, callback){
+registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
     
-    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, courses: courses}, 
+    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now, courses: courses}, 
     function(err, updatedRegistration){
         if (err){
             res.send(err);

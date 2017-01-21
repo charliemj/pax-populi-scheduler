@@ -8,7 +8,6 @@ var enums = require('../javascripts/enums.js');
 
 
 //GET request for displaying the availablities form
-//there will be a link to "register for a class"
 
 router.get('/',function(req, res, next){
   var user = req.session.passport.user;
@@ -75,22 +74,20 @@ router.get('/update/:username/:registration_id', function (req, res, next){
           });//end send
       }//end if
       else{
+          console.log(registration.availability);
           res.render('updateRegistration', {title: 'Update Registration',
                                         csrfToken: req.csrfToken(),
+                                        courses: enums.courses(),
                                         username: user.username,
                                         tutor: user.tutor,
                                         fullName: user.fullName,
-                                        availability: registration.availability,
-                                        genderPref: registration.genderPref,
-                                        earliestStartTime: registration.earliestStartTime,
-                                        dateAdded: registration.dateAdded,
-                                        courses: registration.courses,
-                                        _id : registration._id
+                                        availability: JSON.stringify(registration.availability),
+                                        oldGenderPref: registration.genderPref,
+                                        oldCourses: registration.courses,
+                                        oldStartTime: registration.earliestStartTime
                                         });
       }//end else
-
   });//end getRegistration
-  
 });//end GET
 
 //PUT request for updating availablities
