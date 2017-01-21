@@ -5,19 +5,11 @@ $(document).ready(function(){
     $("#username-register-box").blur(function(){
         var username = $("#username-register-box").val();
     
-        if (username.length < 5){
+        if (username.length < 5 || username.length > 15){
             $('#usernameErrors').empty();
             $('#usernameErrors').append('<p>Error: Username must be 5-15 characters long</p>');
             console.log("Username must be 5-15 characters long");
             $("#username-register-box").css({"border-color":"red"});
-        }
-
-        else if (username.length > 15){
-            $('#usernameErrors').empty();
-            $('#usernameErrors').append('<p>Error: Username must be 5-15 characters long</p>');
-            $("#username-register-box").css({"border-color":"red"});
-
-            console.log("Username must be 5-15 characters long");
         }
 
 
