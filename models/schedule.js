@@ -4,9 +4,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var User = require("../models/user.js"); 
 
 
-
 //TODO need validators
-
 
 //TODO check isTutor for tutor/student objects
 

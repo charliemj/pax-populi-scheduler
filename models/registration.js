@@ -3,9 +3,9 @@ var validators = require("mongoose-validators");
 var User = require('../models/user.js');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var genderPrefs = ["Male","Female", "NoPref"]; 
+var genderPrefs = ["Male","Female", "NoPref"]; //might update to ["Male","Female", ["Male","Female"]]
 
-// times are objects like
+// availability are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
       // '1': [],
       // '2': [],
@@ -114,7 +114,6 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
         }//end else
     });//end update
 };
-
 
 
 /*
