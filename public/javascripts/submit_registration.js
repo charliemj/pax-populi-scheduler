@@ -20,7 +20,7 @@ registration.controller('mainController', ['$scope','$http', function($scope, $h
         var result = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime:earliestStartTime};
     
         $http.post('/registrations', result).then(
-            function (data){}, 
+            function (data){window.location.replace("/");}, //if call to server is sucessful, redirects to dashboard
             function (data){console.log("Error: " + data);});
     };//end submitRegistration
 }]);//end controller

@@ -48,6 +48,8 @@ router.post('/', function(req, res, next){
           //console.log("registration here:");
           //console.log(JSON.stringify(registration));
           res.status(200).send({success:"Registration has been submitted!"});
+          //res.redirect('/users/'+ req.session.passport.user.username);
+          
           //TODO redirect
         }//end else
     });//end createRegistration
