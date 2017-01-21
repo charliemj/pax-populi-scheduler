@@ -5,7 +5,7 @@ var User = require('../models/user.js');
 
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var genders = ["Male","Female", "NoPref"]; 
+var genderPrefs = ["Male","Female", "NoPref"]; 
 
 // times are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -19,7 +19,7 @@ var genders = ["Male","Female", "NoPref"];
 var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
-    genderPref: {type: String, enum: genders, required:true},
+    genderPref: {type: String, enum: genderPrefs, required:true},
     course: {type: String, required:true},
     isMatched:{type: Boolean, required: true,  default: false}
 });
@@ -96,6 +96,17 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
            callback(null, updatedRegistration); //everything worked! 
         }//end else
     });//end update
+};
+
+
+registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
+    Registration.find({isMatched: false }, function (err, registrations) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(err, registrations);
+        }
+    });
 };
 
 //keep at bottom of file

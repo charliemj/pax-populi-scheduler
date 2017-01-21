@@ -129,7 +129,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
             } else if (err.isVerified) {
             	data.success = true;
         		data.redirect = '/';
-        		data.message = err.message
+        		data.message = err.message;
         		return res.json(data);
         	}
         }
@@ -166,10 +166,10 @@ router.put('/approve/:username/:requestToken', parseForm, csrfProtection, functi
         }
         User.sendApprovalEmail(user.username, req.devMode, function (err, user) {
 	        if (err) {
-	        	console.log('failed to send')
+	        	console.log('failed to send');
 	            return res.render('home', data);
 	        }
-	        console.log('sent, redirecting')
+	        console.log('sent, redirecting');
 	        data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
 	        data.success = true;
 	        data.redirect = '/';
@@ -251,7 +251,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 		    	country: req.body.country.trim(),
 		    	region: req.body.region.trim(),
 		    	interests: req.body.interests,
-	        timezone: req.body.timezone,}
+	        timezone: req.body.timezone,};
 		if (isTutor) {
 			userJSON['major'] = req.body.major.trim();
 		}
@@ -299,52 +299,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 					}
 	            });
 	    }
-	})
-
-
-    if (username.length === 0 || password.length === 0 || email.length === 0
-    	|| firstName === 0 || lastName === 0) {
-        data.message = 'Please enter your username and password below';
-        res.render('home', data);
-    } else {
-        User.count({ username: username },
-            function (err, count) {
-                if (count > 0) {
-                    data.message = 'There is already an account with this username, '
-                                    + 'make sure you enter your username correctly';
-                    res.render('home', data);
-                } else {
-                	User.count({ email: email },
-            			function (err, count) {
-		                if (count > 0) {
-		                    data.message = 'There is already an account with this email address, '
-		                                    + 'make sure you enter your email address correctly';
-		                    res.render('home', data);
-		                } else {
-		                    authentication.createUserJSON(username, password, email, firstName, lastName, status, gender, country, region, timezone, bio,
-		                        function (err, userJSON) {
-		                            if (err) {
-		                                data.message = err.message;
-		                                res.render('home', data);
-		                            } else {
-		                            	User.signUp(userJSON, req.devMode, function (err, user) {
-				                            if (err) {
-				                                res.json({'success': false, 'message': err.message});
-				                            } else {
-				                                res.render('home', {title: 'Pax Populi Scheduler',
-				                                                    message: 'Sign up successful! We have sent you a verification email.'
-				                                                              + 'Please check your email.',
-				                                                    csrfToken: req.csrfToken()});
-				                            }
-		                        		});
-		                            }	
-		                        });
-		                }
-		            });
-				}
-            });
-    }
-
+	});
 });
 
 router.get('/faq', authentication.isAuthenticated, function (req, res) {
@@ -353,7 +308,7 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         username: user.username,
                         fullName: user.fullName,
                         onHold: user.onHold,
-                        inPoll: user.inPoll,
+                        inPool: user.inPool,
                         isTutor: user.isTutor,
                         csrfToken: req.csrfToken()});
 });

@@ -99,4 +99,3 @@ class Match:
                       'tutor_class_schedule': tutor_schedule_strings,
                       'UTC_class_schedule': UTC_schedule_strings,}
         return match_dict
-

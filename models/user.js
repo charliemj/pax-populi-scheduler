@@ -13,12 +13,10 @@ var UserSchema = mongoose.Schema({
     password: {type: String, required: true}, // should be just the hash
     verified: {type: Boolean, default: false},
     verificationToken: {type:String, default: null},
-    verified: {type: Boolean, default: false},
-    verificationToken: {type:String, default: null},
     approved: {type: Boolean, default: false},
     rejected: {type: Boolean, default: false},
     requestToken: {type: String, default: null},
-    inPoll: {type: Boolean, default: false},
+    inPool: {type: Boolean, default: false},
     onHold: {type: Boolean, default: false},
     isTutor: {type: Boolean, default: false}, // whether is a tutor or student
     email: {type: String, required: true},
@@ -134,7 +132,7 @@ UserSchema.methods.waitlist = function (callback) {
 * Puts the user to the poll
 * @param {Function} callback - the function that gets called after
 */
-UserSchema.methods.joinPoll = function (callback) {
+UserSchema.methods.joinPool = function (callback) {
     this.onHold = false;
     this.save(callback);
 };
@@ -151,12 +149,12 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid username'});
         } else if (user.verified) {
-            console.log('already verified')
+            console.log('already verified');
             callback({success:false, isVerified: true, message: 'The account is already verified, please log in below:'}, user);
         } else if (user.verificationToken !== token) {
             callback({success:false, message: 'Invalid verification token'});
         } else {
-            console.log('verifying...')
+            console.log('verifying...');
             user.verify(callback);
         }
     });
@@ -182,18 +180,18 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
         } else {
             if (approve) {
                 user.approve(function (err, user) {
-                    console.log('approved', err)
+                    console.log('approved', err);
                     if (err) {
-                        callback({success: false, message: 'Failed to approve account'})
+                        callback({success: false, message: 'Failed to approve account'});
                     } else if (waitlist) {
-                        console.log('put on hold')
+                        console.log('put on hold');
                         user.waitlist(callback);
                     } else {
-                        callback(null, user)
+                        callback(null, user);
                     }
                 });    
             } else {
-                console.log('rejected')
+                console.log('rejected');
                 user.reject(callback);
             }
         }
@@ -221,7 +219,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                                     approved: user.approved,
                                     rejected: user.rejected,
                                     onHold: user.onHold,
-                                    inPoll: user.inPoll,
+                                    inPool: user.inPool,
                                     isTutor: user.isTutor,
                                     fullName: user.firstName + ' ' + user.lastName});
                 } else {
@@ -436,7 +434,7 @@ UserSchema.statics.changePassword = function(username, newPassword, callback){
 UserSchema.statics.getUser = function(username, callback){
     this.findOne({username: username}, function(err,user){
         if (err) {
-            console.log("Invalud usernmae");
+            console.log("Invalid usernmae");
             callback(new Error("Invalid username."));
         } 
         else {

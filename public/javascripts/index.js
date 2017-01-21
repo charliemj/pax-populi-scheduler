@@ -3,7 +3,7 @@ var checkSignUpForm = function () {
 	// if (!$('#agreeToTermConditions').checked) {
 	// 	return false;
 	// }
-}
+};
 
 /**
  * Adds the message message to the area with id messages or class modal-messages.
