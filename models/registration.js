@@ -17,9 +17,9 @@ var genderPrefs = ["Male","Female", "NoPref"];
 var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
-    genderPref: {type: String, enum: genderPrefs, required:true},
-    course: {type: [String], required:true},
-    earliestStartTime: {type: String, required:true},
+    genderPref: {type: String, enum: genderPrefs, required: true},
+    course: {type: [String], required: true},
+    earliestStartTime: {type: String, required: true},
     isMatched:{type: Boolean, required: true,  default: false}
 });
 
@@ -31,7 +31,7 @@ var registrationSchema = mongoose.Schema({
  * @param {Array} times - An array of times the user is available to meet (in their local times).
  * @param {Function} callback - The function to execute after the registration is created. 
  */
-registrationSchema.statics.createRegistration = function(username, genderPref, availability, course, callback){
+registrationSchema.statics.createRegistration = function(username, genderPref, availability, course, earliestStartTime, callback){
     
     User.getUser(username, function(err,user){
         if (err) {res.send(err + "Problem with getting user");}

@@ -56,12 +56,11 @@ router.post('/', function(req, res, next){
 
 
 // GET request for seeing a submitted registration
-router.get('/:username/:registration_id', function (req, res, next){
+router.get('/update/:username/:registration_id', function (req, res, next){
   var regId = req.params.registration_id;
   var user = req.session.passport.user;
   var username = user.username;
 
-  //TODO make getRegistration fn in registration model
   Registration.getRegistration(regId, username, 
     function (err, registration){
 
