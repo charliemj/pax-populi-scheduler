@@ -15,7 +15,7 @@ $(document).ready(function () {
           for(var i=0; i<regIds.length; i++){
             id = regIds[i];
             //add buttons for each of these and have on click do a get to the url
-            link = "/registrations/update/" + username + id;
+            link = "/registrations/update/" + username +"/"+ id;
             $("#registrations").append("<a href="+link+"> Click here to update your registration </a>");
             $("#registrations").append("<br>");
           }
