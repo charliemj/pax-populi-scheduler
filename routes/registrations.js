@@ -83,6 +83,7 @@ router.get('/update/:username/:registration_id', function (req, res, next){
                                         availability: registration.availability,
                                         genderPref: registration.genderPref,
                                         earliestStartTime: registration.earliestStartTime,
+                                        dateAdded: registration.dateAdded,
                                         courses: registration.courses,
                                         _id : registration._id
                                         });
@@ -106,7 +107,7 @@ router.put('update/:username/:registration_id', function(req, res, next){
     var courses = req.body.courses;
     var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime,
+    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime, 
       function (err, registration){
         if (err){
           console.log("error updating registration " + err);
