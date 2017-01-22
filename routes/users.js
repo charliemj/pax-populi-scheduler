@@ -28,11 +28,17 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
         });//end send
     }
     else{
-        var regList = []; //will be a list of all registration ids for the user
+        var regDateList = []; // will be a list containing dateAdded param of all unmatched registrations for user
+        var regIdList = []; //will be a list containing ids of all unmatched registrations for the user 
         for(var i=0; i<registrations.length; i++){
-            regList.push(registrations[i]._id);
+
+            //console.log([registrations[i]._id, registrations[i].dateAdded]);
+
+            regIdList.push(registrations[i]._id); 
+            regDateList.push(registrations[i].dateAdded);
+
+           
         }
-        //console.log(regList); //list of all registration ids for the user
         
         res.render('dashboard',{title: 'Dashboard',
                                         csrfToken: req.csrfToken(),
@@ -44,7 +50,8 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                                         inPool: user.inPool,
                                         isTutor: user.isTutor,                                        
                                         fullName: user.fullName,
-                                        regList: regList}                            
+                                        regIdList: regIdList,
+                                        regDateList: regDateList}                            
       );
     }//end else
   });//end get unmatched
