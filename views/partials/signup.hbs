@@ -17,9 +17,9 @@
           <div class='row'>
             <div class='col-xs-8 col-md-8'>
               <div class="form-group">
-                  <label class="control-label">Register as</label>
+                  <label class="control-label">Register as*</label>
                   <div>
-                    <select id= "userType" name='userType' class='form-control signup-input status' >
+                    <select id= "userType" name='userType' class='form-control signup-input status' required>
                     <option>Sign Up As...</option>
                     {{#each userTypes}}
                         <option>{{this}}</option>
@@ -100,6 +100,7 @@
                   <label class="control-label">Gender*</label>
                   <div>
                     <select id= 'gender' name='gender' class='form-control signup-input' required>
+                      <option>Select your gender...</option>
                       {{#each genders}}
                         <option>{{this}}</option>
                       {{/each}}
@@ -113,23 +114,23 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Telephone Number</label>
+                  <label class="control-label">Telephone Number*</label>
                   <div>
-                    <input id='phone-number-box' class='form-control signup-input' type='text' name='phoneNumber' placeholder='phone number'></input>
+                    <input id='phone-number-box' class='form-control signup-input' type='text' name='phoneNumber' placeholder='phone number' required></input>
                   </div>
                   <div class="formErr" id="phoneNumErrors"></div>
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Skype ID</label>
+                  <label class="control-label">Skype ID*</label>
                   <div>
-                    <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID'></input>
+                    <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
                   </div>
                 </div>
                 <div class='multiple-choice'>
                   <div id='student-schools' class="form-group student">
                     <label class="control-label">School/Institution*</label>
                     <div>
-                      <select id= 'studentSchool' name='studentSchool' class='form-control signup-input choices' required>
+                      <select id='studentSchool' name='studentSchool' class='form-control signup-input choices' required>
                       <option>Select your school...</option>
                       {{#each studentSchools}}
                         <option> {{this}} </option>
@@ -156,9 +157,9 @@
                   </div>}}
                 </div>
                 <div id='student-education-level' class="form-group student">
-                  <label class="control-label">Education Level (Current or Highest Completed)</label>
+                  <label class="control-label">Education Level (Current or Highest Completed)*</label>
                   <div>
-                    <select name='studentEducationLevel' class='form-control signup-input'>
+                    <select name='studentEducationLevel' class='form-control signup-input' required>
                     {{#each studentEducationLevels}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -166,9 +167,9 @@
                   </div>
                 </div>
                 <div id='tutor-education-level' class="form-group tutor">
-                  <label class="control-label">Educational Class or Grade (Current or Highest Completed)</label>
+                  <label class="control-label">Educational Class or Grade (Current or Highest Completed)*</label>
                   <div>
-                    <select name='tutorEducationLevel' class='form-control signup-input'>
+                    <select name='tutorEducationLevel' class='form-control signup-input' required>
                     {{#each tutorEducationLevels}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -176,9 +177,9 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Are you currently enrolled in school?</label>
+                  <label class="control-label">Are you currently enrolled in school?*</label>
                   <div>
-                    <select name='enrolled' class='form-control signup-input'>
+                    <select name='enrolled' class='form-control signup-input' required>
                       {{#each confirmation}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -187,15 +188,15 @@
                 </div>
                 <div class='multiple-choice'>
                   <div class="form-group tutor">
-                    <label class="control-label">Major</label>
+                    <label class="control-label">Major*</label>
                     <div>
-                      <select id='major-register-box' name='major' class='form-control signup-input'>
-                        <option>"--"</option>  
-                         <!--try-->
-                      {{#each majors}}
-                        <option>{{this}}</option>
-                      {{/each}}
-                    </select>
+                      <select id='major-register-box' name='major' class='form-control signup-input' required>
+                      <option>"Select Your Major..."</option>  
+                        <!--try-->
+                        {{#each majors}}
+                          <option>{{this}}</option>
+                        {{/each}}
+                      </select>
                     </div>
                   </div>
                   {{!<div class="other form-group">
@@ -206,33 +207,34 @@
                   </div>}}
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Nationality</label>
+                  <label class="control-label">Nationality*</label>
                   <div>
-                    <input id='nationality-register-box' class='form-control signup-input' type='text' name='nationality' placeholder='nationality'></input>
+                    <input id='nationality-register-box' class='form-control signup-input' type='text' name='nationality' placeholder='nationality' required></input>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Country</label>
+                  <label class="control-label">Country*</label>
                   <div>
                     <!--Source: https://github.com/benkeen/country-region-selector-->
                     <select name="country" class="form-control signup-input crs-country" data-region-id="regionHere" required></select>
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Region</label>
+                  <label class="control-label">Region*</label>
                   <div>
                     <select name="region" class='form-control signup-input ' id="regionHere" required></select>
                   </div>
                 </div>
                 <div>
-                    <p>Select your timezone: <b>{[{timezone}]}</b></p>
+                    <p>Select your timezone*: <b>{[{timezone}]}</b></p>
                     <timezone-selector ng-model="timezone"/>
-                  </div>
+                </div>
                 <div class='mulitple-choice'>
                   <div class="form-group">
-                    <label class="control-label">Interests</label>
+                    <label class="control-label">Interests*</label>
                     <div>
-                      <select multiple name='interests' class='form-control signup-input choices'>
+                      <select multiple name='interests' class='form-control signup-input choices' required>
+                        <option>Please Select Your Interests...</option>
                         {{#each interests}}
                         <option>{{this}}</option>
                       {{/each}}

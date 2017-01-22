@@ -99,4 +99,13 @@ $(document).ready(function(){
 
     });
 
+
+    // TODO: make sure timezone is selected
+
+    // TODO: make sure resgister up as is valid
+
+    //TODO: make sure that box is checked
+
+
+
 });

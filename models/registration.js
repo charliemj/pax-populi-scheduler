@@ -3,9 +3,9 @@ var validators = require("mongoose-validators");
 var User = require('../models/user.js');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var genderPrefs = ["Male","Female", "NoPref"]; 
+var genderPrefs = ["MALE","FEMALE", "NONE"]; //might update to ["Male","Female", ["Male","Female"]]
 
-// times are objects like
+// availability are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
       // '1': [],
       // '2': [],
@@ -20,7 +20,8 @@ var registrationSchema = mongoose.Schema({
     genderPref: {type: String, enum: genderPrefs, required: true},
     courses: {type: [String], required: true},
     earliestStartTime: {type: Date, required: true},
-    isMatched:{type: Boolean, required: true,  default: false}
+    isMatched:{type: Boolean, required: true,  default: false},
+    dateAdded:{type: Date, default: Date.now}
 });
 
 
@@ -39,7 +40,7 @@ registrationSchema.statics.createRegistration = function(username, genderPref, a
         if (err) {res.send(err + "Problem with getting user");}
         
         else{
-            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime, isMatched:false}, 
+            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
             function(err, registration){
                 if (err){
                     console.log("Problem creating registration");
@@ -104,17 +105,16 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
 
 registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
     
-    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, courses: courses}, 
+    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now(), courses: courses}, 
     function(err, updatedRegistration){
         if (err){
-            res.send(err);
+            callback(err);
         }//end if
         else{
            callback(null, updatedRegistration); //everything worked! 
         }//end else
     });//end update
 };
-
 
 
 /*

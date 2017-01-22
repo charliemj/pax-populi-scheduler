@@ -8,7 +8,6 @@ var enums = require('../javascripts/enums.js');
 
 
 //GET request for displaying the availablities form
-//there will be a link to "register for a class"
 
 router.get('/',function(req, res, next){
   var user = req.session.passport.user;
@@ -48,6 +47,8 @@ router.post('/', function(req, res, next){
           //console.log("registration here:");
           //console.log(JSON.stringify(registration));
           res.status(200).send({success:"Registration has been submitted!"});
+          //res.redirect('/users/'+ req.session.passport.user.username);
+          
           //TODO redirect
         }//end else
     });//end createRegistration
@@ -73,26 +74,26 @@ router.get('/update/:username/:registration_id', function (req, res, next){
           });//end send
       }//end if
       else{
+          console.log(registration.availability);
           res.render('updateRegistration', {title: 'Update Registration',
                                         csrfToken: req.csrfToken(),
+                                        courses: enums.courses(),
                                         username: user.username,
                                         tutor: user.tutor,
                                         fullName: user.fullName,
-                                        availability: registration.availability,
-                                        genderPref: registration.genderPref,
-                                        earliestStartTime: registration.earliestStartTime,
-                                        courses: registration.courses,
-                                        _id : registration._id
+                                        availability: JSON.stringify(registration.availability),
+                                        oldGenderPref: registration.genderPref,
+                                        oldCourses: registration.courses,
+                                        oldStartTime: registration.earliestStartTime,
+                                        regId: regId
                                         });
       }//end else
-
   });//end getRegistration
-  
 });//end GET
 
 //PUT request for updating availablities
 
-router.put('update/:username/:registration_id', function(req, res, next){
+router.put('/update/:username/:registration_id', function(req, res, next){
     
   // make sure that user who is logged in is the user who's reg it is
   // look up registration by reg_id
@@ -103,8 +104,9 @@ router.put('update/:username/:registration_id', function(req, res, next){
     var genderPref = req.body.genderPref;
     var courses = req.body.courses;
     var earliestStartTime = req.body.earliestStartTime;
+    var regId = req.params.registration_id;
 
-    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime,
+    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime, 
       function (err, registration){
         if (err){
           console.log("error updating registration " + err);
@@ -114,7 +116,7 @@ router.put('update/:username/:registration_id', function(req, res, next){
           });//end send
         }//end if
         else {
-          res.send(200,{success:"Registration has been updated!"});
+          res.status(200).send({success:"Registration has been updated!"});
           // TO DO redirect 
         }//end else
     });//end updateAvailabilty
