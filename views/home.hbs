@@ -5,35 +5,47 @@
     <center><b><h3>Welcome to {{title}}</h3></b></center><br>
     <div class="row">
       <div>
-        {{#if verificationToken}}
-          <div>
-            <br><br class='hidden-xs hidden-ms'>
-            <input id='username' type="hidden" value="{{username}}"></input>
-            <input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
-            <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button id='verify-button' class='btn btn-primary btn-hg'>Verify Account</button>
+        <div id='login-container'>
+          <div id='login-logo'>
+            <center><img src='/images/paxpopuli.png'></img></center>
           </div>
-        {{else if requestToken}}
-          <div>
-            <br><br class='hidden-xs hidden-ms'>
-            <input id='username' type="hidden" value="{{username}}"></input>
-            <input id='requestToken' type="hidden" value="{{requestToken}}"></input>
-            <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button id='approve-button' class='btn btn-primary btn-hg'>Approve</button>
-            <button id='reject-button' class='btn btn-primary btn-hg'>Reject</button>
-            <button id='waitlist-button' class='btn btn-primary btn-hg'>Waitlist</button>
-          </div>
-        {{else if isValidAccount}}
           <div class="login-warning">
-            {{message}}
+            <center>{{message}}</center>
           </div>
-          <form id='verification-form' action='/verify/{{username}}/resend' method='get'>
-            <input id='send-verification-button' class='btn btn-primary btn-hg' type='submit' value='Send Verification Email'></input>
-          </form>
-        {{else}}
-          {{>login_register}}
-          {{> signup}}
-        {{/if}}
+          {{#if verificationToken}}
+            <div>
+              <br><br class='hidden-xs hidden-ms'>
+              <input id='username' type="hidden" value="{{username}}"></input>
+              <input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
+              <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+              <center>
+                <button id='verify-button' class='btn btn-primary btn-hg'>Verify Account</button>
+              </center>
+            </div>
+          {{else if requestToken}}
+            <div>
+              <br><br class='hidden-xs hidden-ms'>
+              <input id='username' type="hidden" value="{{username}}"></input>
+              <input id='requestToken' type="hidden" value="{{requestToken}}"></input>
+              <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+              <center>
+                <button id='approve-button' class='btn btn-primary btn-hg'>Approve</button>
+                <button id='reject-button' class='btn btn-primary btn-hg'>Reject</button>
+                <button id='waitlist-button' class='btn btn-primary btn-hg'>Waitlist</button>
+              </center>
+            </div>
+          {{else if isValidAccount}}
+            <div class="login-warning">
+              {{message}}
+            </div>
+            <form id='verification-form' action='/verify/{{username}}/resend' method='get'>
+              <input id='send-verification-button' class='btn btn-primary btn-hg' type='submit' value='Send Verification Email'></input>
+            </form>
+          {{else}}
+            {{>login_register}}
+            {{> signup}}
+          {{/if}}
+        </div>
       </div>
     </div>
   </div>

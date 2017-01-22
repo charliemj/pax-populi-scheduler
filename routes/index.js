@@ -81,7 +81,12 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	                data.message = err.message;
 	                return res.render('home', data);
 	            }
-	            res.redirect('/users/'+ user.username);
+                console.log('------------------');
+	            console.log(req);
+                var path = req.body.ref_path;
+                console.log('ref path', path, typeof path !== 'undefined', typeof path !== 'undefined' ? path : '/users/'+ user.username);
+                console.log('username', user.username);
+                res.redirect(path !== '' ? path : '/users/'+ user.username);
 	        });
         }
     })(req, res, next);
@@ -110,8 +115,10 @@ router.get('/verify/:username/resend', function(req, res, next) {
 
 // Directs user to verification page
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
+    var username = req.params.username;
     data = {title: 'Pax Populi Scheduler',
-            username: req.params.username,
+            message: 'Hello ' + username + '! Click below to verify your account',
+            username: username,
             verificationToken: req.params.verificationToken,
             csrfToken: req.csrfToken()};
     res.render('home', data);      
@@ -147,9 +154,10 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
 });
 
 // Directs admin to request page
-router.get('/respond/:username/:requestToken', function(req, res, next) {
+router.get('/respond/:username/:requestToken', authentication.isAuthenticated, function(req, res, next) {
+    var username = req.params.username;
     data = {title: 'Pax Populi Scheduler',
-            username: req.params.username,
+            username: username,
             requestToken: req.params.requestToken,
             csrfToken: req.csrfToken()};
     res.render('home', data);      

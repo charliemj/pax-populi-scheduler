@@ -5,11 +5,12 @@ var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var Registration = require("../models/registration.js");
 var enums = require('../javascripts/enums.js');
+var authentication = require('../javascripts/authentication.js');
 
 
 //GET request for displaying the availablities form
 
-router.get('/',function(req, res, next){
+router.get('/', authentication.isAuthenticated, function(req, res, next){
   var user = req.session.passport.user;
   res.render('registration', {title: 'Register',
                                         csrfToken: req.csrfToken(),
@@ -26,7 +27,7 @@ router.get('/',function(req, res, next){
 
 //POST request for submitting the availablities from submit button
 
-router.post('/', function(req, res, next){
+router.post('/', authentication.isAuthenticated, function(req, res, next){
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
@@ -58,7 +59,7 @@ router.post('/', function(req, res, next){
 
 // GET request for seeing a submitted registration
 
-router.get('/update/:username/:registration_id', function (req, res, next){
+router.get('/update/:username/:registration_id', authentication.isAuthenticated, function (req, res, next){
   var regId = req.params.registration_id;
   var user = req.session.passport.user;
   var username = user.username;
@@ -93,7 +94,7 @@ router.get('/update/:username/:registration_id', function (req, res, next){
 
 //PUT request for updating availablities
 
-router.put('/update/:username/:registration_id', function(req, res, next){
+router.put('/update/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
     
   // make sure that user who is logged in is the user who's reg it is
   // look up registration by reg_id

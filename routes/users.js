@@ -41,17 +41,17 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
         }
         
         res.render('dashboard',{title: 'Dashboard',
-                                        csrfToken: req.csrfToken(),
-                                        username: req.params.username,
-                                        verified: user.verified,
-                                        approved: user.approved,
-                                        rejected: user.rejected,
-                                        onHold: user.onHold,
-                                        inPool: user.inPool,
-                                        isTutor: user.isTutor,                                        
-                                        fullName: user.fullName,
-                                        regIdList: regIdList,
-                                        regDateList: regDateList}                            
+                                csrfToken: req.csrfToken(),
+                                username: req.params.username,
+                                verified: user.verified,
+                                approved: user.approved,
+                                rejected: user.rejected,
+                                onHold: user.onHold,
+                                inPool: user.inPool,
+                                isTutor: user.isTutor,                                        
+                                fullName: user.fullName,
+                                regIdList: regIdList,
+                                regDateList: regDateList}                            
       );
     }//end else
   });//end get unmatched

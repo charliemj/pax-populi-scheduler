@@ -111,7 +111,6 @@ var Email = function() {
             if (err) {
                 return callback({success: false, message: err.message});
             }
-            console.log('in email.js', err, user);
             var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstname, user.lastName);
             var link;
             if (developmentMode) {
@@ -133,8 +132,9 @@ var Email = function() {
                             + '<li>Region: {}</li>'.format(user.region)
                             + '<li>Nationality: {}</li>'.format(user.nationality)
                             + '<li>Interests: {}</li></ul><br>'.format(user.interests)
-            content += '<form action="{}"><input type="submit" value="Respond to Request"/></form>'.format(link)
+            content += '<form action="{}"><input type="hidden" name="ref_path" value="{}"><input type="submit" value="Respond to Request"/></form>'.format(link, link)
                             + '{}</p>'.format(that.signature);
+            console.log(content);
             console.log('about to send an approval request email to', user.email);
             sendEmail(config.adminEmailAddress(), subject, content); // for now send it back to the user
             callback(null, user);
