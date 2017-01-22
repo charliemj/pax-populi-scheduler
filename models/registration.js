@@ -2,7 +2,6 @@ var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var User = require('../models/user.js');
 var ObjectId = mongoose.Schema.Types.ObjectId;
-
 var genderPrefs = ["MALE","FEMALE", "NONE"]; 
 
 // availability are objects like
@@ -21,7 +20,7 @@ var registrationSchema = mongoose.Schema({
     courses: {type: [String], required: true},
     earliestStartTime: {type: Date, required: true},
     isMatched:{type: Boolean, required: true,  default: false},
-    dateAdded:{type: Date, default: Date.now}
+    dateAdded:{type: Date, default: Date.now, validate:[validators.isDate()]}
 });
 
 

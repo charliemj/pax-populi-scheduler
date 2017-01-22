@@ -14,6 +14,9 @@
       <div class="modal-body">
         <form id='register-form' action='/signup' method='post'>
           <input type="hidden" value="{[{timezone}]}" name="timezone">
+          <input type="hidden" value="{{passwordRegex}}" name="passwordRegex" id="passwordRegex">
+          <input type="hidden" value="{{emailRegex}}" name="emailRegex" id="emailRegex">
+          <input type="hidden" value="{{notAllowedRegex}}" name="notAllowedRegex" id="notAllowedRegex">
           <div class='row'>
             <div class='col-xs-8 col-md-8'>
               <div class="form-group">
@@ -229,6 +232,7 @@
                     <p>Select your timezone*: <b>{[{timezone}]}</b></p>
                     <timezone-selector ng-model="timezone"/>
                 </div>
+                <div class="formErr" id="timezoneErrors"></div>
                 <div class='mulitple-choice'>
                   <div class="form-group">
                     <label class="control-label">Interests*</label>

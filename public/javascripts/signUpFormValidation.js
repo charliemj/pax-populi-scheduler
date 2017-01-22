@@ -1,8 +1,22 @@
 $(document).ready(function(){
+    
+    var notAllowedPattern = new RegExp (JSON.parse($("#notAllowedRegex").val()));
 
     //TODO maybe other validation to make sure that fields are checked
     
+    $("#register-button").click(function(){
+        if($("input[name=timezone]").val() == ""){
+            $('#timezoneErrors').empty();
+            $('#timezoneErrors').append('<p>Error: Please select your timezone.</p>');
+        }
+    });
+
+
     $("#username-register-box").blur(function(){
+
+
+        //usernames can only contain numbers and letters and the following special chars: _ - .
+
         var username = $("#username-register-box").val();
     
         if (username.length < 5 || username.length > 15){
@@ -13,9 +27,20 @@ $(document).ready(function(){
         }
 
 
-        else if (5<= username.length <= 15){
+        else if (5<= username.length && username.length <= 15){
             $('#usernameErrors').empty();
-            $("#username-register-box").css({"border-color":"green"});
+            console.log(usernamePattern);
+            console.log(usernamePattern.test(username));
+
+            if (notAllowedPattern.test(username)) {
+                $('#usernameErrors').append('<p>Error: Username contains disallowed special characters.</p>');
+                $("#username-register-box").css({"border-color":"red"});
+            
+            }
+
+            else{
+                $("#username-register-box").css({"border-color":"green"});
+            }
         }
 
     }); 
@@ -24,7 +49,7 @@ $(document).ready(function(){
 
         var pw = $("#password-register-box").val();
 
-        var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/;
+        var passwordPattern = new RegExp(JSON.parse($("#passwordRegex").val()));
         
 
         if ( pw.legnth < 8 || !(passwordPattern.test(pw))){
@@ -61,7 +86,7 @@ $(document).ready(function(){
 
     $("#email-register-box").blur(function(){
         var email = $("#email-register-box").val();
-        var emailRegEx = /\S+@\S+\.\S+/;
+        var emailRegEx = new RegExp(JSON.parse($("#emailRegex").val()));
 
         if( !(emailRegEx.test(email))) {
             $("#emailErrors").empty();
@@ -84,7 +109,7 @@ $(document).ready(function(){
 
     $("#alternative-email-register-box").blur(function(){
         var email = $("#alternative-email-register-box").val();
-        var emailRegEx = /\S+@\S+\.\S+/;
+        var emailRegEx = new RegExp(JSON.parse($("#emailRegex").val()));
 
         if( !(emailRegEx.test(email))) {
             $("#altEmailErrors").empty();
