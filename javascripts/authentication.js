@@ -2,6 +2,7 @@ var request = require('request');
 var config = require('./config.js');
 var bcrypt = require('bcrypt');
 var utils = require('./utils.js');
+var enums = require('./enums.js');
 
 var Authentication = function() {
 
@@ -24,7 +25,19 @@ var Authentication = function() {
         } else if (req.isAuthenticated()) {
             next();
         } else {
-            res.render('home', { title: 'Pax Populi Scheduler', message: 'Please log in below', csrfToken: req.csrfToken(), ref_path: req.query.ref_path});
+            res.render('home', {title: 'Pax Populi Scheduler',
+                                message: 'Please log in below',
+                                csrfToken: req.csrfToken(),
+                                userTypes: enums.userTypes(),
+                                genders: enums.genders(),
+                                confirmation: enums.confirmation(),
+                                studentSchools: enums.studentSchools(),
+                                tutorSchools: enums.tutorSchools(),
+                                studentEducationLevels: enums.studentEducationLevels(),
+                                tutorEducationLevels: enums.tutorEducationLevels(),
+                                majors: enums.majors(),
+                                interests: enums.interests(),
+                                ref_path: req.query.ref_path});
         }
     };
 
