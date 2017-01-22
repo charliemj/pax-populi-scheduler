@@ -51,7 +51,7 @@ router.get('/match', function(req, res, next) {
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
 router.get('/match', function(req, res, next) {
-	Registration.getAllUnmatchedRegistrations(err, unmatchedRegistrations) {
+	Registration.getAllUnmatchedRegistrations(function (err, unmatchedRegistrations) {
 		var options = {
 			mode: 'json',
 			scriptPath: './scheduler/',
@@ -67,8 +67,7 @@ router.get('/match', function(req, res, next) {
 		});
 
 		// parse the string and write to db
-	}
-	}
+	});
 });
 
 module.exports = router; //keep at the bottom of the file
