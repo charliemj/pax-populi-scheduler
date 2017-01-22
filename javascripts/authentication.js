@@ -22,7 +22,7 @@ var Authentication = function() {
             // otherwise, needs to check that user is requesting for himself
             next();
         } else if (req.isAuthenticated()) {
-            res.redirect('/users/'+req.session.passport.user.username);
+            next();
         } else {
             res.render('home', { title: 'Pax Populi Scheduler', message: 'Please log in below', csrfToken: req.csrfToken(), ref_path: req.query.ref_path});
         }

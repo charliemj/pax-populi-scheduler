@@ -156,6 +156,7 @@ router.get('/respond/:username/:requestToken', authentication.isAuthenticated, f
             username: username,
             requestToken: req.params.requestToken,
             csrfToken: req.csrfToken()};
+    console.log('in respond', data)
     res.render('home', data);      
 });
 
