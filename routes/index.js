@@ -81,11 +81,7 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	                data.message = err.message;
 	                return res.render('home', data);
 	            }
-                console.log('------------------');
-	            console.log(req);
                 var path = req.body.ref_path;
-                console.log('ref path', path, typeof path !== 'undefined', typeof path !== 'undefined' ? path : '/users/'+ user.username);
-                console.log('username', user.username);
                 res.redirect(path !== '' ? path : '/users/'+ user.username);
 	        });
         }

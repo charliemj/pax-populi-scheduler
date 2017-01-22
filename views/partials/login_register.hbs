@@ -1,6 +1,6 @@
 <form id='login-form' action='/login' method='post'>
   <input type="hidden" name="_csrf" value="{{csrfToken}}">
-  <input id='csrf' type="hidden" name="ref_path" value="{{ref_path}}">
+  <input id='ref-path' type="hidden" name="ref_path" value="{{ref_path}}">
   <div class='row'>
     <input id='username-box' class='form-control' type='text' name='username' placeholder='username' required autofocus></input><br>
   </div>

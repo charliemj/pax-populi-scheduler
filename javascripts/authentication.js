@@ -15,7 +15,7 @@ var Authentication = function() {
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
     that.isAuthenticated = function (req, res, next) {
-        console.log(req.query);
+        console.log('in authenicated...');
         if (req.params.username == undefined && req.isAuthenticated() || 
                 req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
             // if the request is not user specific, give permission as long as the user is authenticated,

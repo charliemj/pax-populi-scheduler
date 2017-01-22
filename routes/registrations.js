@@ -27,7 +27,8 @@ router.get('/', authentication.isAuthenticated, function(req, res, next){
 
 //POST request for submitting the availablities from submit button
 
-router.post('/', authentication.isAuthenticated, function(req, res, next){
+router.post('/:username', authentication.isAuthenticated, function(req, res, next){
+    console.log('in submitting')
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
@@ -36,7 +37,8 @@ router.post('/', authentication.isAuthenticated, function(req, res, next){
     var earliestStartTime = req.body.earliestStartTime;
 
     Registration.createRegistration(username, genderPref, availability, courses, earliestStartTime,
-      function(err,registration){
+      function (err,registration){
+        console.log(err);
         if (err){
           console.log("error submitting registration " + err);
           res.send({
@@ -47,7 +49,9 @@ router.post('/', authentication.isAuthenticated, function(req, res, next){
         else {
           //console.log("registration here:");
           //console.log(JSON.stringify(registration));
-          res.status(200).send({success:"Registration has been submitted!"});
+          res.status(200).send( {success: true,
+                                 message:"Registration has been submitted!", 
+                                 redirect: "/"});
           //res.redirect('/users/'+ req.session.passport.user.username);
           
           //TODO redirect
@@ -117,7 +121,9 @@ router.put('/update/:username/:registration_id', authentication.isAuthenticated,
           });//end send
         }//end if
         else {
-          res.status(200).send({success:"Registration has been updated!"});
+          res.status(200).send({success: true,
+                                message:"Registration has been updated!", 
+                                redirect: "/"});
           // TO DO redirect 
         }//end else
     });//end updateAvailabilty
