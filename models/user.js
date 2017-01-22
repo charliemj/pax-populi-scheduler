@@ -27,17 +27,17 @@ var UserSchema = mongoose.Schema({
     nickname: {type: String},
     gender: {type: String, enum: enums.genders(), required: true},
     dateOfBirth: {type: Date, required: true},
-    phoneNumber: {type: String},
-    skypeId: {type: String},
+    phoneNumber: {type: String, require: true},
+    skypeId: {type: String, require: true},
     school: {type: String, required: true},
     educationLevel: {type: String, required: true},
     enrolled: {type: String, required: true},
-    major: {type: String, default: 'N/A'},
+    major: {type: String, default: 'N/A', require: true},
     country:{type: String, required: true},
     region: {type: String, required: true},
     timezone: {type: String, require: true},
-    nationality: {type: String},
-    interests: [{type: String}]
+    nationality: {type: String, require: true},
+    interests: [{type: String, require: true}]
 
 });
 
