@@ -7,7 +7,7 @@ $(document).ready(function(){
     
         if (username.length < 5 || username.length > 15){
             $('#usernameErrors').empty();
-            $('#usernameErrors').append('<p>Username must be 5-15 characters long</p>');
+            $('#usernameErrors').append('<p>Error: Username must be 5-15 characters long</p>');
             console.log("Username must be 5-15 characters long");
             $("#username-register-box").css({"border-color":"red"});
         }
@@ -29,7 +29,7 @@ $(document).ready(function(){
 
         if ( pw.legnth < 8 || !(passwordPattern.test(pw))){
             $('#pwErrors').empty();
-            $("#pwErrors").append("<p>A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.</p>");
+            $("#pwErrors").append("<p>Error: A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.</p>");
             $("#password-register-box").css({"border-color":"red"});
         }
 

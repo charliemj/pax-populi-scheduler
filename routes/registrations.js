@@ -79,17 +79,13 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
           });//end send
       }//end if
       else{
-          console.log(registration.availability);
           res.render('updateRegistration', {title: 'Update Registration',
                                         csrfToken: req.csrfToken(),
                                         courses: enums.courses(),
                                         username: user.username,
                                         tutor: user.tutor,
                                         fullName: user.fullName,
-                                        availability: JSON.stringify(registration.availability),
-                                        oldGenderPref: registration.genderPref,
-                                        oldCourses: registration.courses,
-                                        oldStartTime: registration.earliestStartTime,
+                                        oldRegistration: JSON.stringify(registration),
                                         regId: regId
                                         });
       }//end else

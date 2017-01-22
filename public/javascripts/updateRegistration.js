@@ -11,12 +11,15 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
 
     
     $("#day-schedule").dayScheduleSelector({}); //function that makes the calendar UI
-     
+    console.log($("#oldRegistration").val());
+    var oldRegistration = JSON.parse($("#oldRegistration").val());
+
     //populates calendar with previously submitted availabilties
-    var availability = JSON.parse($("#availability").val());
-    var genderPref = $("#oldGenderPref").val();
-    var earliestStartTime = ($("#oldStartTime").val()); //will this date object give issues?
-    var courses = $("#oldCourses").val();
+    var availability = oldRegistration.availability;
+    var genderPref = oldRegistration.genderPref;
+    var earliestStartTime = oldRegistration.earliestStartTime;
+    var courses = oldRegistration.courses;
+    
     var regId = $("#regId").val();
     var username = $("#username").val();
 
@@ -31,11 +34,13 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     $('#earliestStartTime').val(oldEarliestTime);
     $('#courses').val(courses);
 
+    console.log($("#courses").val());
+
     //populates schedule UI with the previously selected times
     $("#day-schedule").data('artsy.dayScheduleSelector').deserialize(availability);
 
 
-    //Submit the schedule-- save availablity to database
+    //Submit the schedule-- save availablity and other registration info to database
     $scope.updateRegistration = function (){
         var availability = $("#day-schedule").data('artsy.dayScheduleSelector').serialize(); //gets the schedule output as an object
         
