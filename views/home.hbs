@@ -1,8 +1,12 @@
 <link rel="stylesheet" href="/stylesheets/home.css"/>
 <script src='/javascripts/login.js'></script>
+<script src='/javascripts/home.js'></script>
 <div>
   <div class="container welcome-container">
-    <center><b><h3>Welcome to {{title}}</h3></b></center><br>
+  {{#if fullName}}
+  {{else}}
+  <center><b><h3>Welcome to {{title}}</h3></b></center><br>
+  {{/if}}
     <div class="row">
       <div>
         <div id='login-container'>
@@ -14,7 +18,7 @@
           </div>
           {{#if verificationToken}}
             <div>
-              <br><br class='hidden-xs hidden-ms'>
+              <br class='hidden-xs hidden-ms'>
               <input id='username' type="hidden" value="{{username}}"></input>
               <input id='verificationToken' type="hidden" value="{{verificationToken}}"></input>
               <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -24,7 +28,6 @@
             </div>
           {{else if requestToken}}
             <div>
-              <br><br class='hidden-xs hidden-ms'>
               <input id='username' type="hidden" value="{{username}}"></input>
               <input id='requestToken' type="hidden" value="{{requestToken}}"></input>
               <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
