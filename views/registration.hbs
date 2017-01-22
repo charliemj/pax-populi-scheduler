@@ -20,6 +20,7 @@
         <div ng-controller="mainController">
             <div id="day-schedule"></div>
             <!-- calander UI is populated here -->
+            <div class="regError" id="availabiltyError"></div>
             <br>
             <form>
                 <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
@@ -36,6 +37,7 @@
                                       {{/each}}
                                       </select>
                                     </div>
+                                    <div class="regError" id="coursesError"></div>
                             </div>
                         </div>
                     </div>
@@ -48,6 +50,7 @@
                                 <option value="FEMALE">Female</option>
                             </select>
                         </div>
+                        <div class="regError" id="genderPrefError"></div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="control-label">What is Your Earliest Possible Start Date?</label>
@@ -55,6 +58,7 @@
                             <input id='earliestStartTime' class='form-control' type='date' name='earliestStartTime' placeholder='earliestStartTime' required></input>
                         </div>
                     </div>
+                    <div class="regError" id="startTimeError"></div>
                 </div>
                 <div class="form-group">
                         <input type="button" value="Submit" class='btn btn-primary btn-lg' id="target" ng-click="submitRegistration()">
