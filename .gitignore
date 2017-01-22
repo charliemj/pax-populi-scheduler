@@ -2,6 +2,6 @@ node_modules/*
 npm-debug.log
 javascripts/config.js
 public/availability.html
-public/vendor/bower_components
+public/javascripts/vendor/bower_components
 .DS_Store
 
