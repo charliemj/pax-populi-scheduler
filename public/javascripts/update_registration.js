@@ -13,22 +13,20 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     var genderPref = $("#oldGenderPref").val();
     var earliestStartTime = ($("#oldStartTime").val()); //will this date object give issues?
     var courses = $("#oldCourses").val();
-    console.log(earliestStartTime);
-    console.log(typeof(earliestStartTime));
+    
+    //converts this back into a date object
     var earliestStartTimeDate = new Date(earliestStartTime);
-    console.log(earliestStartTimeDate);
-    console.log(typeof(earliestStartTimeDate));
-    console.log(earliestStartTimeDate.toISOString().substring(0, 10));
-
+    
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
+    //gets us the form we need to feed back into datepicker UI, substring(0,10) gives us yyyy-mm-dd
     var oldEarliestTime = earliestStartTimeDate.toISOString().substring(0, 10);
 
     $('#genderPref').val(genderPref);
     $('#earliestStartTime').val(oldEarliestTime);
     $('#courses').val(courses);
 
+    //populates schedule UI with the previously selected times
     $("#day-schedule").data('artsy.dayScheduleSelector').deserialize(availability);
-
-
 
 
     //Submit the schedule-- save availablity to database
