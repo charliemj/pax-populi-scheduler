@@ -9,7 +9,11 @@ var User = require('../models/user');
 var authentication = require('../javascripts/authentication.js');
 var email = require('../javascripts/email.js');
 var enums = require('../javascripts/enums.js');
+<<<<<<< HEAD
 var regexs = require("../javascripts/regexs.js");
+=======
+var utils = require('../javascripts/utils.js');
+>>>>>>> origin/alert-messages
 
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
@@ -87,7 +91,8 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
 	                data.message = err.message;
 	                return res.render('home', data);
 	            }
-	            res.redirect('/users/'+ user.username);
+                var path = req.body.ref_path;
+                res.redirect(path !== '' ? path : '/users/'+ user.username);
 	        });
         }
     })(req, res, next);
@@ -116,8 +121,10 @@ router.get('/verify/:username/resend', function(req, res, next) {
 
 // Directs user to verification page
 router.get('/verify/:username/:verificationToken', function(req, res, next) {
+    var username = req.params.username;
     data = {title: 'Pax Populi Scheduler',
-            username: req.params.username,
+            message: 'Hello ' + username + '! Click below to verify your account',
+            username: username,
             verificationToken: req.params.verificationToken,
             csrfToken: req.csrfToken()};
     res.render('home', data);      
@@ -153,12 +160,34 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
 });
 
 // Directs admin to request page
-router.get('/respond/:username/:requestToken', function(req, res, next) {
-    data = {title: 'Pax Populi Scheduler',
-            username: req.params.username,
-            requestToken: req.params.requestToken,
-            csrfToken: req.csrfToken()};
-    res.render('home', data);      
+router.get('/respond/:username/:requestToken', authentication.isAuthenticated, function(req, res, next) {
+    var username = req.params.username;
+    var user = req.session.passport.user;
+    User.getUser(username, function (err, accountUser) {
+        var message = '<table class="table table-hover"><tbody>'
+                        + '<tr><th>Full Name</th><td>{} {}</td>'.format(accountUser.firstName, accountUser.lastName)
+                        + '<tr><th>Gender</th><td>{}</td>'.format(accountUser.gender)
+                        + '<tr><th>Date of Birth</th><td>{}</td>'.format(utils.formatDate(accountUser.dateOfBirth))
+                        + '<tr><th>School</th><td>{}</td>'.format(accountUser.school)
+                        + '<tr><th>Education Level</th><td>{}</td>'.format(accountUser.educationLevel)
+                        + '<tr><th>Major</th><td>{}</td>'.format(accountUser.major)
+                        + '<tr><th>Currently Enrolled</th><td>{}</td>'.format(accountUser.enrolled ? 'Yes': 'No')
+                        + '<tr><th>Country</th><td>{}</td>'.format(accountUser.country)
+                        + '<tr><th>Region</th><td>{}</td>'.format(accountUser.region)
+                        + '<tr><th>Nationality</th><td>{}</td>'.format(accountUser.nationality)
+                        + '<tr><th>Interests</th><td>{}</td></tbody></table>'.format(accountUser.interests)
+        var data = {title: 'Pax Populi Scheduler',
+                    message: message,
+                    username: username,
+                    fullName: user.fullName,
+                    onHold: user.onHold,
+                    inPool: user.inPool,
+                    isTutor: user.isTutor,
+                    requestToken: req.params.requestToken,
+                    csrfToken: req.csrfToken()};
+        res.render('home', data); 
+    })
+         
 });
 
 // Approves the account
@@ -166,11 +195,11 @@ router.put('/approve/:username/:requestToken', parseForm, csrfProtection, functi
     User.respondToAccountRequest(req.params.username, req.params.requestToken, true, false, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
-        if (err || !user.approved) {
+        if (!user || (err && !user.approved))  {
             data.message = err.message;
             return res.json({'success': false, message: err.message});
         }
-        User.sendApprovalEmail(user.username, req.devMode, function (err, user) {
+        User.sendApprovalEmail(user.username, req.devMode, function (err) {
 	        if (err) {
 	        	console.log('failed to send');
 	            return res.render('home', data);
@@ -189,11 +218,11 @@ router.put('/reject/:username/:requestToken', parseForm, csrfProtection, functio
     User.respondToAccountRequest(req.params.username, req.params.requestToken, false, false, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
-        if (err && !user.rejected) {
+        if (!user || (err && !user.rejected)) {
             data.message = err.message;
             return res.json({'success': false, message: err.message});
         }
-        User.sendRejectionEmail(user.username, req.devMode, function (err, user) {
+        User.sendRejectionEmail(user.username, req.devMode, function (err) {
 	        if (err) {
 	            return res.render('home', data);
 	        }
@@ -210,11 +239,11 @@ router.put('/waitlist/:username/:requestToken', parseForm, csrfProtection, funct
     User.respondToAccountRequest(req.params.username, req.params.requestToken, true, true, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
-        if (err || !user.approved || !user.onHold) {
+        if (!user || (err || !user.approved || !user.onHold)){
             data.message = err.message;
             return res.json({'success': false, message: err.message});
         }
-        User.sendWaitlistEmail(user.username, req.devMode, function (err, user) {
+        User.sendWaitlistEmail(user.username, req.devMode, function (err) {
 	        if (err) {
 	            return res.render('home', data);
 	        }

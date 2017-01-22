@@ -5,6 +5,7 @@ var mongoose = require("mongoose");
 var PythonShell = require('python-shell');
 var Schedule = require("../models/schedule.js");
 var Registration = require("../models/registration.js");
+var authentication = require('../javascripts/authentication.js');
 var csrf = require('csurf');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -17,7 +18,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
-router.get('/match', function(req, res, next) {
+router.get('/match', authentication.isAuthenticated, function(req, res, next) {
 
 	Registration.getUnmatchedRegistrations(function (err, registrations) {
 		// Inputs to Simon's script, hardcoding for now.
@@ -50,7 +51,7 @@ router.get('/match', function(req, res, next) {
 
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
-router.get('/match', function(req, res, next) {
+router.get('/match', authentication.isAuthenticated, function(req, res, next) {
 	Registration.getAllUnmatchedRegistrations(function (err, unmatchedRegistrations) {
 		var options = {
 			mode: 'json',

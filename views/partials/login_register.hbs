@@ -1,21 +1,14 @@
-<div id='login-container'>
-  <div id='login-logo'>
-    <center><img src='/images/paxpopuli.png'></img></center>
+<form id='login-form' action='/login' method='post'>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}">
+  <input id='ref-path' type="hidden" name="ref_path" value="{{ref_path}}">
+  <div class='row'>
+    <input id='username-box' class='form-control' type='text' name='username' placeholder='username' required autofocus></input><br>
   </div>
-  <div class="login-warning">
-    <center>{{message}}</center>
+  <div class='row'>
+    <input id='password-box' class='form-control' type='password' name='password' placeholder='password' required></input><br>
   </div>
-  <form id='login-form' action='/login' method='post'>
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <div class='row'>
-      <input id='username-box' class='form-control' type='text' name='username' placeholder='username' required autofocus></input><br>
-    </div>
-    <div class='row'>
-      <input id='password-box' class='form-control' type='password' name='password' placeholder='password' required></input><br>
-    </div>
-    <div class='row'>
-      <input type="submit" id='login-button' class='btn btn-primary' value="Sign In">
-      <input type="button" id='signup-button' class='btn btn-info' data-toggle="modal" data-target="#register-modal" value='Sign Up'></input>
-    </div>
-  </form>
-</div>
+  <div class='row'>
+    <input type="submit" id='login-button' class='btn btn-primary' value="Sign In">
+    <input type="button" id='signup-button' class='btn btn-info' data-toggle="modal" data-target="#register-modal" value='Sign Up'></input>
+  </div>
+</form>

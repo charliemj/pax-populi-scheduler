@@ -2,6 +2,7 @@ var request = require('request');
 var config = require('./config.js');
 var bcrypt = require('bcrypt');
 var utils = require('./utils.js');
+var enums = require('./enums.js');
 
 var Authentication = function() {
 
@@ -15,15 +16,28 @@ var Authentication = function() {
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
     that.isAuthenticated = function (req, res, next) {
+        console.log('in authenicated...');
         if (req.params.username == undefined && req.isAuthenticated() || 
                 req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
             // if the request is not user specific, give permission as long as the user is authenticated,
             // otherwise, needs to check that user is requesting for himself
-                next();
+            next();
         } else if (req.isAuthenticated()) {
-            res.redirect('/users/'+req.session.passport.user.username);
+            next();
         } else {
-            res.render('home', { title: 'Pax Populi Scheduler', message: 'Please log in below', csrfToken: req.csrfToken()});
+            res.render('home', {title: 'Pax Populi Scheduler',
+                                message: 'Please log in below',
+                                csrfToken: req.csrfToken(),
+                                userTypes: enums.userTypes(),
+                                genders: enums.genders(),
+                                confirmation: enums.confirmation(),
+                                studentSchools: enums.studentSchools(),
+                                tutorSchools: enums.tutorSchools(),
+                                studentEducationLevels: enums.studentEducationLevels(),
+                                tutorEducationLevels: enums.tutorEducationLevels(),
+                                majors: enums.majors(),
+                                interests: enums.interests(),
+                                ref_path: req.query.ref_path});
         }
     };
 

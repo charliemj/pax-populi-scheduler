@@ -1,8 +1,15 @@
 <link href="/stylesheets/availability_selection.css" rel="stylesheet">
 <script src="/javascripts/vendor/jquery-3.1.1.min.js"></script><!-- load jquery -->
 <script src="/javascripts/vendor/angular.min.js"></script><!-- load angular -->
+<script src="/javascripts/vendor/availabilitySelection.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js""></script>
+<script type="text/javascript">
+    $j = jQuery.noConflict(true);
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/javascripts/index.js" type="text/javascript"></script>
 <script src="/javascripts/updateRegistration.js" type="text/javascript"></script>
-<script src="/javascripts/vendor/availability_selection.js" type="text/javascript"></script>
+<script src='/javascripts/registration.js'></script>
 <div class='tab-content'>
     {{#if onHold}}
         You do not have the permisson to register for a class yet. You have to wait for either the next cycle or further notice from the adminstrator.
@@ -16,6 +23,11 @@
             <br>
             <form>
                 <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
+                <input type="hidden" id='username' name="username" value="{{username}}">
+                <input type="hidden" id="availability" name="availability" value="{{availability}}">
+                <input type="hidden" id='oldGenderPref' name="oldGenderPref" value="{{oldGenderPref}}">
+                <input type="hidden" id='oldCourses' name="oldCourses" value="{{oldCourses}}">
+                <input type="hidden" id='oldStartTime' name="oldStartTime" value="{{oldStartTime}}">
                 <input type="hidden" id='oldRegistration' name="oldRegistration" value="{{oldRegistration}}">
                 <input type="hidden" id='username' name="username" value="{{username}}">
                 <input type="hidden" id='regId' name="regId" value="{{regId}}">

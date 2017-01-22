@@ -41,17 +41,17 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
         }
         
         res.render('dashboard',{title: 'Dashboard',
-                                        csrfToken: req.csrfToken(),
-                                        username: req.params.username,
-                                        verified: user.verified,
-                                        approved: user.approved,
-                                        rejected: user.rejected,
-                                        onHold: user.onHold,
-                                        inPool: user.inPool,
-                                        isTutor: user.isTutor,                                        
-                                        fullName: user.fullName,
-                                        regIdList: regIdList,
-                                        regDateList: regDateList}                            
+                                csrfToken: req.csrfToken(),
+                                username: req.params.username,
+                                verified: user.verified,
+                                approved: user.approved,
+                                rejected: user.rejected,
+                                onHold: user.onHold,
+                                inPool: user.inPool,
+                                isTutor: user.isTutor,                                        
+                                fullName: user.fullName,
+                                regIdList: regIdList,
+                                regDateList: regDateList}                            
       );
     }//end else
   });//end get unmatched
@@ -71,7 +71,19 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
                                 inPool: user.inPool,
                                 isTutor: user.isTutor,
                                 fullName: fullName,
+                                gender: user.gender,
+                                dateOfBirth: utils.formatDate(user.dateOfBirth),
+                                school: user.school,
+                                educationLevel: user.educationLevel, 
+                                major: user.major,
+                                enrolled: user.enrolled ? 'Yes': 'No',
+                                country: user.country,
+                                region: user.region,
+                                nationality: user.nationality,
+                                interests: user.interests,
                                 email: user.email,
+                                skypeId: user.skypeId,
+                                phoneNumber: user.phoneNumber,
                                 csrfToken: req.csrfToken()
                            });
     });

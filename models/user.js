@@ -150,7 +150,7 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
             callback({success:false, message: 'Invalid username'});
         } else if (user.verified) {
             console.log('already verified');
-            callback({success:false, isVerified: true, message: 'The account is already verified, please log in below:'}, user);
+            callback({success:false, isVerified: true, message: 'The account is already verified'}, user);
         } else if (user.verificationToken !== token) {
             callback({success:false, message: 'Invalid verification token'});
         } else {
