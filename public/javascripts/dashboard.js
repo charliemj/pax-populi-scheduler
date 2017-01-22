@@ -20,7 +20,7 @@ $(document).ready(function () {
               //add buttons for each of these and have on click do a get to the url
               link = "/registrations/update/" + username +"/"+ regId;
               //console.log(dateAdded);
-              $("#registrations").append("<a href="+link+"> Click here to update the registration you submitted on: "+dateAdded+"</a>");
+              $("#registrations").append("<div>Click <a href="+link+">here</a> to update the registration you submitted on: "+dateAdded + "</div>");
               $("#registrations").append("<br>");
             }
           }

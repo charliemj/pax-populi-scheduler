@@ -15,8 +15,6 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 // PUT maybe we want ppl to be able to update and then send verifications to Admin/tutor/student
 
 
-
-
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
 router.get('/match', function(req, res, next) {
@@ -47,6 +45,28 @@ router.get('/match', function(req, res, next) {
 		  console.log('matches:', typeof matches, matches);
 		  // process the JSON objs and write to db
 		});
+	});
+});
+
+// gets all the registration objects and feed those to the python script 
+// to get the pairs
+router.get('/match', function(req, res, next) {
+	Registration.getAllUnmatchedRegistrations(function (err, unmatchedRegistrations) {
+		var options = {
+			mode: 'json',
+			scriptPath: './scheduler/',
+			args: [JSON.stringify(unmatchedRegistrations), JSON.stringify(city_capacity)]
+		}
+
+		PythonShell.run('match.py', options, function (err, matches) {
+		  if (err) {
+		  	throw err;
+		  }
+		  // matches is an array consisting of messages collected during execution
+		  console.log('matches:', typeof matches, matches);
+		});
+
+		// parse the string and write to db
 	});
 });
 
