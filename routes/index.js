@@ -9,11 +9,9 @@ var User = require('../models/user');
 var authentication = require('../javascripts/authentication.js');
 var email = require('../javascripts/email.js');
 var enums = require('../javascripts/enums.js');
-<<<<<<< HEAD
 var regexs = require("../javascripts/regexs.js");
-=======
 var utils = require('../javascripts/utils.js');
->>>>>>> origin/alert-messages
+
 
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
