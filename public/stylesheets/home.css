@@ -1,0 +1,41 @@
+#welcome-container {
+	margin:0 auto;
+}
+
+#login-container {
+	margin:0 auto;
+  width: 350px;
+	padding: 50px;
+	padding-bottom: 30px;
+	background: #F0F3F4;
+}
+
+#login-logo img {
+    width: 30%;
+    height: auto;
+    margin:0 auto;
+    padding-bottom: 25px;
+}
+
+.login-warning {
+	padding-bottom: 15px;
+}
+
+#login-button {
+	float: left;
+	width: 45%;
+}
+
+#signup-button {
+	float: right;
+	width: 45%;
+}
+
+
+
+
+
+
+
+
+

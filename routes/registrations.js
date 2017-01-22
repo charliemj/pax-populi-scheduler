@@ -1,8 +1,10 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
+var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var Registration = require("../models/registration.js");
+var enums = require('../javascripts/enums.js');
 
 
 //GET request for displaying the availablities form
@@ -11,13 +13,13 @@ var Registration = require("../models/registration.js");
 router.get('/',function(req, res, next){
   var user = req.session.passport.user;
   res.render('registration', {title: 'Register',
-
                                         csrfToken: req.csrfToken(),
                                         username: user.username,
                                         isTutor: user.isTutor,
                                         fullName: user.fullName,
                                         onHold: user.onHold,
-                                        inPoll: user.inPoll
+                                        inPool: user.inPool,
+                                        courses: enums.courses()
                                         });
 
 });//end GET request
@@ -29,11 +31,11 @@ router.post('/', function(req, res, next){
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
-    var course = req.body.course;
+    var courses = req.body.courses;
     var username = user.username;
-    
+    var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.createRegistration(username, genderPref, availability, course, 
+    Registration.createRegistration(username, genderPref, availability, courses, earliestStartTime,
       function(err,registration){
         if (err){
           console.log("error submitting registration " + err);
@@ -52,14 +54,15 @@ router.post('/', function(req, res, next){
 });//end POST request
 
 
+
 // GET request for seeing a submitted registration
-router.get('/:username/:registration_id', function (req, res, next){
+
+router.get('/update/:username/:registration_id', function (req, res, next){
   var regId = req.params.registration_id;
   var user = req.session.passport.user;
   var username = user.username;
 
-  //TODO make getRegistration fn in registration model
-  Registration.getRegistration(regId, username, 
+  Registration.findRegistration(regId, user, 
     function (err, registration){
 
       if(err){
@@ -77,7 +80,9 @@ router.get('/:username/:registration_id', function (req, res, next){
                                         fullName: user.fullName,
                                         availability: registration.availability,
                                         genderPref: registration.genderPref,
-                                        course: registration.course,
+                                        earliestStartTime: registration.earliestStartTime,
+                                        courses: registration.courses,
+                                        _id : registration._id
                                         });
       }//end else
 
@@ -87,7 +92,7 @@ router.get('/:username/:registration_id', function (req, res, next){
 
 //PUT request for updating availablities
 
-router.put('/:username/:registration_id', function(req, res, next){
+router.put('update/:username/:registration_id', function(req, res, next){
     
   // make sure that user who is logged in is the user who's reg it is
   // look up registration by reg_id
@@ -96,9 +101,10 @@ router.put('/:username/:registration_id', function(req, res, next){
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
-    var course = req.body.course;
+    var courses = req.body.courses;
+    var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.updateRegistration(user, regId, genderPref, availability, course,
+    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime,
       function (err, registration){
         if (err){
           console.log("error updating registration " + err);

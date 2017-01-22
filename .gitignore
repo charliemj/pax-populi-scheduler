@@ -3,4 +3,5 @@ npm-debug.log
 javascripts/config.js
 public/availability.html
 public/vendor/bower_components
+.DS_Store
 

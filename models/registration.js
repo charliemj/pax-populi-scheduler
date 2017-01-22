@@ -1,11 +1,9 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var User = require('../models/user.js');
-
-
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var genders = ["Male","Female", "NoPref"]; 
+var genderPrefs = ["Male","Female", "NoPref"]; 
 
 // times are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -19,8 +17,9 @@ var genders = ["Male","Female", "NoPref"];
 var registrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
-    genderPref: {type: String, enum: genders, required:true},
-    course: {type: String, required:true},
+    genderPref: {type: String, enum: genderPrefs, required: true},
+    courses: {type: [String], required: true},
+    earliestStartTime: {type: Date, required: true},
     isMatched:{type: Boolean, required: true,  default: false}
 });
 
@@ -29,25 +28,43 @@ var registrationSchema = mongoose.Schema({
  * Creates a registration object for a user. 
  * @param {String} username - The username of the query user. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
- * @param {Array} times - An array of times the user is available to meet (in their local times).
+ * @param {Array} availability - An array of times the user is available to meet (in their local times).
+ * @param {Array} courses - An array of courses that the user wants to sign up for
+ * @param {Date} earliestStartTime - The earliest possible date a user can start a class. 
  * @param {Function} callback - The function to execute after the registration is created. 
  */
-registrationSchema.statics.createRegistration = function(username, genderPref, availability, course, callback){
+registrationSchema.statics.createRegistration = function(username, genderPref, availability, courses, earliestStartTime, callback){
     
     User.getUser(username, function(err,user){
         if (err) {res.send(err + "Problem with getting user");}
         
         else{
-            Registration.create({availability: availability, user: user, genderPref: genderPref, course: course, isMatched:false}, 
+            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime, isMatched:false}, 
             function(err, registration){
                 if (err){
                     console.log("Problem creating registration");
                     callback(err); 
                 }//end if
                 else{
-                    callback(null,registration); //everything worked! 
+                    callback(null, registration); //everything worked! 
                 }//end else
             });//end create
+        }
+    });
+};
+
+/*
+ * Gets all unmatched registrations for a particular user
+ * Will be used to grab all of the standing registrations for a user and display them on the user's dashboard
+ * @param {User} user - A user object of the current user
+ * @param {Function} callback - The function to execute after the unmatched registrations for the user are found.  
+ */
+registrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
+    Registration.find({isMatched: false, user: user }, function (err, registrations) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(err, registrations);
         }
     });
 };
@@ -66,28 +83,28 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
         if(err){
             callback(new Error("This registration doesn't belong this logged in user."));
         }
-
         else{
 
             callback(null, registration);
         }
-
     });//end findOne
-
 };//end findRegistration
 
 
 /*
  * Updates registration info for a user. 
  * @param {String} user - The user object of the logged in user 
+ * @param {String} regId - ID number (assigned by MongoDB) for the registration object. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
- * @param {Array} times - An array of times the user is available to meet.
+ * @param {Array} availabilty - An array of times the user is available to meet.
+ * @param {Array} courses - Array of courses (strings) that a student/take wants to take/teach.
+ * @param {Date} earliestStartTime - The earliest possible date a user can start a class. 
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
 
-registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, course, callback){
+registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
     
-    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, course: course}, 
+    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, courses: courses}, 
     function(err, updatedRegistration){
         if (err){
             res.send(err);
@@ -99,15 +116,19 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
 };
 
 
-registrationSchema.statics.getAllUnmatchedRegistrations = function (callback) {
-    Registration.findAll({isMatched: false }, function (err, registrations) {
+/*
+ * Gets all unmatched registrations in the whole system
+ * @param {Function} callback - The function to execute after the unmatched registrations are found.
+ */
+registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
+    Registration.find({isMatched: false }, function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
         } else {
             callback(err, registrations);
         }
     });
-}
+};
 
 //keep at bottom of file
 var Registration = mongoose.model("Registration", registrationSchema);

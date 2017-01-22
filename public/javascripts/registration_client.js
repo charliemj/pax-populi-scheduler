@@ -13,10 +13,11 @@ registration.controller('mainController', ['$scope','$http', function($scope, $h
         var availability = $("#day-schedule").data('artsy.dayScheduleSelector').serialize(); //gets the schedule output as an object
         
         var csrf = $('#csrf').val(); //all posts requests need an _csrf param
-        var course = $("#course").val();
+        var courses = $("#courses").val();
         var genderPref = $("#genderPref").val();
+        var earliestStartTime = $("#earliestStartTime").val();
 
-        var result = {_csrf:csrf, availability:availability, course:course, genderPref:genderPref};
+        var result = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime:earliestStartTime};
     
         $http.post('/registrations', result).then(
             function (data){}, 

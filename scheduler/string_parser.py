@@ -5,16 +5,12 @@ def escape_single_quotes(string):
 	"""
 	Replaces ' with \"
 	"""
-	return string.replace("'", "\"")
+	return string.replace("'", "\"").replace('"', "\"").replace(':false', ':False')
 
-def dictionary(string):
+def parse_dictionary(string):
 	"""
 	Converts the string to a dictionary, raises argparse.ArgumentTypeError if
 	the string is not a valid dictionary string
 	"""
-	try:
-		return ast.literal_eval(escape_single_quotes(
-				string.replace("'", "\"")))
-	except:
-		raise argparse.ArgumentTypeError('{} is not a valid dictionary string'\
-				.format(string))
+	return ast.literal_eval(escape_single_quotes(
+				string))

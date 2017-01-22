@@ -57,10 +57,10 @@ var Email = function() {
                 console.log('could not send', err.message);
                 return {success: false};
             }
-            console.log('sending succeeded')
-            return {success: true}
+            console.log('sending succeeded');
+            return {success: true};
         });
-    }
+    };
 
     // Adapted from https://www.quora.com/How-can-you-send-a-password-email-verification-link-using-NodeJS-1
     /**
@@ -75,8 +75,8 @@ var Email = function() {
         for (var i = enums.numTokenDigits(); i > 0; --i) {
             token += chars[Math.round(Math.random() * (chars.length - 1))];
         }
-        isVerifyToken ? user.setVerificationToken(token, callback) : user.setRequestToken(token, callback)
-    }
+        isVerifyToken ? user.setVerificationToken(token, callback) : user.setRequestToken(token, callback);
+    };
 
     /**
     * Sends verfication email to user with the confirm button that links to verify request
@@ -98,7 +98,7 @@ var Email = function() {
             sendEmail(user.email, subject, content);
             callback(null, user);
         });
-    }
+    };
 
     /**
     * Sends an email to the admin to ask for the approval for a new 
@@ -111,7 +111,7 @@ var Email = function() {
             if (err) {
                 return callback({success: false, message: err.message});
             }
-            console.log('in email.js', err, user)
+            console.log('in email.js', err, user);
             var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstname, user.lastName);
             var link;
             if (developmentMode) {
@@ -139,7 +139,7 @@ var Email = function() {
             sendEmail(config.adminEmailAddress(), subject, content); // for now send it back to the user
             callback(null, user);
         });
-    }
+    };
 
     /**
     * Sends an email to inform the user that his/her account has been approved
@@ -153,7 +153,7 @@ var Email = function() {
         var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been approved. You can now log in and register for a class.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent);
-    }
+    };
 
     /**
     * Sends an email to inform the user that his/her account has been rejection
@@ -167,7 +167,7 @@ var Email = function() {
         var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been rejected.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent);
-    }
+    };
 
     /**
     * Sends an email to inform the user that his/her account has been waitlisted
@@ -181,7 +181,7 @@ var Email = function() {
         var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been approved. However, you are currenly on the waitlist. So although you can log in to the website, you cannot register for any class until further notice from us.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent);
-    }
+    };
 
     Object.freeze(that);
     return that;
