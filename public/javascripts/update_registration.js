@@ -13,7 +13,9 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     var genderPref = $("#oldGenderPref").val();
     var earliestStartTime = ($("#oldStartTime").val()); //will this date object give issues?
     var courses = $("#oldCourses").val();
-    
+    var regId = $("#regId").val();
+    var username = $("#username").val();
+
     //converts this back into a date object
     var earliestStartTimeDate = new Date(earliestStartTime);
     
@@ -40,8 +42,8 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
 
         var result = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime: earliestStartTime};
     
-        $http.put('/registrations/:username/:registration_id', result).then(
-            function (data){}, 
+        $http.put('/registrations/update/'+ username +'/' + regId, result).then(
+            function (data){window.location.replace("/"); alert("Registration succesfully updated!");}, 
             function (data){console.log("Error: " + data);});
     };//end submitRegistration
 }]);//end controller

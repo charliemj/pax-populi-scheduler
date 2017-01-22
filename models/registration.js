@@ -105,10 +105,10 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
 
 registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
     
-    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now, courses: courses}, 
+    Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now(), courses: courses}, 
     function(err, updatedRegistration){
         if (err){
-            res.send(err);
+            callback(err);
         }//end if
         else{
            callback(null, updatedRegistration); //everything worked! 

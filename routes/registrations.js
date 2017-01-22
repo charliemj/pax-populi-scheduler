@@ -84,7 +84,8 @@ router.get('/update/:username/:registration_id', function (req, res, next){
                                         availability: JSON.stringify(registration.availability),
                                         oldGenderPref: registration.genderPref,
                                         oldCourses: registration.courses,
-                                        oldStartTime: registration.earliestStartTime
+                                        oldStartTime: registration.earliestStartTime,
+                                        regId: regId
                                         });
       }//end else
   });//end getRegistration
@@ -92,7 +93,7 @@ router.get('/update/:username/:registration_id', function (req, res, next){
 
 //PUT request for updating availablities
 
-router.put('update/:username/:registration_id', function(req, res, next){
+router.put('/update/:username/:registration_id', function(req, res, next){
     
   // make sure that user who is logged in is the user who's reg it is
   // look up registration by reg_id
@@ -103,6 +104,7 @@ router.put('update/:username/:registration_id', function(req, res, next){
     var genderPref = req.body.genderPref;
     var courses = req.body.courses;
     var earliestStartTime = req.body.earliestStartTime;
+    var regId = req.params.registration_id;
 
     Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime, 
       function (err, registration){
@@ -114,7 +116,7 @@ router.put('update/:username/:registration_id', function(req, res, next){
           });//end send
         }//end if
         else {
-          res.send(200,{success:"Registration has been updated!"});
+          res.status(200).send({success:"Registration has been updated!"});
           // TO DO redirect 
         }//end else
     });//end updateAvailabilty
