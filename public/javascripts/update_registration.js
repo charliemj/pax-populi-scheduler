@@ -1,6 +1,10 @@
 //Angular.js code that populates the screen with the time selector interface and includes a function
 // to send the updated availabilties to the database when the "submit" button is clicked
 
+$(document).ready(function () {
+    $('#navbar-register').addClass('active');
+});
+
 var updateRegistration = angular.module("updateRegistration",[]);
 
 updateRegistration.controller('mainController', ['$scope','$http', function($scope, $http){
