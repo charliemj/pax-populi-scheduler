@@ -1,6 +1,5 @@
 $(document).ready(function(){
     
-    var notAllowedPattern = new RegExp (JSON.parse($("#notAllowedRegex").val()));
 
     //TODO maybe other validation to make sure that fields are checked
     
@@ -14,7 +13,7 @@ $(document).ready(function(){
 
     $("#username-register-box").blur(function(){
 
-
+        var notAllowedPattern = new RegExp (JSON.parse($("#notAllowedRegex").val()));
         //usernames can only contain numbers and letters and the following special chars: _ - .
 
         var username = $("#username-register-box").val();

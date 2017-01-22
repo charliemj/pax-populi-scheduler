@@ -19,4 +19,9 @@ $(document).ready(function () {
 			$(this).closest('.multiple-choice').find('.other').show();
 		}
 	});
+
+	var now = new Date(Date.now());
+    var timeNow = now.toISOString().substring(0, 10);
+    $("#dob-register-box").attr("max", timeNow);
+
 });

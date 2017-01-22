@@ -34,7 +34,8 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     $('#earliestStartTime').val(oldEarliestTime);
     $('#courses').val(courses);
 
-    console.log($("#courses").val());
+    
+    $("#earliestStartTime").attr("min", oldEarliestTime);
 
     //populates schedule UI with the previously selected times
     $("#day-schedule").data('artsy.dayScheduleSelector').deserialize(availability);
