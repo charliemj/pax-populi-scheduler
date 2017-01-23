@@ -177,6 +177,16 @@ var Email = function() {
                             + '<li>Country: {}</li>'.format(user.country)
                             + '<li>Region: {}</li>'.format(user.region)
                             + '<li>Email Address: {}'.format(user.email);
+            if (utils.isCoordinator(user.role)) {
+                if (user.schoolInCharge) {
+                    content += '<li>School in Charge: {}</li>'.format(user.schoolInCharge);
+                } else if (user.regionInCharge) {
+                    content += '<li>Region in Charge: {}</li>'.format(user.regionInCharge);
+                }
+                if (user.countryInCharge) {
+                    content += '<li>Country in Charge: {}</li>'.format(user.countryInCharge);
+                }  
+            }
             if (utils.isRegularUser(user.role)) {
                 content += '<li>Gender: {}</li>'.format(user.gender)
                             + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))

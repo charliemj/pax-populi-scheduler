@@ -110,6 +110,15 @@ var Authentication = function() {
             } else if (isStudent) {
                 userJSON['major'] = 'N/A';
             }
+            if (utils.isCoordinator(role)) {
+                var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
+                scopes.forEach(function (scope) {
+                    if (typeof data[scope] !== 'undefined') {
+                        userJSON[scope] = data[scope];
+                    }
+                });
+            }
+
             callback(null, userJSON)
         });
     }

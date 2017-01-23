@@ -242,6 +242,7 @@ router.put('/waitlist/:username/:requestToken', parseForm, csrfProtection, funct
 // signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 	console.log('signing up...');
+    console.log(req.body);
     var userJSON = authentication.createUserJSON(req.body, function (err, userJSON) {
         if (err) {
             res.send({success: false, message: err.message});

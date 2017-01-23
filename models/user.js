@@ -37,15 +37,22 @@ var UserSchema = mongoose.Schema({
     region: {type: String, required: true},
     timezone: {type: String},
     nationality: {type: String},
-    interests: [{type: String}]
+    interests: [{type: String}],
+    countryInCharge: {type: String},
+    regionInCharge: {type: String},
+    schoolInCharge: {type: String}
 
 });
 
 UserSchema.path("role").validate(function(role) {
-    if (role === 'Student' || role === 'Tutor') {
+    if (utils.isRegularUser(role)) {
         if (!this.gender || !this.dateOfBirth || !this.educationLevel || !this.skypeId ||
             !this.school || !this.educationLevel || !this.enrolled || !this.major ||
             !this.timezone || !this.nationality || !this.interests) {
+            return false;
+        }
+    } else {
+        if (!this.countryInCharge && !this.regionInCharge && !this.schoolInCharge) {
             return false;
         }
     }

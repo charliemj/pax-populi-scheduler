@@ -27,6 +27,15 @@
         <tr><th>Region</th><td>{{region}}</td>
         <tr><th>Email Address</th><td>{{email}}</td>
         <tr><th>Phone Number</th><td>{{phoneNumber}}</td>
+        {{#if schoolInCharge}}
+          <tr><th>School in Charge</th><td>{{schoolInCharge}}</td>
+        {{/if}}
+        {{#if regionInCharge}}
+          <tr><th>Region in Charge</th><td>{{regionInCharge}}</td>
+        {{/if}}
+        {{#if countryInCharge}}
+          <tr><th>Country in Charge</th><td>{{countryInCharge}}</td>
+        {{/if}}
       {{/isRegularUser}}
      </tbody>
   </table>

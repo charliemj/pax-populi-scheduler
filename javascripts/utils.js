@@ -63,6 +63,16 @@ var Utils = function() {
                         + '<tr><th>Country</th><td>{}</td>'.format(user.country)
                         + '<tr><th>Region</th><td>{}</td>'.format(user.region)
                         + '<tr><th>Email Address</th><td>{}</td>'.format(user.email);
+        if (that.isCoordinator(user.role)) {
+                if (user.schoolInCharge) {
+                    table += '<tr><th>School in Charge</th><td>{}</td>'.format(user.schoolInCharge);
+                } else if (user.regionInCharge) {
+                    table += '<tr><th>Region in Charge</th><td>{}</td>'.format(user.regionInCharge);
+                }
+                if (user.countryInCharge) {
+                    table += '<tr><th>Country in Charge</th><td>{}</td>'.format(user.countryInCharge);
+                }  
+            }
         if (that.isRegularUser(user.role)) {
             table += '<tr><th>Nationality</th><td>{}</td>'.format(user.nationality)
                         + '<tr><th>Gender</th><td>{}</td>'.format(user.gender)

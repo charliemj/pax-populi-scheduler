@@ -80,6 +80,9 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
                                 email: user.email,
                                 skypeId: user.skypeId,
                                 phoneNumber: user.phoneNumber,
+                                schoolInCharge: user.schoolInCharge,
+                                regionInCharge: user.regionInCharge,
+                                countryInCharge: user.countryInCharge,
                                 csrfToken: req.csrfToken()
                            });
     });
