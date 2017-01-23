@@ -103,7 +103,14 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
                 var data = result.data;
                 addMessage('A network error might have occurred. Please try again.', false);
             });
-    };//end submitRegistration
+    };//end updateRegistration
+
+
+    $scope.deleteRegistration = function(){
+        
+    };
+
+
 }]);//end controller
 
 
