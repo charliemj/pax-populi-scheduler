@@ -1,8 +1,5 @@
 $(document).ready(function(){
-    
-
-    //TODO maybe other validation to make sure that fields are checked
-    
+        
     $("#register-button").click(function(){
 
         var validForm = true;
@@ -16,6 +13,8 @@ $(document).ready(function(){
         var phone = $("#phone-number-box").val();
         var skype = $("#skypeId-register-box").val();
         var nationality = $("#nationality-register-box").val();
+        var DOB = $("#dob-register-box").val();
+
         var notAdmin = $('.role :selected').text().toLowerCase() !== 'administrator';
 
         if($("input[name=timezone]").val() == "" && notAdmin){
@@ -23,6 +22,17 @@ $(document).ready(function(){
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
+
+        var birthdayYear = parseInt(DOB.substring(0,4));
+        var currentYear = new Date().getFullYear();
+        var month = DOB.substring(5,7);
+        var day = DOB.substring(8,10);
+
+
+        if (birthdayYear >= currentYear ){
+            $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
+        }
+        
 
         if(notAllowedPattern.test(firstName)){
             validForm = false;
