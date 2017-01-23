@@ -13,14 +13,14 @@ var authentication = require('../javascripts/authentication.js');
 router.get('/', authentication.isAuthenticated, function(req, res, next){
   var user = req.session.passport.user;
   res.render('registration', {title: 'Register',
-                                        csrfToken: req.csrfToken(),
-                                        username: user.username,
-                                        isTutor: user.isTutor,
-                                        fullName: user.fullName,
-                                        onHold: user.onHold,
-                                        inPool: user.inPool,
-                                        courses: enums.courses()
-                                        });
+                              csrfToken: req.csrfToken(),
+                              username: user.username,
+                              isTutor: user.isTutor,
+                              fullName: user.fullName,
+                              onHold: user.onHold,
+                              inPool: user.inPool,
+                              courses: enums.courses()
+                              });
 
 });//end GET request
 
