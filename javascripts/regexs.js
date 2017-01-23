@@ -12,7 +12,7 @@ var Regexs = function() {
     };
 
     that.notAllowedPattern = function(){
-        return "<>"; 
+        return ".*[<>].*"; 
     };
 
     Object.freeze(that);
