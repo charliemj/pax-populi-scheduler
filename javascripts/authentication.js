@@ -39,7 +39,7 @@ var Authentication = function() {
                                 interests: enums.interests(),
                                 ref_path: req.query.ref_path});
         }
-    };
+    }
 
     /*
     * Encrypts the password using hashing and salting
@@ -64,43 +64,55 @@ var Authentication = function() {
 
     /*
     * Creates a JSON object whose fields are username, hashed password, first name, last name, email
-    * @param {String} username - the username for the user
-    * @param {String} password - the user's password
-    * @param {String} email - the user's email address
-    * @param {String} firstName - the user's first name
-    * @param {String} lastName - the user's last name
-    * @param {String} status - the login status of the student - must be either 'Student' or 'Tutor'
+    * @param {Object} data - the object which contains information about the user
     * @param  {Function} callback - the function that takes in an object and is called once this function is done
     */
 
-    that.createUserJSON = function (username, password, email, firstName, lastName, isTutor, gender, country, region, timezone, callback) {
-
-        if (password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
-            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character."});
-        } else {
-            that.encryptPassword(password, function (err, hash) {
-                if (err) {
-                    return callback(err);
-                } else {
-                    var user = {username: username,
+    that.createUserJSON = function (data, callback) {
+        var role = data.userType.trim();
+        role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+        var isTutor = role === 'Tutor';
+        var isAdminTutor = role === 'Tutor' || role === 'Administrator';
+        var password = data.password.trim();
+        that.encryptPassword(password, function (err, hash) {
+            if (err) {
+                return err;
+            }
+            var userJSON = {username: data.username.trim().toLowerCase(),
                             password: hash,
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            gender: gender,
-                            country: country,
-                            region: region,
-                            timezone: timezone,
-                            tutor: isTutor};
+                            role: role,
+                            email: data.email.trim(),
+                            alternativeEmail: data.alternativeEmail.trim(),
+                            firstName: data.firstName.trim(),
+                            middleName: data.middleName.trim(),
+                            lastName: data.lastName.trim(),
+                            phoneNumber: data.phoneNumber.trim(),
+                            school: isAdminTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),
+                            country: data.country.trim(),
+                            region: data.region.trim() }
 
-                    callback(null, user);
-                }      
-            });
-        }
-    };
+            if (utils.notAdmin(userJSON)) {
+                var additionalInfo = { nickname: data.nickname.trim(),
+                                        gender: data.gender.trim(),
+                                        dateOfBirth: new Date(data.dateOfBirth.trim()),
+                                        skypeId: data.skypeId.trim(),   
+                                        educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
+                                                            data.studentEducationLevel.trim(),
+                                        enrolled: data.enrolled === 'Yes',
+                                        nationality: data.nationality.trim(),
+                                        interests: data.interests,
+                                        timezone: data.timezone };
+                Object.assign(userJSON, additionalInfo);
+            }   
+            if (isTutor) {
+                userJSON['major'] = data.major.trim();
+            }
+            callback(null, userJSON)
+        });
+    }
 
     Object.freeze(that);
     return that;
-};
+}
 
 module.exports = Authentication();

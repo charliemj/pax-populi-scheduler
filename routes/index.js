@@ -162,25 +162,13 @@ router.get('/respond/:username/:requestToken', authentication.isAuthenticated, f
     var username = req.params.username;
     var user = req.session.passport.user;
     User.getUser(username, function (err, accountUser) {
-        var message = '<table class="table table-hover"><tbody>'
-                        + '<tr><th>Full Name</th><td>{} {}</td>'.format(accountUser.firstName, accountUser.lastName)
-                        + '<tr><th>Gender</th><td>{}</td>'.format(accountUser.gender)
-                        + '<tr><th>Date of Birth</th><td>{}</td>'.format(utils.formatDate(accountUser.dateOfBirth))
-                        + '<tr><th>School</th><td>{}</td>'.format(accountUser.school)
-                        + '<tr><th>Education Level</th><td>{}</td>'.format(accountUser.educationLevel)
-                        + '<tr><th>Major</th><td>{}</td>'.format(accountUser.major)
-                        + '<tr><th>Currently Enrolled</th><td>{}</td>'.format(accountUser.enrolled ? 'Yes': 'No')
-                        + '<tr><th>Country</th><td>{}</td>'.format(accountUser.country)
-                        + '<tr><th>Region</th><td>{}</td>'.format(accountUser.region)
-                        + '<tr><th>Nationality</th><td>{}</td>'.format(accountUser.nationality)
-                        + '<tr><th>Interests</th><td>{}</td></tbody></table>'.format(accountUser.interests)
         var data = {title: 'Pax Populi Scheduler',
-                    message: message,
+                    message: utils.makeProfileTable(accountUser),
                     username: username,
                     fullName: user.fullName,
                     onHold: user.onHold,
                     inPool: user.inPool,
-                    isTutor: user.isTutor,
+                    role: user.role,
                     requestToken: req.params.requestToken,
                     csrfToken: req.csrfToken()};
         res.render('home', data); 
@@ -255,84 +243,26 @@ router.put('/waitlist/:username/:requestToken', parseForm, csrfProtection, funct
 
 // Signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
-
 	console.log('signing up...');
-	var isTutor = req.body.userType.trim().toLowerCase() === 'tutor';
-	var password = req.body.password.trim();
-	authentication.encryptPassword(password, function (err, hash) {
-		if (err) {
-			return err;
-		}
-	  	var userJSON = {username: req.body.username.trim().toLowerCase(),
-		    	password: hash,
-		    	isTutor: isTutor,
-		    	email: req.body.email.trim(),
-		    	alternativeEmail: req.body.alternativeEmail.trim(),
-		    	firstName: req.body.firstName.trim(),
-		    	middleName: req.body.middleName.trim(),
-		    	lastName: req.body.lastName.trim(),
-		    	nickname: req.body.nickname.trim(),
-		    	gender: req.body.gender.trim(),
-		    	dateOfBirth: new Date(req.body.dateOfBirth.trim()),
-		    	phoneNumber: req.body.phoneNumber.trim(),
-		    	skypeId: req.body.skypeId.trim(),
-		    	school: isTutor ? req.body.tutorSchool.trim() : req.body.studentSchool.trim(),
-		    	educationLevel: isTutor ? req.body.tutorEducationLevel.trim() : 
-		    						req.body.studentEducationLevel.trim(),
-		    	enrolled: req.body.enrolled === 'Yes',
-		    	nationality: req.body.nationality.trim(),
-		    	country: req.body.country.trim(),
-		    	region: req.body.region.trim(),
-		    	interests: req.body.interests,
-	            timezone: req.body.timezone};
-		if (isTutor) {
-			userJSON['major'] = req.body.major.trim();
-		}
-
-		console.log('userJSON', userJSON);
-
-	    data = {title: 'Pax Populi Scheduler',
-	            csrfToken: req.csrfToken()};
-
-	    if (userJSON['username'].length === 0 || userJSON['password'].length === 0) {
-	        data.message = 'Please enter your username and password below';
-	        res.render('home', data);
-	    } else {
-	        User.count({username: userJSON['username']},
-	            function (err, count) {
-	                if (count > 0) {
-	                    data.message = 'There is already an account with this username, '
-	                                    + 'make sure you enter your username correctly';
-	                    res.render('home', data);
-	                } else {
-	                	User.count({email: userJSON['email']},
-	            			function (err, count) {
-			                if (count > 0) {
-			                    data.message = 'There is already an account with this email address, '
-			                                    + 'make sure you enter your email address correctly';
-			                    res.render('home', data);
-			                } else {
-			                    if (err) {
-	                                data.message = err.message;
-	                                res.render('home', data);
-	                            } else {
-	                            	User.signUp(userJSON, req.devMode, function (err, user) {
-			                            if (err) {
-			                                res.json({'success': false, 'message': err.message});
-			                            } else {
-			                                res.render('home', {title: 'Pax Populi Scheduler',
-			                                                    message: 'Sign up successful! We have sent you a verification email.'
-			                                                              + 'Please check your email.',
-			                                                    csrfToken: req.csrfToken()});
-			                            }
-	                        		});
-	                            }
-			                }
-			            });
-					}
-	            });
-	    }
-	});
+    var userJSON = authentication.createUserJSON(req.body, function (err, userJSON) {
+        if (err) {
+            res.send({success: false, message: err.message});
+        } else {
+            console.log('userJSON', userJSON);
+            data = {title: 'Pax Populi Scheduler',
+                    csrfToken: req.csrfToken()};
+            User.signUp(userJSON, req.devMode, function (err, user) {
+                if (err) {
+                    res.json({'success': false, 'message': err.message});
+                } else {
+                    res.render('home', {title: 'Pax Populi Scheduler',
+                                        message: 'Sign up successful! We have sent you a verification email.'
+                                                  + 'Please check your email.',
+                                        csrfToken: req.csrfToken()});
+                }
+            });
+        }
+    });
 });
 
 router.get('/faq', authentication.isAuthenticated, function (req, res) {
@@ -342,7 +272,7 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         fullName: user.fullName,
                         onHold: user.onHold,
                         inPool: user.inPool,
-                        isTutor: user.isTutor,
+                        role: user.role,
                         csrfToken: req.csrfToken()});
 });
 

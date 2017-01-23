@@ -6,10 +6,21 @@ var PythonShell = require('python-shell');
 var Schedule = require("../models/schedule.js");
 var Registration = require("../models/registration.js");
 var authentication = require('../javascripts/authentication.js');
+var utils = require('../javascripts/utils.js');
 var csrf = require('csurf');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-//GET request for seeing schedule
+//get schedules for the user
+// router.get('/:username', authentication.isAuthenticated, function (req, res, next) {
+// 	var user = req.session.passport.user;
+// 	Schedule.getSchedules(user, function (err, schedules) {
+// 		if (err) {
+// 			res.send({success: false, message: err.message});
+// 		} else {
+// 			res.send({success: true, schedules: schedules});
+// 		}
+// 	});	
+// });
 
 // DELETE where should this happen?
 
@@ -18,7 +29,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
-router.get('/match', authentication.isAuthenticated, function(req, res, next) {
+router.get('/match', authentication.isAuthenticated, function (req, res, next) {
 
 	Registration.getUnmatchedRegistrations(function (err, registrations) {
 		// Inputs to Simon's script, hardcoding for now.
@@ -46,28 +57,6 @@ router.get('/match', authentication.isAuthenticated, function(req, res, next) {
 		  console.log('matches:', typeof matches, matches);
 		  // process the JSON objs and write to db
 		});
-	});
-});
-
-// gets all the registration objects and feed those to the python script 
-// to get the pairs
-router.get('/match', authentication.isAuthenticated, function(req, res, next) {
-	Registration.getAllUnmatchedRegistrations(function (err, unmatchedRegistrations) {
-		var options = {
-			mode: 'json',
-			scriptPath: './scheduler/',
-			args: [JSON.stringify(unmatchedRegistrations), JSON.stringify(city_capacity)]
-		}
-
-		PythonShell.run('match.py', options, function (err, matches) {
-		  if (err) {
-		  	throw err;
-		  }
-		  // matches is an array consisting of messages collected during execution
-		  console.log('matches:', typeof matches, matches);
-		});
-
-		// parse the string and write to db
 	});
 });
 

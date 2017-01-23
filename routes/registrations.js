@@ -10,24 +10,23 @@ var authentication = require('../javascripts/authentication.js');
 
 //GET request for displaying the availablities form
 
-router.get('/', authentication.isAuthenticated, function(req, res, next){
-  var user = req.session.passport.user;
-  res.render('registration', {title: 'Register',
+router.get('/', authentication.isAuthenticated, function (req, res, next) {
+    var user = req.session.passport.user;
+    res.render('registration', {title: 'Register',
                               csrfToken: req.csrfToken(),
                               username: user.username,
-                              isTutor: user.isTutor,
+                              role: user.role,
                               fullName: user.fullName,
                               onHold: user.onHold,
                               inPool: user.inPool,
-                              courses: enums.courses()
-                              });
+                              courses: enums.courses()});
 
-});//end GET request
+});
 
 
 //POST request for submitting the availablities from submit button
 
-router.post('/:username', authentication.isAuthenticated, function(req, res, next){
+router.post('/:username', authentication.isAuthenticated, function (req, res, next) {
     console.log('in submitting')
     var availability = req.body.availability;
     var user = req.session.passport.user; 
@@ -37,28 +36,19 @@ router.post('/:username', authentication.isAuthenticated, function(req, res, nex
     var earliestStartTime = req.body.earliestStartTime;
 
     Registration.createRegistration(username, genderPref, availability, courses, earliestStartTime,
-      function (err,registration){
-        console.log(err);
-        if (err){
-          console.log("error submitting registration " + err);
-          res.send({
-            success: false,
-            message: err
-          });//end send
-        }//end if
-        else {
-          //console.log("registration here:");
-          //console.log(JSON.stringify(registration));
-          res.status(200).send( {success: true,
-                                 message:"Registration has been submitted!", 
-                                 redirect: "/"});
-          //res.redirect('/users/'+ req.session.passport.user.username);
-          
-          //TODO redirect
-        }//end else
-    });//end createRegistration
-});//end POST request
-
+        function (err,registration){
+            console.log(err);
+            if (err){
+                console.log("error submitting registration " + err);
+                res.send({ success: false, message: err.message });
+            } else {
+                res.status(200).send( {success: true,
+                                        message:"Registration has been submitted!", 
+                                        redirect: "/"});
+                //TODO redirect
+            }
+    });
+});
 
 
 // GET request for seeing a submitted registration
@@ -70,27 +60,21 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
 
   Registration.findRegistration(regId, user, 
     function (err, registration){
-
-      if(err){
-        console.log("error getting registration " + err);
-        res.send({
-            success: false,
-            message: err
-          });//end send
-      }//end if
-      else{
-          res.render('updateRegistration', {title: 'Update Registration',
-                                        csrfToken: req.csrfToken(),
-                                        courses: enums.courses(),
-                                        username: user.username,
-                                        tutor: user.tutor,
-                                        fullName: user.fullName,
-                                        oldRegistration: JSON.stringify(registration),
-                                        regId: regId
-                                        });
-      }//end else
-  });//end getRegistration
-});//end GET
+        if (err) {
+            console.log("error getting registration " + err);
+            res.send({ success: false, message: err.message });
+        } else {
+            res.render('updateRegistration', {title: 'Update Registration',
+                                                csrfToken: req.csrfToken(),
+                                                courses: enums.courses(),
+                                                username: user.username,
+                                                role: user.role,
+                                                fullName: user.fullName,
+                                                oldRegistration: JSON.stringify(registration),
+                                                regId: regId });
+        }
+  });
+});
 
 //PUT request for updating availablities
 
@@ -108,22 +92,18 @@ router.put('/update/:username/:registration_id', authentication.isAuthenticated,
     var regId = req.params.registration_id;
 
     Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime, 
-      function (err, registration){
-        if (err){
-          console.log("error updating registration " + err);
-          res.send({
-            success: false,
-            message: err
-          });//end send
-        }//end if
-        else {
-          res.status(200).send({success: true,
-                                message:"Registration has been updated!", 
-                                redirect: "/"});
-          // TO DO redirect 
-        }//end else
-    });//end updateAvailabilty
-});//end PUT request
+        function (err, registration){
+            if (err){
+                console.log("error updating registration " + err);
+                res.send({ success: false, message: err.message });
+            } else {
+                res.status(200).send({success: true,
+                                        message:"Registration has been updated!", 
+                                        redirect: "/"});
+            // TO DO redirect 
+            } 
+        });
+});
 
 
-module.exports = router; //keep at the bottom of the file
+module.exports = router;
