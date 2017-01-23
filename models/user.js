@@ -9,7 +9,7 @@ var validators = require("mongoose-validators");
 var regexs = require("../javascripts/regexs.js");
 
 var UserSchema = mongoose.Schema({
-    username: {type: String, required: true, index: true, validate:[validators.isLength(5, 15)]},
+    username: {type: String, required: true, index: true},
     password: {type: String, required: true}, // should be just the hash
     verified: {type: Boolean, default: false},
     verificationToken: {type:String, default: null},
@@ -19,14 +19,14 @@ var UserSchema = mongoose.Schema({
     inPool: {type: Boolean, default: false},
     onHold: {type: Boolean, default: false},
     isTutor: {type: Boolean, default: false}, // whether is a tutor or student
-    email: {type: String, required: true, validate:[validators.matches(regexs.emailPattern)]},
-    alternativeEmail: {type: String, required: true, validate:[validators.matches(regexs.emailPattern)]},
+    email: {type: String, required: true},
+    alternativeEmail: {type: String, required: true},
     firstName: {type: String, required: true},
     middleName: {type: String},
     lastName: {type: String, required: true},
     nickname: {type: String},
     gender: {type: String, enum: enums.genders(), required: true},
-    dateOfBirth: {type: Date, required: true, validate:[validators.isDate()]},
+    dateOfBirth: {type: Date, required: true},
     phoneNumber: {type: String, require: true},
     skypeId: {type: String, require: true},
     school: {type: String, required: true},

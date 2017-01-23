@@ -20,7 +20,7 @@ var registrationSchema = mongoose.Schema({
     courses: {type: [String], required: true},
     earliestStartTime: {type: Date, required: true},
     isMatched:{type: Boolean, required: true,  default: false},
-    dateAdded:{type: Date, default: Date.now, validate:[validators.isDate()]}
+    dateAdded:{type: Date, default: Date.now}
 });
 
 
