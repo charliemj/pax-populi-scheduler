@@ -15,7 +15,7 @@ var Enums = function() {
     }
 
     that.userTypes = function () {
-        return ["Student", "Tutor"];
+        return ["Student", "Tutor", "Administrator"];
     }
 
     that.genders = function () {

@@ -16,30 +16,41 @@ var UserSchema = mongoose.Schema({
     approved: {type: Boolean, default: false},
     rejected: {type: Boolean, default: false},
     requestToken: {type: String, default: null},
-    inPool: {type: Boolean, default: false},
+    inPool: {type: Boolean, default: false}, 
     onHold: {type: Boolean, default: false},
-    isTutor: {type: Boolean, default: false}, // whether is a tutor or student
+    role: {type: Boolean, enum: enums.userTypes, required: true},
     email: {type: String, required: true},
     alternativeEmail: {type: String, required: true},
     firstName: {type: String, required: true},
     middleName: {type: String},
     lastName: {type: String, required: true},
     nickname: {type: String},
-    gender: {type: String, enum: enums.genders(), required: true},
-    dateOfBirth: {type: Date, required: true},
+    gender: {type: String, enum: enums.genders()},
+    dateOfBirth: {type: Date},
     phoneNumber: {type: String, require: true},
-    skypeId: {type: String, require: true},
-    school: {type: String, required: true},
-    educationLevel: {type: String, required: true},
-    enrolled: {type: String, required: true},
-    major: {type: String, default: 'N/A', require: true},
+    skypeId: {type: String},
+    school: {type: String},
+    educationLevel: {type: String},
+    enrolled: {type: String},
+    major: {type: String, default: 'N/A'},
     country:{type: String, required: true},
     region: {type: String, required: true},
-    timezone: {type: String, require: true},
-    nationality: {type: String, require: true},
-    interests: [{type: String, require: true}]
+    timezone: {type: String},
+    nationality: {type: String},
+    interests: [{type: String}]
 
 });
+
+UserSchema.path("role").validate(function(role) {
+    if (role === 'Student' || role === 'Tutor') {
+        if (!this.gender || !this.dateOfBirth || !this.educationLevel || !this.skypeId ||
+            !this.school || !this.educationLevel || !this.enrolled || !this.major ||
+            !this.timezone || !this.nationality || !this.interests) {
+            return false;
+        }
+    }
+    return true;
+}, "Missing required personal info from the user");
 
 UserSchema.path("username").validate(function(username) {
     return username.trim().length >= enums.minUsernameLength() || 

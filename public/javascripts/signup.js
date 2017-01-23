@@ -1,21 +1,26 @@
 $(document).ready(function () {
 	$('.tutor').hide();
 	$('.other').hide();
-	$('.status').on('change', function () {
-		var status = $('.status :selected').text().toLowerCase();
-		if (status === 'tutor') {
+	$('.role').on('change', function () {
+		var role = $('.role :selected').text().toLowerCase();
+		if (role === 'tutor') {
 			$('.student').hide();
+			$('.admin').hide();
 			$('.tutor').show();
-		} else if (status === 'student') {
+		} else if (role === 'student') {
 			$('.tutor').hide();
+			$('.admin').hide();
 			$('.student').show();
+		} else if (role === 'administrator') {
+			$('.tutor').hide();
+			$('.student').hide();
+			$('.admin').show();
 		}
 	});
 
 	$('select').on('change', function () {
 		var choice = $(this).find(':selected').text().toLowerCase();
 		if (choice === 'other') {
-			console.log('hiii', $(this).closest('.multiple-choice').find('.other'));
 			$(this).closest('.multiple-choice').find('.other').show();
 		}
 	});
