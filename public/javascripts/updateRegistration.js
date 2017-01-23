@@ -1,9 +1,6 @@
 //Angular.js code that populates the screen with the time selector interface and includes a function
 // to send the updated availabilties to the database when the "submit" button is clicked
 
-$(document).ready(function () {
-    $('#navbar-register').addClass('active');
-});
 
 var updateRegistration = angular.module("updateRegistration",[]);
 
@@ -11,15 +8,14 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
 
     
     $("#day-schedule").dayScheduleSelector({}); //function that makes the calendar UI
-    console.log($("#oldRegistration").val());
+    
+    //LOGIC FOR POPULATING PAGE WITH SAVED DATA
+    //populates calendar with previously submitted registration values
     var oldRegistration = JSON.parse($("#oldRegistration").val());
-
-    //populates calendar with previously submitted availabilties
     var availability = oldRegistration.availability;
     var genderPref = oldRegistration.genderPref;
     var earliestStartTime = oldRegistration.earliestStartTime;
     var courses = oldRegistration.courses;
-    
     var regId = $("#regId").val();
     var username = $("#username").val();
 
@@ -33,15 +29,53 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     $('#genderPref').val(genderPref);
     $('#earliestStartTime').val(oldEarliestTime);
     $('#courses').val(courses);
-
-    console.log($("#courses").val());
+    $("#earliestStartTime").attr("min", oldEarliestTime); 
 
     //populates schedule UI with the previously selected times
     $("#day-schedule").data('artsy.dayScheduleSelector').deserialize(availability);
+    ////////////////////
 
+    //LOGIC FOR VALIDATING UPDATE FORM
+    
+    var registrationFormValidation = function(){
+        var availability = $("#day-schedule").data('artsy.dayScheduleSelector').serialize();
+        var genderPref = $("#genderPref").val();
+        var courses = $("#courses").val();
+        var earliestStartDate = $("#earliestStartTime").val();
 
+        if(genderPref == "MALE" | genderPref == "FEMALE" | genderPref == "NONE"){
+            $("#genderPrefError").empty(); 
+        }
+        else{
+            $("#genderPrefError").append('<p>Error: Please answer this question.</p>');
+            return false;
+        }
+
+        if (courses.length === 0){
+            $("#coursesError").append('<p>Error: Please select at least one course.</p>');
+            return false;
+        }
+        else{
+            $("#coursesError").empty();
+        }
+
+        if(earliestStartDate === undefined || earliestStartDate =="" ){
+            $("#startTimeError").append('<p>Error: Please select a date.</p>');
+            return false;
+        }
+        else{
+            $("#startTimeError").empty();
+        }
+
+        return true; //hits no errors
+    };
+
+    //LOGIC FOR UPDATING REGISTRATION
     //Submit the schedule-- save availablity and other registration info to database
     $scope.updateRegistration = function (){
+
+        if (!registrationFormValidation()){return;} //if validation false, don't submit
+
         var availability = $("#day-schedule").data('artsy.dayScheduleSelector').serialize(); //gets the schedule output as an object
         
         var csrf = $('#csrf').val(); //all posts requests need an _csrf param

@@ -14,6 +14,9 @@
       <div class="modal-body">
         <form id='register-form' action='/signup' method='post'>
           <input type="hidden" value="{[{timezone}]}" name="timezone">
+          <input type="hidden" value="{{passwordRegex}}" name="passwordRegex" id="passwordRegex">
+          <input type="hidden" value="{{emailRegex}}" name="emailRegex" id="emailRegex">
+          <input type="hidden" value="{{notAllowedRegex}}" name="notAllowedRegex" id="notAllowedRegex">
           <div class='row'>
             <div class='col-xs-8 col-md-8'>
               <div class="form-group">
@@ -82,6 +85,7 @@
                   <div>
                     <input id='middleName-register-box' class='form-control signup-input' type='text' name='middleName' placeholder='middle name'></input>
                   </div>
+                  <div class="formErr" id="middleNameErrors">
                 </div>
                 <div class="form-group">
                   <label class="control-label">Last Name*</label>
@@ -95,6 +99,7 @@
                   <div>
                     <input id='nickName-register-box' class='form-control signup-input' type='text' name='nickname' placeholder='nickname'></input>
                   </div>
+                  <div class="formErr" id="nickNameErrors">
                 </div>
                 <div class="form-group">
                   <label class="control-label">Gender*</label>
@@ -125,6 +130,7 @@
                   <div>
                     <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
                   </div>
+                  <div class="formErr" id="skypeErrors">
                 </div>
                 <div class='multiple-choice'>
                   <div id='student-schools' class="form-group student">
@@ -160,6 +166,7 @@
                   <label class="control-label">Education Level (Current or Highest Completed)*</label>
                   <div>
                     <select name='studentEducationLevel' class='form-control signup-input' required>
+                    <option>Select Your Education Level..</option>
                     {{#each studentEducationLevels}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -170,6 +177,7 @@
                   <label class="control-label">Educational Class or Grade (Current or Highest Completed)*</label>
                   <div>
                     <select name='tutorEducationLevel' class='form-control signup-input' required>
+                    <option>Select Your Education Level..</option>
                     {{#each tutorEducationLevels}}
                       <option>{{this}}</option>
                     {{/each}}
@@ -191,7 +199,7 @@
                     <label class="control-label">Major*</label>
                     <div>
                       <select id='major-register-box' name='major' class='form-control signup-input' required>
-                      <option>"Select Your Major..."</option>  
+                      <option>Select Your Major...</option>  
                         <!--try-->
                         {{#each majors}}
                           <option>{{this}}</option>
@@ -211,6 +219,7 @@
                   <div>
                     <input id='nationality-register-box' class='form-control signup-input' type='text' name='nationality' placeholder='nationality' required></input>
                   </div>
+                  <div class="formErr" id="nationalityErrors">
                 </div>
                 <div class="form-group">
                   <label class="control-label">Country*</label>
@@ -229,6 +238,7 @@
                     <p>Select your timezone*: <b>{[{timezone}]}</b></p>
                     <timezone-selector ng-model="timezone"/>
                 </div>
+                <div class="formErr" id="timezoneErrors"></div>
                 <div class='mulitple-choice'>
                   <div class="form-group">
                     <label class="control-label">Interests*</label>
@@ -251,7 +261,7 @@
               </div>
             </div>
             {{> agreements}}
-            <input type="submit" id='register-button' class='btn btn-primary btn-lg' value="Sign Up">
+            <input type="button" id='register-button' class='btn btn-primary btn-lg' value="Sign Up">
         </form>
       </div> 
     </div>

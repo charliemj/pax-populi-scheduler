@@ -15,11 +15,12 @@
         You do not have the permisson to register for a class yet. You have to wait for either the next cycle or further notice from the adminstrator.
     {{else}}
     <h1>Submit Your Availability</h1>
-    <p>To indicate times when you are free for a tutoring session, click on a rectangle on the schedule. Click twice on a particular rectangle to select a single time,or to select a range, click once on a rectangle at a starting time you are free and drag your cursor within the column to mark a time range in which you are free and click again on the last rectangle in the range to complete marking the range. Any blocks that are purple when you submit will be considered as possible meeting times! </p>
+    <p>To indicate times when you are free for a tutoring session, click on a rectangle on the schedule. Click twice on a particular rectangle to select a single time,or to select a range, click once on a rectangle at a starting time you are free and drag your cursor within the column to mark a time range in which you are free and click again on the last rectangle in the range to complete marking the range. Any blocks that are blue when you submit will be considered as possible meeting times! </p>
     <div ng-app="registration">
         <div ng-controller="mainController">
             <div id="day-schedule"></div>
             <!-- calander UI is populated here -->
+            <div class="regError" id="availabiltyError"></div>
             <br>
             <form>
                 <input type="hidden" id='csrf' name="_csrf" value="{{csrfToken}}">
@@ -36,6 +37,7 @@
                                       {{/each}}
                                       </select>
                                     </div>
+                                    <div class="regError" id="coursesError"></div>
                             </div>
                         </div>
                     </div>
@@ -48,6 +50,7 @@
                                 <option value="FEMALE">Female</option>
                             </select>
                         </div>
+                        <div class="regError" id="genderPrefError"></div>
                     </div>
                     <div class="form-group col-md-6">
                         <label class="control-label">What is Your Earliest Possible Start Date?</label>
@@ -55,6 +58,7 @@
                             <input id='earliestStartTime' class='form-control' type='date' name='earliestStartTime' placeholder='earliestStartTime' required></input>
                         </div>
                     </div>
+                    <div class="regError" id="startTimeError"></div>
                 </div>
                 <div class="form-group">
                         <input type="button" value="Submit" class='btn btn-primary btn-lg' id="target" ng-click="submitRegistration()">

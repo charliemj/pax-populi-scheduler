@@ -9,7 +9,9 @@ var User = require('../models/user');
 var authentication = require('../javascripts/authentication.js');
 var email = require('../javascripts/email.js');
 var enums = require('../javascripts/enums.js');
+var regexs = require("../javascripts/regexs.js");
 var utils = require('../javascripts/utils.js');
+
 
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
@@ -20,6 +22,8 @@ router.get('/', function(req, res, next) {
     if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
         res.redirect('/users/'+ req.session.passport.user.username);
     } else {
+        console.log(regexs.passwordPattern());
+        console.log(JSON.stringify(regexs.passwordPattern()));
         res.render('home', {title: 'Pax Populi Scheduler',
                             csrfToken: req.csrfToken(),
                             userTypes: enums.userTypes(),
@@ -29,6 +33,9 @@ router.get('/', function(req, res, next) {
                         	tutorSchools: enums.tutorSchools(),
                         	studentEducationLevels: enums.studentEducationLevels(),
                         	tutorEducationLevels: enums.tutorEducationLevels(),
+                            passwordRegex: JSON.stringify(regexs.passwordPattern()),
+                            emailRegex: JSON.stringify(regexs.emailPattern()),
+                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
                         	majors: enums.majors(),
                         	interests: enums.interests()});
     }

@@ -19,4 +19,10 @@ $(document).ready(function () {
 			$(this).closest('.multiple-choice').find('.other').show();
 		}
 	});
+
+	//makes sure that birthday is not in the future
+	var now = new Date(Date.now());
+    var timeNow = now.toISOString().substring(0, 10);
+    $("#dob-register-box").attr("max", timeNow);
+
 });

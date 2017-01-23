@@ -96,6 +96,7 @@ var Email = function() {
             var content = '{}<p>Hi {}!<br><br>Confirm your Pax Populi Scheduler account by clicking on the confirm button below.<form action="{}"><input type="submit" value="Confirm" /></form>{}</p>'.format(that.welcomeMessage, user.firstName, link, that.signature);
             console.log('about to send a verification email to', user.email);
             sendEmail(user.email, subject, content, callback);
+
         });
     };
 
@@ -136,6 +137,7 @@ var Email = function() {
             console.log(content);
             console.log('about to send an approval request email to', user.email);
             sendEmail(config.adminEmailAddress(), subject, content, callback); // for now send it back to the user
+
         });
     };
 

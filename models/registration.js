@@ -2,7 +2,6 @@ var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var User = require('../models/user.js');
 var ObjectId = mongoose.Schema.Types.ObjectId;
-
 var genderPrefs = ["MALE","FEMALE", "NONE"]; 
 
 // availability are objects like
