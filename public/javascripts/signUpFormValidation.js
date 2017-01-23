@@ -141,7 +141,7 @@ $(document).ready(function(){
 
         if (pw !== pwConfirm){
             $("#pwConErrors").empty();
-            $("#pwConErrors").append("<p>This password does not test the one you entered above.</p>");
+            $("#pwConErrors").append("<p>This password does not match the one you entered above.</p>");
             $("#confirm-password-register-box").css({"border-color":"red"});
         }
 
