@@ -13,6 +13,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var registrations = require('./routes/registrations.js');
 var schedules = require('./routes/schedules.js');
+var hbsHelpers = require('./javascripts/hbsHelpers.js');
 
 
 // database setup
@@ -31,7 +32,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', exphbs({extname: '.hbs',
                            defaultLayout: 'index',
-                           helpers: {}
+                           helpers: {toLowerCase: hbsHelpers.lowerCase}
                           }));
 app.set('view engine', 'hbs');
 

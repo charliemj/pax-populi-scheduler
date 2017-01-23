@@ -133,7 +133,7 @@
                   <div class="formErr" id="skypeErrors"></div>
                 </div>
                 <div class='multiple-choice'>
-                  <div id='student-schools' class="form-group student">
+                  <div id='student-schools' class="form-group student admin">
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id='studentSchool' name='studentSchool' class='form-control signup-input choices' required>
@@ -144,7 +144,7 @@
                     </select>
                     </div>
                   </div>
-                  <div id='tutor-schools' class="form-group tutor admin">
+                  <div id='tutor-schools' class="form-group tutor">
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id="tutorSchool" name='tutorSchool' class='form-control signup-input' required>
@@ -239,8 +239,9 @@
                   <div>
                     <timezone-selector ng-model="timezone"/>
                   </div>
+                  <div class="formErr" id="timezoneErrors"></div>
                 </div>
-                <div class="formErr" id="timezoneErrors"></div>
+                
                 <div class='mulitple-choice'>
                   <div class="form-group tutor student">
                     <label class="control-label">Interests*</label>

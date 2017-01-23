@@ -16,8 +16,9 @@ $(document).ready(function(){
         var phone = $("#phone-number-box").val();
         var skype = $("#skypeId-register-box").val();
         var nationality = $("#nationality-register-box").val();
+        var notAdmin = $('.role :selected').text().toLowerCase() !== 'administrator';
 
-        if($("input[name=timezone]").val() == ""){
+        if($("input[name=timezone]").val() == "" && notAdmin){
             validForm = false;
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');

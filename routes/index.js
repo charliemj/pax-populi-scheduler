@@ -164,23 +164,28 @@ router.get('/respond/:username/:requestToken', authentication.isAuthenticated, f
     User.getUser(username, function (err, accountUser) {
         var message = '<table class="table table-hover"><tbody>'
                         + '<tr><th>Full Name</th><td>{} {}</td>'.format(accountUser.firstName, accountUser.lastName)
+                        + '<tr><th>School/Institution</th><td>{}</td>'.format(accountUser.school)
+                        + '<tr><th>Country</th><td>{}</td>'.format(accountUser.country)
+                        + '<tr><th>Region</th><td>{}</td>'.format(accountUser.region)
+                        + '<tr><th>Email Address</th><td>{}</td>'.format(accountUser.email);
+        if (accountUser.role === 'Student' || accountUser.role === 'Tutor') {
+            message += '<tr><th>Nationality</th><td>{}</td>'.format(accountUser.nationality)
                         + '<tr><th>Gender</th><td>{}</td>'.format(accountUser.gender)
                         + '<tr><th>Date of Birth</th><td>{}</td>'.format(utils.formatDate(accountUser.dateOfBirth))
-                        + '<tr><th>School</th><td>{}</td>'.format(accountUser.school)
                         + '<tr><th>Education Level</th><td>{}</td>'.format(accountUser.educationLevel)
                         + '<tr><th>Major</th><td>{}</td>'.format(accountUser.major)
                         + '<tr><th>Currently Enrolled</th><td>{}</td>'.format(accountUser.enrolled ? 'Yes': 'No')
-                        + '<tr><th>Country</th><td>{}</td>'.format(accountUser.country)
-                        + '<tr><th>Region</th><td>{}</td>'.format(accountUser.region)
-                        + '<tr><th>Nationality</th><td>{}</td>'.format(accountUser.nationality)
-                        + '<tr><th>Interests</th><td>{}</td></tbody></table>'.format(accountUser.interests)
+                        + '<tr><th>Interests</th><td>{}</td>'.format(accountUser.interests);
+        }                
+        message += '</tbody></table>'
+
         var data = {title: 'Pax Populi Scheduler',
                     message: message,
                     username: username,
                     fullName: user.fullName,
                     onHold: user.onHold,
                     inPool: user.inPool,
-                    isTutor: user.isTutor,
+                    role: user.role,
                     requestToken: req.params.requestToken,
                     csrfToken: req.csrfToken()};
         res.render('home', data); 
@@ -259,6 +264,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 	console.log('signing up...');
 	var role = req.body.userType.trim();
     role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    var isTutor = role === 'Tutor';
 	var password = req.body.password.trim();
 	authentication.encryptPassword(password, function (err, hash) {
 		if (err) {
@@ -281,7 +287,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                                     gender: req.body.gender.trim(),
                                     dateOfBirth: new Date(req.body.dateOfBirth.trim()),
                                     skypeId: req.body.skypeId.trim(),   
-                                    educationLevel: role === 'Tutor' ? req.body.tutorEducationLevel.trim() : 
+                                    educationLevel: isTutor ? req.body.tutorEducationLevel.trim() : 
                                                         req.body.studentEducationLevel.trim(),
                                     enrolled: req.body.enrolled === 'Yes',
                                     nationality: req.body.nationality.trim(),
@@ -289,7 +295,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                                     timezone: req.body.timezone };
             Object.assign(userJSON, additionalInfo);
         }	
-		if (role === 'Tutor') {
+		if (isTutor) {
 			userJSON['major'] = req.body.major.trim();
 		}
 
@@ -346,7 +352,7 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         fullName: user.fullName,
                         onHold: user.onHold,
                         inPool: user.inPool,
-                        isTutor: user.isTutor,
+                        role: user.role,
                         csrfToken: req.csrfToken()});
 });
 

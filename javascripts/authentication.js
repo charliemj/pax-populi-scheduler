@@ -62,43 +62,6 @@ var Authentication = function() {
         });
     };
 
-    /*
-    * Creates a JSON object whose fields are username, hashed password, first name, last name, email
-    * @param {String} username - the username for the user
-    * @param {String} password - the user's password
-    * @param {String} email - the user's email address
-    * @param {String} firstName - the user's first name
-    * @param {String} lastName - the user's last name
-    * @param {String} status - the login status of the student - must be either 'Student' or 'Tutor'
-    * @param  {Function} callback - the function that takes in an object and is called once this function is done
-    */
-
-    that.createUserJSON = function (username, password, email, firstName, lastName, isTutor, gender, country, region, timezone, callback) {
-
-        if (password.length < 8 || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/.test(password)) {
-            callback({success: false, message: "A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character."});
-        } else {
-            that.encryptPassword(password, function (err, hash) {
-                if (err) {
-                    return callback(err);
-                } else {
-                    var user = {username: username,
-                            password: hash,
-                            firstName: firstName,
-                            lastName: lastName,
-                            email: email,
-                            gender: gender,
-                            country: country,
-                            region: region,
-                            timezone: timezone,
-                            tutor: isTutor};
-
-                    callback(null, user);
-                }      
-            });
-        }
-    };
-
     Object.freeze(that);
     return that;
 };

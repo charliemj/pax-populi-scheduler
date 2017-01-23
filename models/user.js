@@ -18,7 +18,7 @@ var UserSchema = mongoose.Schema({
     requestToken: {type: String, default: null},
     inPool: {type: Boolean, default: false}, 
     onHold: {type: Boolean, default: false},
-    role: {type: Boolean, enum: enums.userTypes, required: true},
+    role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
     alternativeEmail: {type: String, required: true},
     firstName: {type: String, required: true},
@@ -29,7 +29,7 @@ var UserSchema = mongoose.Schema({
     dateOfBirth: {type: Date},
     phoneNumber: {type: String, require: true},
     skypeId: {type: String},
-    school: {type: String},
+    school: {type: String, default: 'N/A'},
     educationLevel: {type: String},
     enrolled: {type: String},
     major: {type: String, default: 'N/A'},
@@ -231,7 +231,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                                     rejected: user.rejected,
                                     onHold: user.onHold,
                                     inPool: user.inPool,
-                                    isTutor: user.isTutor,
+                                    role: user.role,
                                     fullName: user.firstName + ' ' + user.lastName});
                 } else {
                     callback({message:'Please enter a correct password'});
