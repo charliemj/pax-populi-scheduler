@@ -6,11 +6,11 @@ var HbsHelpers = function() {
     }
 
     that.notAdmin = function (role, options) {
-    	console.log(role);
-    	console.log(options);
-    	if (!role.toLowerCase() === 'administrator') {
+    	if (role.toLowerCase() !== 'administrator') {
+            console.log('not administrator', role);
     		return options.fn(this);
     	}
+        console.log('is administrator', role)
     	return options.inverse(this);
     }
 

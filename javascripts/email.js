@@ -112,31 +112,7 @@ var Email = function() {
                 return callback({success: false, message: err.message});
             }
             var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
-            var link;
-            if (developmentMode) {
-                link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
-            } else {
-                link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
-            }
-            var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, config.adminFirstName(), config.adminLastName())
-                            + '{} {} has just requested to join Pax Populi as {}. '.format(user.firstName, user.lastName, user.role.toLowerCase())
-                            + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
-                            + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
-                            + '<li>School/Institution: {}</li>'.format(user.school)
-                            + '<li>Country: {}</li>'.format(user.country)
-                            + '<li>Region: {}</li>'.format(user.region)
-                            + '<li>Email Address: {}'.format(user.email);
-            if (user.role === 'Student' || user.role === 'Tutor') {
-                content += '<li>Gender: {}</li>'.format(user.gender)
-                            + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))
-                            + '<li>Nationality: {}</li>'.format(user.nationality)
-                            + '<li>Major: {}</li>'.format(user.major)
-                            + '<li>Education Level: {}</li>'.format(user.educationLevel)
-                            + '<li>Currently Enrolled: {}</li>'.format(user.enrolled ? 'Yes': 'No')
-                            + '<li>Interests: {}</li>'.format(user.interests);
-            }                            
-            content += '</ul><br><form action="{}"><input type="hidden" name="ref_path" value="{}"><input type="submit" value="Respond to Request"/></form>'.format(link, link)
-                            + '{}</p>'.format(that.signature);
+            var content = that.makeApprovalRequestEmailContent(user, developmentMode);
             console.log(content);
             console.log('about to send an approval request email to', user.email);
             sendEmail(config.adminEmailAddress(), subject, content, callback); // for now send it back to the user
@@ -185,6 +161,35 @@ var Email = function() {
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
+
+    that.makeApprovalRequestEmailContent = function (user, developmentMode) {
+        var link;
+            if (developmentMode) {
+                link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
+            } else {
+                link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
+            }
+        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, config.adminFirstName(), config.adminLastName())
+                            + '{} {} has just requested to join Pax Populi as a/an {}. '.format(user.firstName, user.lastName, user.role.toLowerCase())
+                            + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
+                            + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
+                            + '<li>School/Institution: {}</li>'.format(user.school)
+                            + '<li>Country: {}</li>'.format(user.country)
+                            + '<li>Region: {}</li>'.format(user.region)
+                            + '<li>Email Address: {}'.format(user.email);
+            if (utils.notAdmin(user)) {
+                content += '<li>Gender: {}</li>'.format(user.gender)
+                            + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))
+                            + '<li>Nationality: {}</li>'.format(user.nationality)
+                            + '<li>Major: {}</li>'.format(user.major)
+                            + '<li>Education Level: {}</li>'.format(user.educationLevel)
+                            + '<li>Currently Enrolled: {}</li>'.format(user.enrolled ? 'Yes': 'No')
+                            + '<li>Interests: {}</li>'.format(user.interests);
+            }                            
+            content += '</ul><br><form action="{}"><input type="hidden" name="ref_path" value="{}"><input type="submit" value="Respond to Request"/></form>'.format(link, link)
+                            + '{}</p>'.format(that.signature);
+        return content;
+    }
 
     Object.freeze(that);
     return that;

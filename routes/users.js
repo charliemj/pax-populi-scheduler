@@ -3,6 +3,7 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var csrf = require('csurf');
 var User = require('../models/user.js');
+var Schedule = require("../models/schedule.js");
 var utils = require('../javascripts/utils.js');
 var authentication = require('../javascripts/authentication.js');
 var Registration = require("../models/registration.js");
@@ -18,44 +19,39 @@ router.get('/', function(req, res, next) {
 router.get('/:username', authentication.isAuthenticated, function (req, res, next) {
 	var user = req.session.passport.user;
 
-  Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
+    Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
+        if (err) {
+          res.send({success: false, message: err.message});
+        } else {
+            var regDateList = []; // will be a list containing dateAdded param of all unmatched registrations for user
+            var regIdList = []; //will be a list containing ids of all unmatched registrations for the user 
+            for (var i=0; i < registrations.length; i++) {
+                regIdList.push(registrations[i]._id); 
+                regDateList.push(registrations[i].dateAdded);    
+            }
 
-    if(err){
-      console.log("error getting registrations " + err);
-      res.send({
-          success: false,
-          message: err
-        });//end send
-    }
-    else{
-        var regDateList = []; // will be a list containing dateAdded param of all unmatched registrations for user
-        var regIdList = []; //will be a list containing ids of all unmatched registrations for the user 
-        for(var i=0; i<registrations.length; i++){
-
-            //console.log([registrations[i]._id, registrations[i].dateAdded]);
-
-            regIdList.push(registrations[i]._id); 
-            regDateList.push(registrations[i].dateAdded);
-
-           
+            Schedule.getSchedules(user, function (err, schedules) {
+                if (err) {
+                    res.send({success: false, message: err.message});
+                } else {
+                    res.render('dashboard',{title: 'Dashboard',
+                                            csrfToken: req.csrfToken(),
+                                            username: req.params.username,
+                                            verified: user.verified,
+                                            approved: user.approved,
+                                            rejected: user.rejected,
+                                            onHold: user.onHold,
+                                            inPool: user.inPool,
+                                            role: user.role,                                        
+                                            fullName: user.fullName,
+                                            regIdList: regIdList,
+                                            regDateList: regDateList,
+                                            schedules: schedules});
+                }
+            }); 
         }
-        
-        res.render('dashboard',{title: 'Dashboard',
-                                csrfToken: req.csrfToken(),
-                                username: req.params.username,
-                                verified: user.verified,
-                                approved: user.approved,
-                                rejected: user.rejected,
-                                onHold: user.onHold,
-                                inPool: user.inPool,
-                                role: user.role,                                        
-                                fullName: user.fullName,
-                                regIdList: regIdList,
-                                regDateList: regDateList}                            
-      );
-    }//end else
-  });//end get unmatched
-});//end GET
+  });
+});
 
 
 

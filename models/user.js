@@ -274,7 +274,8 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
             });
             
         } else {
-            callback({message: 'There is already an account with this username'});
+            callback({success: false, message: 'There is already an account with this username, '
+                                + 'make sure you enter your username correctly'});
         }
     });
 };
