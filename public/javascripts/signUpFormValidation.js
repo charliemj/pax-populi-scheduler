@@ -23,37 +23,37 @@ $(document).ready(function(){
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
 
-        if(notAllowedPattern.match(firstName)){
+        if(notAllowedPattern.test(firstName)){
             $("#firstNameErrors").append("<p>First name contains disallowed special characters");
         }
         else{$("#firstNameErrors").empty();}
 
-        if(notAllowedPattern.match(middleName)){
+        if(notAllowedPattern.test(middleName)){
             $("#middleNameErrors").append("<p>Middle name contains disallowed special characters");
         }
         else{$("#middleNameErrors").empty();}
 
-        if(notAllowedPattern.match(lastName)){
+        if(notAllowedPattern.test(lastName)){
             $("#lastNameErrors").append("<p>Last name contains disallowed special characters");
         }
         else{$("#lastNameErrors").empty();}
 
-        if(notAllowedPattern.match(nickName)){
+        if(notAllowedPattern.test(nickName)){
             $("#nickNameErrors").append("<p>Nickname contains disallowed special characters");
         }
         else{$("#nickNameErrors").empty();}
 
-        if(notAllowedPattern.match(phone)){
+        if(notAllowedPattern.test(phone)){
             $("#phoneNumErrors").append("<p>Phone number contains disallowed special characters");
         }
         else{$("#phoneNumErrors").empty();}
 
-        if(notAllowedPattern.match(skype)){
+        if(notAllowedPattern.test(skype)){
             $("#skypeErrors").append("<p>Skype username contains disallowed special characters");
         }
         else{$("#skypeErrors").empty();}
 
-        if(notAllowedPattern.match(nationality)){
+        if(notAllowedPattern.test(nationality)){
             $("#nationalityErrors").append("<p>Nationality contains disallowed special characters");
         }
         else{$("#nationalityErrors").empty();}
@@ -134,7 +134,7 @@ $(document).ready(function(){
 
         if (pw !== pwConfirm){
             $("#pwConErrors").empty();
-            $("#pwConErrors").append("<p>This password does not match the one you entered above.</p>");
+            $("#pwConErrors").append("<p>This password does not test the one you entered above.</p>");
             $("#confirm-password-register-box").css({"border-color":"red"});
         }
 
