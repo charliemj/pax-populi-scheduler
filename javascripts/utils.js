@@ -33,6 +33,30 @@ var Utils = function() {
         return Number.isInteger(number) && number >= from && number <= to;
     };
 
+    that.notAdmin = function (user) {
+        return user.role.toLowerCase() !== 'administrator';
+    }
+
+    that.makeProfileTable = function (user) {
+        var table = '<table class="table table-hover"><tbody>'
+                        + '<tr><th>Full Name</th><td>{} {}</td>'.format(user.firstName, user.lastName)
+                        + '<tr><th>School/Institution</th><td>{}</td>'.format(user.school)
+                        + '<tr><th>Country</th><td>{}</td>'.format(user.country)
+                        + '<tr><th>Region</th><td>{}</td>'.format(user.region)
+                        + '<tr><th>Email Address</th><td>{}</td>'.format(user.email);
+        if (that.notAdmin(user)) {
+            table += '<tr><th>Nationality</th><td>{}</td>'.format(user.nationality)
+                        + '<tr><th>Gender</th><td>{}</td>'.format(user.gender)
+                        + '<tr><th>Date of Birth</th><td>{}</td>'.format(that.formatDate(user.dateOfBirth))
+                        + '<tr><th>Education Level</th><td>{}</td>'.format(user.educationLevel)
+                        + '<tr><th>Major</th><td>{}</td>'.format(user.major)
+                        + '<tr><th>Currently Enrolled</th><td>{}</td>'.format(user.enrolled ? 'Yes': 'No')
+                        + '<tr><th>Interests</th><td>{}</td>'.format(user.interests);
+        }                
+        table += '</tbody></table>';
+        return table;
+    }
+
     Object.freeze(that);
     return that;
 };

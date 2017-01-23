@@ -30,6 +30,11 @@ input {
 	padding-right: 2%;
 }
 
+.register-modal-dialog {
+  width: 42%;
+  min-width: 200px;
+}
+
 #main-content {
 	padding: 2%;
 }
@@ -71,8 +76,7 @@ input {
 }
 
 .message-modal-dialog {
-    width: 35%; /* respsonsive width */
-    /*margin-left: -17.5%; /* width/2) */ */
+    width: 35%;
 }
 
 .ui-widget {
