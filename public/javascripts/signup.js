@@ -26,7 +26,7 @@ $(document).ready(function () {
 		}
 	});
 
-	//makes sure that birthday is not in the future
+	//doesn't allow user to select birthdays that are in the future on the UI
 	var now = new Date(Date.now());
     var timeNow = now.toISOString().substring(0, 10);
     $("#dob-register-box").attr("max", timeNow);

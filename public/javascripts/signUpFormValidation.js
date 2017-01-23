@@ -5,7 +5,6 @@ $(document).ready(function(){
         var validForm = true;
         var notAllowedPattern = new RegExp (JSON.parse($("#notAllowedRegex").val()));
 
-
         var firstName = $("#firstName-register-box").val();
         var middleName = $("#middleName-register-box").val();
         var lastName = $("#lastName-register-box").val();
@@ -25,10 +24,7 @@ $(document).ready(function(){
 
         var birthdayYear = parseInt(DOB.substring(0,4));
         var currentYear = new Date().getFullYear();
-        var month = DOB.substring(5,7);
-        var day = DOB.substring(8,10);
-
-
+        
         if (birthdayYear >= currentYear ){
             $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
         }
