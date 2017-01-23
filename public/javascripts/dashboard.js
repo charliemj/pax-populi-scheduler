@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	$('#navbar-dashboard').addClass('active');
+	  $('#navbar-dashboard').addClass('active');
     var username = $("#username").val();
     var registrationIds = $("#regIds").val();
     var registrationDates = $("#regDates").val();

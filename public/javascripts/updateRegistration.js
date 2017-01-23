@@ -48,12 +48,27 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
         var courses = $("#courses").val();
         var genderPref = $("#genderPref").val();
         var earliestStartTime = $("#earliestStartTime").val();
+        var data = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime: earliestStartTime};
 
-        var result = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime: earliestStartTime};
-    
-        $http.put('/registrations/update/'+ username +'/' + regId, result).then(
-            function (data){window.location.replace("/"); alert("Registration succesfully updated!");}, 
-            function (data){console.log("Error: " + data);});
+        $http.put('/registrations/update/'+ username +'/' + regId, data).then(
+            //TODO better alert for sucessful registration
+            function (result){
+                var data = result.data;
+                if (data.success) {
+                    addMessage(data.message, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect;
+                        }, 2500);   
+                    }
+                } else {
+                    addMessage(data.message, false);
+                }
+            }, //if call to server is sucessful, redirects to dashboard
+            function (result){
+                var data = result.data;
+                addMessage('A network error might have occurred. Please try again.', false);
+            });
     };//end submitRegistration
 }]);//end controller
 
