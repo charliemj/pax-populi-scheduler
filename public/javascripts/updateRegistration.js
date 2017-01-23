@@ -1,8 +1,3 @@
-$(document).ready(function () {
-   
-
-});
-
 //Angular.js code that populates the screen with the time selector interface and includes a function
 // to send the updated availabilties to the database when the "submit" button is clicked
 
