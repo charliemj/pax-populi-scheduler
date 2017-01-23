@@ -177,7 +177,7 @@ var Email = function() {
                             + '<li>Country: {}</li>'.format(user.country)
                             + '<li>Region: {}</li>'.format(user.region)
                             + '<li>Email Address: {}'.format(user.email);
-            if (utils.notAdmin(user)) {
+            if (utils.isRegularUser(user.role)) {
                 content += '<li>Gender: {}</li>'.format(user.gender)
                             + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))
                             + '<li>Nationality: {}</li>'.format(user.nationality)

@@ -22,8 +22,6 @@ router.get('/', function(req, res, next) {
     if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
         res.redirect('/users/'+ req.session.passport.user.username);
     } else {
-        console.log(regexs.passwordPattern());
-        console.log(JSON.stringify(regexs.passwordPattern()));
         res.render('home', {title: 'Pax Populi Scheduler',
                             csrfToken: req.csrfToken(),
                             userTypes: enums.userTypes(),
@@ -75,11 +73,11 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
             data.username = user.username;
             return res.render('home', data);
         } else if (user.rejected) {
-        	data.message = 'Your account has been rejected by the adminstrator so you do not have '
+        	data.message = 'Your account has been rejected by the adminstrators so you do not have '
         					+ 'the permission to use this scheduler';
         	return res.render('home', data);
         } else if (!user.approved) {
-        	data.message = 'Your account has not been approved by the adminstrator so you do not have '
+        	data.message = 'Your account has not been approved by the adminstrators so you do not have '
         					+ 'the permission to use this scheduler yet. Please keep an eye on your ' 
         					+ 'email for further notice.';
         	return res.render('home', data);
@@ -149,7 +147,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
         		data.message = err.message;
             	return res.json({'success': false, message: err.message});
         	}
-        	data.message = 'Your account has been verified successfully. Next, the adminstrator will be going through your application, and inform you shortly about their decision.';  
+        	data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
         	data.success = true;
         	data.redirect = '/';
         	res.json(data);
@@ -241,7 +239,7 @@ router.put('/waitlist/:username/:requestToken', parseForm, csrfProtection, funct
     });
 });
 
-// Signs up a new account
+// signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 	console.log('signing up...');
     var userJSON = authentication.createUserJSON(req.body, function (err, userJSON) {

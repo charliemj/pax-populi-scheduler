@@ -33,7 +33,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('.hbs', exphbs({extname: '.hbs',
                            defaultLayout: 'index',
                            helpers: {toLowerCase: hbsHelpers.lowerCase,
-                                     notAdmin: hbsHelpers.notAdmin}
+                                     isRegularUser: hbsHelpers.isRegularUser,
+                                      isAdministrator: hbsHelpers.isAdministrator,
+                                      isCoordinator: hbsHelpers.isCoordinator}
                           }));
 app.set('view engine', 'hbs');
 

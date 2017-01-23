@@ -33,8 +33,27 @@ var Utils = function() {
         return Number.isInteger(number) && number >= from && number <= to;
     };
 
-    that.notAdmin = function (user) {
-        return user.role.toLowerCase() !== 'administrator';
+    /**
+    * Returns True if the user is a student or tutor
+    */
+    that.isRegularUser = function (role) {
+        return role.toLowerCase() !== 'administrator' && role.toLowerCase() !== 'coordinator';
+    }
+
+    that.isStudent = function (role) {
+        return role.toLowerCase() === 'student';
+    }
+
+    that.isTutor = function (role) {
+        return role.toLowerCase() === 'tutor';
+    }
+
+    that.isAdministrator = function (role) {
+        return role.toLowerCase() === 'administrator';
+    }
+
+    that.isCoordinator = function (role) {
+        return role.toLowerCase() === 'coordinator';
     }
 
     that.makeProfileTable = function (user) {
@@ -44,7 +63,7 @@ var Utils = function() {
                         + '<tr><th>Country</th><td>{}</td>'.format(user.country)
                         + '<tr><th>Region</th><td>{}</td>'.format(user.region)
                         + '<tr><th>Email Address</th><td>{}</td>'.format(user.email);
-        if (that.notAdmin(user)) {
+        if (that.isRegularUser(user.role)) {
             table += '<tr><th>Nationality</th><td>{}</td>'.format(user.nationality)
                         + '<tr><th>Gender</th><td>{}</td>'.format(user.gender)
                         + '<tr><th>Date of Birth</th><td>{}</td>'.format(that.formatDate(user.dateOfBirth))

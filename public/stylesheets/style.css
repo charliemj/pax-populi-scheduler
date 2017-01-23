@@ -25,7 +25,7 @@ input {
     *display: inline; 
 }
 
-#register-form {
+.register-form {
 	padding-left: 2%;
 	padding-right: 2%;
 }

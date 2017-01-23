@@ -71,8 +71,9 @@ var Authentication = function() {
     that.createUserJSON = function (data, callback) {
         var role = data.userType.trim();
         role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-        var isTutor = role === 'Tutor';
-        var isAdminTutor = role === 'Tutor' || role === 'Administrator';
+        var isTutor = utils.isTutor(role);
+        var isStudent = utils.isStudent(role);
+        var isAdminTutor = !utils.isRegularUser(role);
         var password = data.password.trim();
         that.encryptPassword(password, function (err, hash) {
             if (err) {
@@ -91,7 +92,7 @@ var Authentication = function() {
                             country: data.country.trim(),
                             region: data.region.trim() }
 
-            if (utils.notAdmin(userJSON)) {
+            if (utils.isRegularUser(userJSON.role)) {
                 var additionalInfo = { nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
@@ -106,6 +107,8 @@ var Authentication = function() {
             }   
             if (isTutor) {
                 userJSON['major'] = data.major.trim();
+            } else if (isStudent) {
+                userJSON['major'] = 'N/A';
             }
             callback(null, userJSON)
         });

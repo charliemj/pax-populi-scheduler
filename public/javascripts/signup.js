@@ -12,7 +12,7 @@ $(document).ready(function () {
 			$('.tutor').hide();
 			$('.admin').hide();
 			$('.student').show();
-		} else if (role === 'administrator') {
+		} else if (role === 'administrator' || role === 'coordinator') {
 			$('.tutor').hide();
 			$('.student').hide();
 			$('.admin').show();

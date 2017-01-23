@@ -16,9 +16,10 @@ $(document).ready(function(){
         var phone = $("#phone-number-box").val();
         var skype = $("#skypeId-register-box").val();
         var nationality = $("#nationality-register-box").val();
-        var notAdmin = $('.role :selected').text().toLowerCase() !== 'administrator';
+        var role = $('.role :selected').text().toLowerCase();
+        var regularUser = role !== 'administrator' && role != 'coordinator';
 
-        if($("input[name=timezone]").val() == "" && notAdmin){
+        if($("input[name=timezone]").val() == "" && regularUser){
             validForm = false;
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
