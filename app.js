@@ -17,7 +17,7 @@ var schedules = require('./routes/schedules.js');
 
 // database setup
 var mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/paxpopulidb14');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/paxpopulidb');
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {

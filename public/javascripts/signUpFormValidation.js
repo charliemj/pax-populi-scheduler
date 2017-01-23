@@ -20,41 +20,41 @@ $(document).ready(function(){
         if($("input[name=timezone]").val() == ""){
             validFrom = false;
             $('#timezoneErrors').empty();
-            $('#timezoneErrors').append('<p>Error: Please select your timezone.</p>');
+            $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
 
         if(notAllowedPattern.match(firstName)){
-            $("#firstNameErrors").append("<p>Error: First name contains disallowed special characters");
+            $("#firstNameErrors").append("<p>First name contains disallowed special characters");
         }
         else{$("#firstNameErrors").empty();}
 
         if(notAllowedPattern.match(middleName)){
-            $("#middleNameErrors").append("<p>Error: Middle name contains disallowed special characters");
+            $("#middleNameErrors").append("<p>Middle name contains disallowed special characters");
         }
         else{$("#middleNameErrors").empty();}
 
         if(notAllowedPattern.match(lastName)){
-            $("#lastNameErrors").append("<p>Error: Last name contains disallowed special characters");
+            $("#lastNameErrors").append("<p>Last name contains disallowed special characters");
         }
         else{$("#lastNameErrors").empty();}
 
         if(notAllowedPattern.match(nickName)){
-            $("#nickNameErrors").append("<p>Error: Nickname contains disallowed special characters");
+            $("#nickNameErrors").append("<p>Nickname contains disallowed special characters");
         }
         else{$("#nickNameErrors").empty();}
 
         if(notAllowedPattern.match(phone)){
-            $("#phoneNumErrors").append("<p>Error: Phone number contains disallowed special characters");
+            $("#phoneNumErrors").append("<p>Phone number contains disallowed special characters");
         }
         else{$("#phoneNumErrors").empty();}
 
         if(notAllowedPattern.match(skype)){
-            $("#skypeErrors").append("<p>Error: Skype username contains disallowed special characters");
+            $("#skypeErrors").append("<p>Skype username contains disallowed special characters");
         }
         else{$("#skypeErrors").empty();}
 
         if(notAllowedPattern.match(nationality)){
-            $("#nationalityErrors").append("<p>Error: Nationality contains disallowed special characters");
+            $("#nationalityErrors").append("<p>Nationality contains disallowed special characters");
         }
         else{$("#nationalityErrors").empty();}
 
@@ -75,8 +75,7 @@ $(document).ready(function(){
 
         if (username.length < 5 || username.length > 15){
             $('#usernameErrors').empty();
-            $('#usernameErrors').append('<p>Error: Username must be 5-15 characters long</p>');
-            console.log("Username must be 5-15 characters long");
+            $('#usernameErrors').append('<p>Username must be 5-15 characters long</p>');
             $("#username-register-box").css({"border-color":"red"});
         }
 
@@ -86,7 +85,7 @@ $(document).ready(function(){
         
 
             if (notAllowedPattern.test(username)) {
-                $('#usernameErrors').append('<p>Error: Username contains disallowed special characters.</p>');
+                $('#usernameErrors').append('<p>Username contains disallowed special characters.</p>');
                 $("#username-register-box").css({"border-color":"red"});
             
             }
@@ -108,7 +107,7 @@ $(document).ready(function(){
 
         if ( pw.legnth < 8 || !(passwordPattern.test(pw))){
             $('#pwErrors').empty();
-            $("#pwErrors").append("<p>Error: A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.</p>");
+            $("#pwErrors").append("<p>A valid password contains at least 8 characters, and at least one uppercase character, one lowercase character, a number and one special character.</p>");
             $("#password-register-box").css({"border-color":"red"});
         }
 
@@ -116,7 +115,7 @@ $(document).ready(function(){
             $('#pwErrors').empty();
 
             if (notAllowedPattern.test(pw)) {
-                $('#pwErrors').append('<p>Error: Password contains disallowed special characters.</p>');
+                $('#pwErrors').append('<p>Password contains disallowed special characters.</p>');
                 $("#password-register-box").css({"border-color":"red"});
             }
 
@@ -169,7 +168,7 @@ $(document).ready(function(){
             $("#emailErrors").empty();
 
             if (notAllowedPattern.test(email)) {
-                $('#emailErrors').append('<p>Error: Email contains disallowed special characters.</p>');
+                $('#emailErrors').append('<p>Email contains disallowed special characters.</p>');
                 $("#email-register-box").css({"border-color":"red"});
             }
 
@@ -196,7 +195,7 @@ $(document).ready(function(){
             $("#altEmailErrors").empty();
 
             if (notAllowedPattern.test(email)) {
-                $('#altEmailErrors').append('<p>Error: Email contains disallowed special characters.</p>');
+                $('#altEmailErrors').append('<p>Email contains disallowed special characters.</p>');
                 $("#alternative-email-register-box").css({"border-color":"red"});
             }
 
