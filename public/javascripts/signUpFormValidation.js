@@ -18,49 +18,56 @@ $(document).ready(function(){
         var nationality = $("#nationality-register-box").val();
 
         if($("input[name=timezone]").val() == ""){
-            validFrom = false;
+            validForm = false;
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
 
         if(notAllowedPattern.test(firstName)){
+            validForm = false;
             $("#firstNameErrors").append("<p>First name contains disallowed special characters");
         }
         else{$("#firstNameErrors").empty();}
 
         if(notAllowedPattern.test(middleName)){
+            validForm = false;
             $("#middleNameErrors").append("<p>Middle name contains disallowed special characters");
         }
         else{$("#middleNameErrors").empty();}
 
         if(notAllowedPattern.test(lastName)){
+            validForm = false;
             $("#lastNameErrors").append("<p>Last name contains disallowed special characters");
         }
         else{$("#lastNameErrors").empty();}
 
         if(notAllowedPattern.test(nickName)){
+            validForm = false;
             $("#nickNameErrors").append("<p>Nickname contains disallowed special characters");
         }
         else{$("#nickNameErrors").empty();}
 
         if(notAllowedPattern.test(phone)){
+            validForm = false;
             $("#phoneNumErrors").append("<p>Phone number contains disallowed special characters");
         }
         else{$("#phoneNumErrors").empty();}
 
         if(notAllowedPattern.test(skype)){
+            validForm = false;
             $("#skypeErrors").append("<p>Skype username contains disallowed special characters");
         }
         else{$("#skypeErrors").empty();}
 
         if(notAllowedPattern.test(nationality)){
+            validForm = false;
             $("#nationalityErrors").append("<p>Nationality contains disallowed special characters");
         }
         else{$("#nationalityErrors").empty();}
 
 
         if (validForm){
-            $("register-form").submit();
+            $("#register-form").submit();
         }
     });
 
