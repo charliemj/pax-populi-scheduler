@@ -88,15 +88,15 @@ var Authentication = function() {
                             middleName: data.middleName.trim(),
                             lastName: data.lastName.trim(),
                             phoneNumber: data.phoneNumber.trim(),
-                            school: isAdminTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),
                             country: data.country.trim(),
                             region: data.region.trim() }
 
             if (utils.isRegularUser(userJSON.role)) {
-                var additionalInfo = { nickname: data.nickname.trim(),
+                var additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
-                                        skypeId: data.skypeId.trim(),   
+                                        skypeId: data.skypeId.trim(),
+                                        school: isAdminTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),   
                                         educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
                                                             data.studentEducationLevel.trim(),
                                         enrolled: data.enrolled === 'Yes',
