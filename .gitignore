@@ -5,4 +5,5 @@ public/availability.html
 public/javascripts/vendor/bower_components
 public/vendor
 .DS_Store
-
+.gitignore~
+*.pyc

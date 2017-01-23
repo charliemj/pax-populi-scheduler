@@ -1,6 +1,10 @@
 <ul class="nav navbar-nav navbar-right">
   <li id='navbar-dashboard'><a href="/users/{{username}}">Dashboard</a></li>
+  {{#notAdmin role}}
   <li id='navbar-register'><a href="/registrations">Register</a></li>
+  {{else}}
+  <li id='navbar-schedules'><a href="/schedules">Schedules</a></li>
+  {{/notAdmin}}
   <li id='navbar-faq'><a href="/faq">FAQ</a></li>
   <li id='navbar-user' class="dropdown">
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="username" name="username">{{fullName}}</span>   <span class="caret"></span></a>
