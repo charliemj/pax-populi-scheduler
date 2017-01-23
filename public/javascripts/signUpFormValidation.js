@@ -25,43 +25,43 @@ $(document).ready(function(){
 
         if(notAllowedPattern.test(firstName)){
             validForm = false;
-            $("#firstNameErrors").append("<p>First name contains disallowed special characters");
+            $("#firstNameErrors").append("<p>First name contains disallowed special characters</p>");
         }
         else{$("#firstNameErrors").empty();}
 
         if(notAllowedPattern.test(middleName)){
             validForm = false;
-            $("#middleNameErrors").append("<p>Middle name contains disallowed special characters");
+            $("#middleNameErrors").append("<p>Middle name contains disallowed special characters</p>");
         }
         else{$("#middleNameErrors").empty();}
 
         if(notAllowedPattern.test(lastName)){
             validForm = false;
-            $("#lastNameErrors").append("<p>Last name contains disallowed special characters");
+            $("#lastNameErrors").append("<p>Last name contains disallowed special characters</p>");
         }
         else{$("#lastNameErrors").empty();}
 
         if(notAllowedPattern.test(nickName)){
             validForm = false;
-            $("#nickNameErrors").append("<p>Nickname contains disallowed special characters");
+            $("#nickNameErrors").append("<p>Nickname contains disallowed special characters</p>");
         }
         else{$("#nickNameErrors").empty();}
 
         if(notAllowedPattern.test(phone)){
             validForm = false;
-            $("#phoneNumErrors").append("<p>Phone number contains disallowed special characters");
+            $("#phoneNumErrors").append("<p>Phone number contains disallowed special characters</p>");
         }
         else{$("#phoneNumErrors").empty();}
 
         if(notAllowedPattern.test(skype)){
             validForm = false;
-            $("#skypeErrors").append("<p>Skype username contains disallowed special characters");
+            $("#skypeErrors").append("<p>Skype username contains disallowed special characters</p>");
         }
         else{$("#skypeErrors").empty();}
 
         if(notAllowedPattern.test(nationality)){
             validForm = false;
-            $("#nationalityErrors").append("<p>Nationality contains disallowed special characters");
+            $("#nationalityErrors").append("<p>Nationality contains disallowed special characters</p>");
         }
         else{$("#nationalityErrors").empty();}
 
