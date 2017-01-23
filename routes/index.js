@@ -257,35 +257,39 @@ router.put('/waitlist/:username/:requestToken', parseForm, csrfProtection, funct
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 
 	console.log('signing up...');
-	var isTutor = req.body.userType.trim().toLowerCase() === 'tutor';
+	var role = req.body.userType.trim();
+    role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 	var password = req.body.password.trim();
 	authentication.encryptPassword(password, function (err, hash) {
 		if (err) {
 			return err;
 		}
 	  	var userJSON = {username: req.body.username.trim().toLowerCase(),
-		    	password: hash,
-		    	isTutor: isTutor,
-		    	email: req.body.email.trim(),
-		    	alternativeEmail: req.body.alternativeEmail.trim(),
-		    	firstName: req.body.firstName.trim(),
-		    	middleName: req.body.middleName.trim(),
-		    	lastName: req.body.lastName.trim(),
-		    	nickname: req.body.nickname.trim(),
-		    	gender: req.body.gender.trim(),
-		    	dateOfBirth: new Date(req.body.dateOfBirth.trim()),
-		    	phoneNumber: req.body.phoneNumber.trim(),
-		    	skypeId: req.body.skypeId.trim(),
-		    	school: isTutor ? req.body.tutorSchool.trim() : req.body.studentSchool.trim(),
-		    	educationLevel: isTutor ? req.body.tutorEducationLevel.trim() : 
-		    						req.body.studentEducationLevel.trim(),
-		    	enrolled: req.body.enrolled === 'Yes',
-		    	nationality: req.body.nationality.trim(),
-		    	country: req.body.country.trim(),
-		    	region: req.body.region.trim(),
-		    	interests: req.body.interests,
-	            timezone: req.body.timezone};
-		if (isTutor) {
+            	    	password: hash,
+            	    	role: role,
+            	    	email: req.body.email.trim(),
+            	    	alternativeEmail: req.body.alternativeEmail.trim(),
+            	    	firstName: req.body.firstName.trim(),
+            	    	middleName: req.body.middleName.trim(),
+            	    	lastName: req.body.lastName.trim(),
+                        phoneNumber: req.body.phoneNumber.trim(),
+                        school: isTutor ? req.body.tutorSchool.trim() : req.body.studentSchool.trim(),
+                        country: req.body.country.trim(),
+                        region: req.body.region.trim() }
+        if (role === 'Tutor' || role === 'Student') {
+            var additionalInfo = { nickname: req.body.nickname.trim(),
+                                    gender: req.body.gender.trim(),
+                                    dateOfBirth: new Date(req.body.dateOfBirth.trim()),
+                                    skypeId: req.body.skypeId.trim(),   
+                                    educationLevel: role === 'Tutor' ? req.body.tutorEducationLevel.trim() : 
+                                                        req.body.studentEducationLevel.trim(),
+                                    enrolled: req.body.enrolled === 'Yes',
+                                    nationality: req.body.nationality.trim(),
+                                    interests: req.body.interests,
+                                    timezone: req.body.timezone };
+            Object.assign(userJSON, additionalInfo);
+        }	
+		if (role === 'Tutor') {
 			userJSON['major'] = req.body.major.trim();
 		}
 

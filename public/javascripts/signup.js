@@ -1,5 +1,6 @@
 $(document).ready(function () {
 	$('.tutor').hide();
+	$('.student').filter('.tutor').show();
 	$('.other').hide();
 	$('.role').on('change', function () {
 		var role = $('.role :selected').text().toLowerCase();
