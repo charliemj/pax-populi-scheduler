@@ -1,17 +1,17 @@
 {{#each pendingUsers}}
 
-<div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-4 pending-registration-container' id='pending-registration-container-{{_id}}'>
-  <div class='tile pending-registration-tile' name="pending-registration-{{_id}}" data-id='{{_id}}'>
+<div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-4 pending-request-container' id='pending-request-container-{{_id}}'>
+  <div class='tile pending-request-tile' name="pending-request-{{_id}}" data-id='{{_id}}'>
   	<div class='tile-icon' style='float: left'><img class='icon' src="/images/user.gif"></img></div>
-  	<div class='pending-registration-header'>
-    	<a data-toggle="modal" data-target='#pending-registration-modal-{{_id}}'>
+  	<div class='pending-request-header'>
+    	<a data-toggle="modal" data-target='#pending-request-modal-{{_id}}'>
     		<h4 class='tile-title'>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</h4>
     	</a>
     	<p class='tile-subtitle'>{{role}}<h class='small-text'>{{#if this.onHold}}(waitlisted){{/if}}<h></p>
 
     </div>
     </div>
-    <div id="pending-registration-modal-{{_id}}" class="pending-registration-item-modal modal fade" role="dialog">
+    <div id="pending-request-modal-{{_id}}" class="pending-request-item-modal modal fade" role="dialog">
 	  <div class="modal-messages"></div>
 	  <div class="modal-dialog modal-xs">
 	    <div class="modal-content">

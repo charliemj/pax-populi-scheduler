@@ -16,11 +16,11 @@
  </div>
 {{/isRegularUser}}
 {{#isAdministrator role}}
-<div class='row' id="pendingRegistrations">
+<div class='row' id="pendingRequests">
 	<span class='title-toggle' id='pendingRegistrations-toggle' data-toggle="collapse" data-target="#dashboard-pendingRegistrations"><h3>Pending Requests<span class="badge hide notifs-count"></span>
 	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
   	<div id='dashboard-pendingRegistrations' class='collapse in'>
-  		{{> pendingRegistrations}}
+  		{{> pendingRequests}}
   	</div>
  </div>
 {{/isAdministrator}}

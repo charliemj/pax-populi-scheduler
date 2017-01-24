@@ -1,4 +1,4 @@
-.pending-registration-container {
+.pending-request-container {
 	border-color: #eff0f2;
   	border-style: solid;
   	border-width: medium;
@@ -9,12 +9,12 @@
   	margin: 10px;
 }
 
-.pending-registration-container:hover {
+.pending-request-container:hover {
 	background: #E5E7E9;
 	border-color: #E5E7E9;
 }
 
-.pending-registration-header {
+.pending-request-header {
 	padding-left: 10px;
 	padding-bottom: 15px;
 }
