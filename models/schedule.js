@@ -8,14 +8,21 @@ var utils = require("../javascripts/utils.js");
 var scheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
-    studentClassSchedule: {type: [String], required:true},
-    tutorClassSchedule: {type: [String], required:true},
-    UTCClassSchedule: {type: [String], required:true}, // for Admins
+    possibleCourses: {type:[String], required:true},
+    studentCoord :{type: ObjectId, ref:"User"},
+    tutorCoord :{type: ObjectId, ref:"User"},
+    studentClassSchedule: {type: [Date], required:true},
+    tutorClassSchedule: {type: [Date], required:true},
+    UTCClassSchedule: {type: [Date], required:true}, // for Admins
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDay: {type: String, required:true}, 
-    lastDay: {type: String, required: true} //so we know when to delete the schedule from the DB
+    firstDateTime: {type: Date, required:true}, 
+    lastDateTime: {type: Date, required: true}, //so we know when to delete the schedule from the DB
+    studentPossibleSchedules: {},
+    tutorPossibleSchedules: {},
+    UTCPossibleSchedules: {},
+    course: {type: String}
 });
 
 

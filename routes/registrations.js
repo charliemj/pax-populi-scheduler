@@ -101,6 +101,7 @@ router.put('/update/:username/:registration_id', authentication.isAuthenticated,
 });
 
 
+//DELETE request for deleting registration objects
 router.delete('/delete/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
   var user = req.session.passport.user; 
   var regId = req.params.registration_id;
