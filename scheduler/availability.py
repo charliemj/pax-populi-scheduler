@@ -46,23 +46,29 @@ class WeeklyTime:
 
     def first_datetime_after(self, dt):
         """Computes the first datetime that matches self that is greater or
-        equal to an input datetime.
+        equal to an input datetime. 
 
         Args:
             dt: A datetime.
 
         Returns:
-            The first datetime with the same day of week, hour, and minute as 
+            The first datetime with the same (day of week, hour, minute) as
                 self that is greater or equal to dt.
         """
         # In Python, 0 corresponds to Monday
         input_day_of_week_index = (dt.weekday() + 1) % self.DAYS_PER_WEEK
+        # If input datetime is same day of week as self, then output datetime
+        # is either 0 or 7 days after input datetime
         if input_day_of_week_index == self.day_of_week_index:
             if self.time >= dt.time():
                 first_datetime = datetime.combine(dt.date(), self.time)
             else:
                 first_datetime = datetime.combine(dt.date() + timedelta(days=self.DAYS_PER_WEEK),
                                                   self.time)
+        # If input datetime is not the same day of week as self, then take the
+        # difference between the day of the week index of self and day of week
+        # index of the input datetime mod 7 to find the number of days to add
+        # to the input datetime 
         else:
             shift_days = (self.day_of_week_index - input_day_of_week_index) % self.DAYS_PER_WEEK
             first_datetime = datetime.combine(dt.date() + timedelta(days=shift_days),
@@ -83,40 +89,35 @@ class Availability:
     SLOTS_PER_HOUR = MINUTES_PER_HOUR / MINUTES_PER_SLOT
     SLOTS_PER_DAY = SLOTS_PER_HOUR * HOURS_PER_DAY
     SLOTS_PER_WEEK = MINUTES_PER_WEEK / MINUTES_PER_SLOT
-    MINUTES_PER_CLASS = 90
-    SLOTS_PER_CLASS = int(math.ceil(MINUTES_PER_CLASS / float(MINUTES_PER_SLOT)))
+    MINUTES_PER_COURSE = 90
+    SLOTS_PER_COURSE = int(math.ceil(MINUTES_PER_COURSE / float(MINUTES_PER_SLOT)))
     SLOT_START_TIMES = []
     for day in range(DAYS_PER_WEEK):
         for hour in range(HOURS_PER_DAY):
             for k in range(SLOTS_PER_HOUR):
                 SLOT_START_TIMES.append(WeeklyTime(day, hour, k*MINUTES_PER_SLOT))
-    SLOT_TIMES = [(SLOT_START_TIMES[i], SLOT_START_TIMES[(i+1)%SLOTS_PER_WEEK])
-                   for i in range(SLOTS_PER_WEEK)]
-    CLASS_SLOT_TIMES = [(SLOT_START_TIMES[i],
-                         SLOT_START_TIMES[(i+SLOTS_PER_CLASS)%SLOTS_PER_WEEK])
-                         for i in range(SLOTS_PER_WEEK)]
     SLOT_START_TIME_TO_INDEX = {}
     for i in range(SLOTS_PER_WEEK):
         SLOT_START_TIME_TO_INDEX[SLOT_START_TIMES[i]] = i
 
     def __init__(self, free_slots):
-        # boolean array, i-th entry is whether or not user is available for self.SLOT_TIMES[i]
+        # boolean array, i-th entry is whether or not user is free for the slot starting at SLOT_START_TIMES[i]
         if len(free_slots) != self.SLOTS_PER_WEEK:
             raise ValueError('free_slots must have length SLOTS_PER_WEEK')
         self.free_slots = free_slots
-        # boolean array, i-th entry is whether or not user is available for self.CLASS_SLOT_TIMES[i]
-        self.free_class_slots = []
+        # boolean array, i-th entry is whether or not user is free to start a course at SLOT_START_TIMES[i]
+        self.free_course_slots = []
         for i in range(self.SLOTS_PER_WEEK):
             is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK]
-                          for j in range(self.SLOTS_PER_CLASS))
-            self.free_class_slots.append(is_free)
+                          for j in range(self.SLOTS_PER_COURSE))
+            self.free_course_slots.append(is_free)
     
     def __str__(self):
         lines = []
         for i in range(self.SLOTS_PER_WEEK):
             if self.free_slots[i]:
-                lines.append(str(self.SLOT_TIMES[i][0]) + ' - '
-                             + str(self.SLOT_TIMES[i][1]))
+                lines.append(str(self.SLOT_START_TIMES[i]) + ' - '
+                             + str(self.SLOT_START_TIMES[(i+1)%self.SLOTS_PER_WEEK]))
         return '\n'.join(lines)
 
     def __eq__(self, other):
@@ -133,13 +134,13 @@ class Availability:
         """
         Returns:
             free_slots_indices: A set of indices i such that the user is free
-                during cls.SLOT_TIMES[i]
+                during the slot starting at cls.SLOT_START_TIMES[i]
         """ 
-        for day_index_str in availability_dict.keys():
+        for day_index_str in availability_dict:
             if day_index_str not in map(str, range(cls.DAYS_PER_WEEK)):
                 raise ValueError('Each key in availability_dict must be a string form of an integer in range(7)')
         free_slots_indices = set([])
-        for day_string in availability_dict.keys():
+        for day_string in availability_dict:
             intervals = availability_dict[day_string]
             day_slot_index = int(day_string) * cls.SLOTS_PER_DAY
             for interval in intervals:
@@ -152,7 +153,7 @@ class Availability:
 
     @classmethod
     def from_dict(cls, availability_dict):
-        for day_index_str in availability_dict.keys():
+        for day_index_str in availability_dict:
             if day_index_str not in map(str, range(cls.DAYS_PER_WEEK)):
                 raise ValueError('Each key in availability_dict must be a string form of an integer in range(7)')
         free_slots_indices = cls.parse_dict(availability_dict)
@@ -215,47 +216,47 @@ class Availability:
         new_wt = cls.SLOT_START_TIMES[(index+n_slots)%cls.SLOTS_PER_WEEK]
         return new_wt
 
-    def share_class_start(self, other_availability):
+    def share_course_start(self, other_availability):
         """Returns whether or not two Availability objects are both free for
-        least one class slot.
+        least one course slot.
 
         Args:
             other_availability: An Availability object.
 
         Returns:
             A boolean whether or not self and other_availability are both free
-                for at least one class slot.    
+                for at least one course slot.    
         """
-        return any(self.free_class_slots[i] and other_availability.free_class_slots[i]
+        return any(self.free_course_slots[i] and other_availability.free_course_slots[i]
                    for i in range(self.SLOTS_PER_WEEK))
 
-    def shared_class_start_indices(self, other_availability):
+    def shared_course_start_indices(self, other_availability):
         """Computes indices of self.SLOT_START_TIMES during which both
-        Availability objects are free to start class.
+        Availability objects are free to start a course.
 
         Args:
             other_availability: An Availability object.
 
         Returns:
             A list of indices into self.SLOT_START_TIMES for which self and
-                other_availability are both free to start class.
+                other_availability are both free to start a course.
         """
         return [i for i in range(self.SLOTS_PER_WEEK)
-                if self.free_class_slots[i] and other_availability.free_class_slots[i]]
+                if self.free_course_slots[i] and other_availability.free_course_slots[i]]
 
-    def shared_class_start_times(self, other_availability):
+    def shared_course_start_times(self, other_availability):
         """Computes weekly times during which both Availability objects are
-        free to start class.
+        free to start a course.
 
         Args:
             other_availability: An Availability object.
 
         Returns:
             A list of WeeklyTime objects during which self and
-                other_availability are both free to start class.
+                other_availability are both free to start a course.
         """
         return [self.SLOT_START_TIMES[i] for i in range(self.SLOTS_PER_WEEK)
-                if self.free_class_slots[i] and other_availability.free_class_slots[i]]
+                if self.free_course_slots[i] and other_availability.free_course_slots[i]]
 
     def forward_shifted(self, forward_shift_minutes):
         """
@@ -285,7 +286,7 @@ class Availability:
         return shifted_availability
 
     def new_timezone(self, current_tz_string, new_tz_string,
-                     unlocalized_datetime_in_new_tz):
+                     naive_datetime_in_new_tz):
         """Returns a copy of self after shifting to a new timezone.
 
         Args:
@@ -293,7 +294,7 @@ class Availability:
                 Must be in the pytz timezone database.
             new_tz_string: A string representing the new time zone to shift to.
                 Must be in the pytz timezone database.
-            unlocalized_datetime_in_new_tz: An unlocalized datetime object that
+            naive_datetime_in_new_tz: An naive datetime object that
                 provides the reference time in the timezone new_tz_string with
                 which to calculate UTC offsets. 
         """
@@ -303,7 +304,7 @@ class Availability:
             raise ValueError('new_tz must be in the pytz timezone databse')
         current_tz = pytz.timezone(current_tz_string)
         new_tz = pytz.timezone(new_tz_string)
-        datetime_new_tz = new_tz.localize(unlocalized_datetime_in_new_tz)
+        datetime_new_tz = new_tz.localize(naive_datetime_in_new_tz)
         datetime_current_tz = datetime_new_tz.astimezone(current_tz)
         forward_shift_minutes = (self.UTC_offset_minutes(datetime_new_tz)
                                  - self.UTC_offset_minutes(datetime_current_tz))
@@ -320,15 +321,10 @@ if __name__ == '__main__':
     availability_dict2 = {'0':[['5:30', '15:00']]}
     a = Availability.from_dict(availability_dict)
     a2 = Availability.from_dict(availability_dict2)
-    '''
-    for wt in a.shared_class_start_times(a2):
-        print wt
-    print WeeklyTime.from_datetime(datetime(2017, 1, 14, 2, 00, 49))
-    '''
     wt = WeeklyTime(0, 12, 15)
     current_tz = pytz.timezone('US/Eastern')
     new_tz_string = 'UTC'
     dt = datetime(2017, 7, 15)
     localized_dt = current_tz.localize(dt)
-    #print Availability.new_timezone_wt(wt, localized_dt, new_tz_string)
+    print a2
 

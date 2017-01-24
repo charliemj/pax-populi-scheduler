@@ -6,13 +6,14 @@ from match import Match
 Performs schedule matching between students and tutors.
 """
 class Scheduler:
-    WEEKS_PER_CLASS = 11
-
-    def __init__(self, students, tutors):
+    def __init__(self, students, tutors, weeks_per_course=11):
         """
         Args:
             students: A list of student User objects to be matched.
             tutors: A list of tutor User objects to be matched.
+            weeks_per_course: A positive integer representing the number of
+                occurrences of the course, assuming the course meets once per
+                week.
         """
         for student in students:
             if student.user_type != 'STUDENT':
@@ -20,9 +21,12 @@ class Scheduler:
         for tutor in tutors:
             if tutor.user_type != 'TUTOR':
                 raise ValueError('Every user in tutors must have the user_type "TUTOR"')
+        if weeks_per_course <= 0:
+            raise ValueError('weeks_per_course must be a positive integer')
         self.students = students
         self.tutors = tutors
         self.tutor_ID_to_tutor = {tutor.ID: tutor for tutor in tutors}
+        self.weeks_per_course = weeks_per_course
 
     def get_max_flow_network(self):
         # Add nodes
@@ -37,7 +41,7 @@ class Scheduler:
             network.add_edge('SOURCE', student.ID, capacity=1)
         for student in self.students:
             for tutor in self.tutors:
-                if student.can_match(tutor, self.WEEKS_PER_CLASS):
+                if student.can_match(tutor, self.weeks_per_course):
                     network.add_edge(student.ID, tutor.ID, capacity=1)
         for tutor in self.tutors:
             network.add_edge(tutor.ID, 'SINK', capacity=1)
@@ -48,18 +52,18 @@ class Scheduler:
         student_tutor_to_matches = {}
         for student in self.students:
             edge_dict = flow_dict[student.ID]
-            for tutor_ID in edge_dict.keys():
+            for tutor_ID in edge_dict:
                 flow = edge_dict[tutor_ID]
                 if flow == 1:
                     tutor = self.tutor_ID_to_tutor[tutor_ID]
-                    matches = student.get_availability_matches(tutor, self.WEEKS_PER_CLASS)
+                    matches = student.get_availability_matches(tutor, self.weeks_per_course)
                     student_tutor_to_matches[(student.ID, tutor.ID)] = matches
         return student_tutor_to_matches
     
     def match_output_to_db(self):
         student_tutor_to_matches = self.match_max_flow()
         student_tutor_to_match_dicts = {pair: map(lambda x: x.to_dict(), student_tutor_to_matches[pair])
-                                        for pair in student_tutor_to_matches.keys()}
+                                        for pair in student_tutor_to_matches}
         return student_tutor_to_match_dicts
 
 if __name__ == '__main__':
@@ -84,7 +88,9 @@ if __name__ == '__main__':
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
     d = s.match_output_to_db()
-    for pair in d.keys():
+    for pair in d:
         print pair
         for match_dict in d[pair]:
             print match_dict
+
+    
