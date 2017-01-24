@@ -1,6 +1,16 @@
 import networkx as nx
-from availability import WeeklyTime, Availability
 from match import Match
+
+"""
+Immutable source or sink vertex for max flow. This class was created so that
+instances of it can be used as the source and sink vertex in max flow instead
+of the strings 'SOURCE' and 'SINK', one of which could be equal to a student ID
+or tutor ID.
+"""
+class Vertex:
+    def __init__(self, vertex_type):
+        if vertex_type not in ['SOURCE', 'SINK']:
+            raise ValueError('vertex_type must be "SOURCE" or "SINK"')
 
 """
 Performs schedule matching between students and tutors.
@@ -27,28 +37,30 @@ class Scheduler:
         self.tutors = tutors
         self.tutor_ID_to_tutor = {tutor.ID: tutor for tutor in tutors}
         self.weeks_per_course = weeks_per_course
+        self.source = Vertex('SOURCE')
+        self.sink = Vertex('SINK')
 
     def get_max_flow_network(self):
         # Add nodes
         network = nx.DiGraph()
-        network.add_node('SOURCE')
-        network.add_node('SINK')
+        network.add_node(self.source)
+        network.add_node(self.sink)
         network.add_nodes_from([student.ID for student in self.students])
         network.add_nodes_from([tutor.ID for tutor in self.tutors])
 
         # Add edges
         for student in self.students:
-            network.add_edge('SOURCE', student.ID, capacity=1)
+            network.add_edge(self.source, student.ID, capacity=1)
         for student in self.students:
             for tutor in self.tutors:
                 if student.can_match(tutor, self.weeks_per_course):
                     network.add_edge(student.ID, tutor.ID, capacity=1)
         for tutor in self.tutors:
-            network.add_edge(tutor.ID, 'SINK', capacity=1)
+            network.add_edge(tutor.ID, self.sink, capacity=1)
         return network
 
     def match_max_flow(self):
-        (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(), 'SOURCE', 'SINK')
+        (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(), self.source, self.sink)
         student_tutor_to_matches = {}
         for student in self.students:
             edge_dict = flow_dict[student.ID]
@@ -67,10 +79,6 @@ class Scheduler:
         return student_tutor_to_match_dicts
 
 if __name__ == '__main__':
-    #import matplotlib.pyplot as plt
-    #nx.draw(G, pos=nx.spring_layout(G), with_labels=False)
-    #nx.draw_networkx_labels(G, pos=nx.spring_layout(G))
-    #plt.show()
     from user import User
     from availability import Availability
     from datetime import date
