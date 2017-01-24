@@ -41,6 +41,27 @@ var Authentication = function() {
         }
     }
 
+    that.isAdministrator = function (req, res, next) {
+        var user = req.session.passport.user;
+        if (utils.isAdministrator(user.role)) {
+            next();
+        } else {
+            res.render('home', {title: 'Pax Populi Scheduler',
+                                message: 'You do not have the right permission to proceed',
+                                csrfToken: req.csrfToken(),
+                                userTypes: enums.userTypes(),
+                                genders: enums.genders(),
+                                confirmation: enums.confirmation(),
+                                studentSchools: enums.studentSchools(),
+                                tutorSchools: enums.tutorSchools(),
+                                studentEducationLevels: enums.studentEducationLevels(),
+                                tutorEducationLevels: enums.tutorEducationLevels(),
+                                majors: enums.majors(),
+                                interests: enums.interests(),
+                                ref_path: req.query.ref_path});
+        }
+    }
+
     /*
     * Encrypts the password using hashing and salting
     * @param {String} password - the password to encrypt
@@ -71,8 +92,9 @@ var Authentication = function() {
     that.createUserJSON = function (data, callback) {
         var role = data.userType.trim();
         role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-        var isTutor = role === 'Tutor';
-        var isAdminTutor = role === 'Tutor' || role === 'Administrator';
+        var isTutor = utils.isTutor(role);
+        var isStudent = utils.isStudent(role);
+        var isAdminTutor = !utils.isRegularUser(role);
         var password = data.password.trim();
         that.encryptPassword(password, function (err, hash) {
             if (err) {
@@ -86,27 +108,38 @@ var Authentication = function() {
                             firstName: data.firstName.trim(),
                             middleName: data.middleName.trim(),
                             lastName: data.lastName.trim(),
-                            phoneNumber: data.phoneNumber.trim(),
-                            school: isAdminTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),
-                            country: data.country.trim(),
-                            region: data.region.trim() }
+                            phoneNumber: data.phoneNumber.trim()}
 
-            if (utils.notAdmin(userJSON)) {
-                var additionalInfo = { nickname: data.nickname.trim(),
+            if (utils.isRegularUser(userJSON.role)) {
+                var additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
-                                        skypeId: data.skypeId.trim(),   
+                                        skypeId: data.skypeId.trim(),
+                                        school: isTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),   
                                         educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
                                                             data.studentEducationLevel.trim(),
                                         enrolled: data.enrolled === 'Yes',
                                         nationality: data.nationality.trim(),
+                                        country: data.country.trim(),
+                                        region: data.region.trim(),
                                         interests: data.interests,
                                         timezone: data.timezone };
                 Object.assign(userJSON, additionalInfo);
             }   
             if (isTutor) {
                 userJSON['major'] = data.major.trim();
+            } else if (isStudent) {
+                userJSON['major'] = 'N/A';
             }
+            if (utils.isCoordinator(role)) {
+                var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
+                scopes.forEach(function (scope) {
+                    if (typeof data[scope] !== 'undefined') {
+                        userJSON[scope] = data[scope];
+                    }
+                });
+            }
+
             callback(null, userJSON)
         });
     }
