@@ -87,20 +87,20 @@ var Authentication = function() {
                             firstName: data.firstName.trim(),
                             middleName: data.middleName.trim(),
                             lastName: data.lastName.trim(),
-                            phoneNumber: data.phoneNumber.trim(),
-                            country: data.country.trim(),
-                            region: data.region.trim() }
+                            phoneNumber: data.phoneNumber.trim()}
 
             if (utils.isRegularUser(userJSON.role)) {
                 var additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
                                         skypeId: data.skypeId.trim(),
-                                        school: isAdminTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),   
+                                        school: isTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),   
                                         educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
                                                             data.studentEducationLevel.trim(),
                                         enrolled: data.enrolled === 'Yes',
                                         nationality: data.nationality.trim(),
+                                        country: data.country.trim(),
+                                        region: data.region.trim(),
                                         interests: data.interests,
                                         timezone: data.timezone };
                 Object.assign(userJSON, additionalInfo);

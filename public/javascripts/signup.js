@@ -5,6 +5,7 @@ $(document).ready(function () {
 	$('.in-charge').hide();
 	$('.role').on('change', function () {
 		var role = $('.role :selected').text().toLowerCase();
+		$('.coordinator').hide();
 		switch(role) {
 		    case 'tutor':
 		        $('.student').hide();
@@ -34,7 +35,7 @@ $(document).ready(function () {
 
 	$('input:radio[name="in-charge"]').change(
 	    function () {
-	    	console.log('changed');
+	    	$('#in-charge-of').empty();
 	    	var countryHTML = $('.country').clone();
 	    	countryHTML.find('select').attr('name', 'countryInCharge');
 	    	var regionHTML = $('.region').clone();
@@ -45,7 +46,6 @@ $(document).ready(function () {
 
 	        if ($(this).is(':checked')) {
 	        	var inCharge = $(this).val();
-	        	console.log('inCharge', inCharge);
 	        	switch (inCharge) {
 	        		case 'School':
 	        			$('#in-charge-of').html(schoolHTML);

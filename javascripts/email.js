@@ -173,9 +173,6 @@ var Email = function() {
                             + '{} {} has just requested to join Pax Populi as a/an {}. '.format(user.firstName, user.lastName, user.role.toLowerCase())
                             + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
                             + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
-                            + '<li>School/Institution: {}</li>'.format(user.school)
-                            + '<li>Country: {}</li>'.format(user.country)
-                            + '<li>Region: {}</li>'.format(user.region)
                             + '<li>Email Address: {}'.format(user.email);
             if (utils.isCoordinator(user.role)) {
                 if (user.schoolInCharge) {
@@ -190,7 +187,10 @@ var Email = function() {
             if (utils.isRegularUser(user.role)) {
                 content += '<li>Gender: {}</li>'.format(user.gender)
                             + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))
+                            + '<li>School/Institution: {}</li>'.format(user.school)
                             + '<li>Nationality: {}</li>'.format(user.nationality)
+                            + '<li>Country: {}</li>'.format(user.country)
+                            + '<li>Region: {}</li>'.format(user.region)
                             + '<li>Major: {}</li>'.format(user.major)
                             + '<li>Education Level: {}</li>'.format(user.educationLevel)
                             + '<li>Currently Enrolled: {}</li>'.format(user.enrolled ? 'Yes': 'No')

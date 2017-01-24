@@ -33,8 +33,8 @@ var UserSchema = mongoose.Schema({
     educationLevel: {type: String},
     enrolled: {type: String},
     major: {type: String},
-    country:{type: String, required: true},
-    region: {type: String, required: true},
+    country:{type: String},
+    region: {type: String},
     timezone: {type: String},
     nationality: {type: String},
     interests: [{type: String}],
@@ -46,12 +46,12 @@ var UserSchema = mongoose.Schema({
 
 UserSchema.path("role").validate(function(role) {
     if (utils.isRegularUser(role)) {
-        if (!this.gender || !this.dateOfBirth || !this.educationLevel || !this.skypeId ||
+        if (!this.gender || !this.dateOfBirth || !this.skypeId || !this.interests || 
             !this.school || !this.educationLevel || !this.enrolled || !this.major ||
-            !this.timezone || !this.nationality || !this.interests) {
+            !this.timezone || !this.nationality || !this.country || !this.region) {
             return false;
         }
-    } else {
+    } else if (utils.isCoordinator(role)) {
         if (!this.countryInCharge && !this.regionInCharge && !this.schoolInCharge) {
             return false;
         }
