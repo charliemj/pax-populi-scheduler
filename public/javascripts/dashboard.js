@@ -12,6 +12,7 @@ $(document).ready(function () {
         method: 'GET',
         success: function(data) {
           // loads the registrations into #registrations div and sets all controllers
+          var content = '';
           if (regIds != ""){
             //displays registration objects with most recently submitted on top
             for(var i=regIds.length-1; i>=0; i--){ //regIds and regDates should be same length
@@ -20,8 +21,8 @@ $(document).ready(function () {
               //add buttons for each of these and have on click do a get to the url
               link = "/registrations/update/" + username +"/"+ regId;
               //console.log(dateAdded);
-              $("#registrations").append("<div>Click <a href="+link+">here</a> to update the registration you submitted on: "+dateAdded + "</div>");
-              $("#registrations").append("<br>");
+              content += "<div>Click <a href="+link+">here</a> to update the registration you submitted on: "+dateAdded + "</div><br>";
+              $("#dashboard-registrations").html(content + "<br>");
             }
           }
           //loadRegistrations(registrations, currentUser, csrfToken);

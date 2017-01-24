@@ -127,3 +127,7 @@ input {
 .footer {
 	padding-bottom: 10%;
 }
+
+.glyphicon.glyphicon-chevron-down {
+    font-size: 15px;
+}

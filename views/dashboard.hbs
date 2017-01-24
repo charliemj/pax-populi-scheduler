@@ -5,12 +5,33 @@
 <input type="hidden" id='username' name="username" value="{{username}}">
 <input type="hidden" id='regIds' name="regIds" value="{{regIdList}}">
 <input type="hidden" id='regDates' name="regDates" value="{{regDateList}}">
-
-Hi {{fullName}}, you are logged in as a/an {{toLowerCase role}}
-
-<div id="registrations"></div>
-
-<div id="schedules"></div>
+{{#isRegularUser role}}
+<div id="registrations">
+	<span class='title-toggle' id='registrations-toggle' data-toggle="collapse" data-target="#dashboard-registrations"><h3>Your Registrations<span class="badge hide notifs-count"></span>
+	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  	<div id='dashboard-registrations' class='collapse in'>
+  	</div>
+ </div>
+{{/isRegularUser}}
+{{#isAdministrator role}}
+<div id="pendingRegistrations">
+	<span class='title-toggle' id='pendingRegistrations-toggle' data-toggle="collapse" data-target="#dashboard-pendingRegistrations"><h3>Pending Registrations<span class="badge hide notifs-count"></span>
+	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  	<div id='dashboard-pendingRegistrations' class='collapse in'>
+  		{{> pendingRegistrations}}
+  	</div>
+ </div>
+{{/isAdministrator}}
+{{#isRegularUser role}}
+{{else}}
+<div id="schedules">
+	<span class='title-toggle' id='schedules-toggle' data-toggle="collapse" data-target="#dashboard-schedules"><h3>Schedules<span class="badge hide notifs-count"></span>
+	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  	<div id='dashboard-schedules' class='collapse in'>
+  		{{> schedules}}
+  	</div>
+ </div>
+{{/isRegularUser}}
 
 </div>
 </div>
