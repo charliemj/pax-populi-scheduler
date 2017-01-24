@@ -18,37 +18,45 @@ router.get('/', function(req, res, next) {
 //TODO-- eventually add a similar functionality for getting any schedules they might have
 router.get('/:username', authentication.isAuthenticated, function (req, res, next) {
 	var user = req.session.passport.user;
+    var data = {title: 'Dashboard',
+                csrfToken: req.csrfToken(),
+                username: req.params.username,
+                verified: user.verified,
+                approved: user.approved,
+                rejected: user.rejected,
+                onHold: user.onHold,
+                inPool: user.inPool,
+                role: user.role,                                        
+                fullName: user.fullName}
 
     Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
         if (err) {
           res.send({success: false, message: err.message});
         } else {
-            var regDateList = []; // will be a list containing dateAdded param of all unmatched registrations for user
-            var regIdList = []; //will be a list containing ids of all unmatched registrations for the user 
-            for (var i=0; i < registrations.length; i++) {
-                regIdList.push(registrations[i]._id); 
-                regDateList.push(registrations[i].dateAdded);    
+            data.registrations = registrations;
+            if (utils.isRegularUser(user.role)) {
+                res.render('dashboard', data)
+            } else {
+                Schedule.getSchedules(user, function (err, schedules) {
+                    if (err) {
+                        res.send({success: false, message: err.message});
+                    } else {
+                        data.schedules = schedules;
+                        if (utils.isCoordinator(user.role)) {
+                            res.render('dashboard', data);
+                        } else if (utils.isAdministrator(user.role)) {
+                            User.getPendingUsers(function (err, users) {
+                                if (err) {
+                                    res.send({success: false, message: err.message});
+                                } else {
+                                    data.pendingUsers = users;
+                                    res.render('dashboard', data);
+                                }
+                            })
+                        }
+                    }
+                }); 
             }
-
-            Schedule.getSchedules(user, function (err, schedules) {
-                if (err) {
-                    res.send({success: false, message: err.message});
-                } else {
-                    res.render('dashboard',{title: 'Dashboard',
-                                            csrfToken: req.csrfToken(),
-                                            username: req.params.username,
-                                            verified: user.verified,
-                                            approved: user.approved,
-                                            rejected: user.rejected,
-                                            onHold: user.onHold,
-                                            inPool: user.inPool,
-                                            role: user.role,                                        
-                                            fullName: user.fullName,
-                                            regIdList: regIdList,
-                                            regDateList: regDateList,
-                                            schedules: schedules});
-                }
-            }); 
         }
   });
 });
@@ -80,6 +88,9 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
                                 email: user.email,
                                 skypeId: user.skypeId,
                                 phoneNumber: user.phoneNumber,
+                                schoolInCharge: user.schoolInCharge,
+                                regionInCharge: user.regionInCharge,
+                                countryInCharge: user.countryInCharge,
                                 csrfToken: req.csrfToken()
                            });
     });

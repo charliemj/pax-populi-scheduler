@@ -24,7 +24,7 @@ var scheduleSchema = mongoose.Schema({
 
 
 scheduleSchema.statics.getSchedules = function (user, callback) {
-    if (utils.notAdmin(user)) {
+    if (utils.isRegularUser(user.role)) {
         // get personal scheudles
         Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]}, function (err, schedules) {
             if (err) {
