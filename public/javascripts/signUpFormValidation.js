@@ -13,10 +13,11 @@ $(document).ready(function(){
         var skype = $("#skypeId-register-box").val();
         var nationality = $("#nationality-register-box").val();
         var DOB = $("#dob-register-box").val();
+        var role = $('.role :selected').text().toLowerCase();
+        var regularUser = role !== 'administrator' && role != 'coordinator';
 
-        var notAdmin = $('.role :selected').text().toLowerCase() !== 'administrator';
 
-        if($("input[name=timezone]").val() == "" && notAdmin){
+        if($("input[name=timezone]").val() == "" && regularUser){
             validForm = false;
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');

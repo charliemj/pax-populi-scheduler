@@ -29,23 +29,30 @@ var UserSchema = mongoose.Schema({
     dateOfBirth: {type: Date},
     phoneNumber: {type: String, require: true},
     skypeId: {type: String},
-    school: {type: String, default: 'N/A'},
+    school: {type: String},
     educationLevel: {type: String},
     enrolled: {type: String},
-    major: {type: String, default: 'N/A'},
-    country:{type: String, required: true},
-    region: {type: String, required: true},
+    major: {type: String},
+    country:{type: String},
+    region: {type: String},
     timezone: {type: String},
     nationality: {type: String},
-    interests: [{type: String}]
+    interests: [{type: String}],
+    countryInCharge: {type: String},
+    regionInCharge: {type: String},
+    schoolInCharge: {type: String}
 
 });
 
 UserSchema.path("role").validate(function(role) {
-    if (role === 'Student' || role === 'Tutor') {
-        if (!this.gender || !this.dateOfBirth || !this.educationLevel || !this.skypeId ||
+    if (utils.isRegularUser(role)) {
+        if (!this.gender || !this.dateOfBirth || !this.skypeId || !this.interests || 
             !this.school || !this.educationLevel || !this.enrolled || !this.major ||
-            !this.timezone || !this.nationality || !this.interests) {
+            !this.timezone || !this.nationality || !this.country || !this.region) {
+            return false;
+        }
+    } else if (utils.isCoordinator(role)) {
+        if (!this.countryInCharge && !this.regionInCharge && !this.schoolInCharge) {
             return false;
         }
     }
@@ -118,6 +125,7 @@ UserSchema.methods.setRequestToken = function (token, callback) {
 */
 UserSchema.methods.approve = function (callback) {
     this.approved = true;
+    this.onHold = false;
     this.save(callback);
 };
 
@@ -182,7 +190,7 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
     this.findOne({username: username}, function (err, user) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid username'});
-        } else if (user.approved) {
+        } else if (user.approved && !user.onHold) {
             callback({success:false, message: 'The account is already approved'});
         } else if (user.rejected) {
             callback({success:false, message: 'The account is already rejected'});
@@ -454,6 +462,20 @@ UserSchema.statics.getUser = function(username, callback){
         }
     });//end findOne
 };
+
+UserSchema.statics.getPendingUsers = function (callback) {
+    // {$or: [{student: user._id}, {tutor: user._id}]}
+    this.find({$and: [{verified: true}, 
+                        {$or: [{$and: [{approved:false}, {rejected: false}, {onHold: false}]}, 
+                                {onHold: true, approved: true}]}]}, function (err, users) {
+        console.log('pending', users);
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(null, users);
+        }
+    });
+}
 
 var UserModel = mongoose.model("User", UserSchema);
 
