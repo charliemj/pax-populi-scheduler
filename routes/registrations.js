@@ -103,16 +103,17 @@ router.put('/update/:username/:registration_id', authentication.isAuthenticated,
 
 //DELETE request for deleting registration objects
 router.delete('/delete/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
-  var user = req.session.passport.user; 
   var regId = req.params.registration_id;
 
-  Registration.deleteRegistration(regId, user, function(err){
+  Registration.deleteRegistration(regId, function(err){
 
     if (err){
+      console.log("breaks in route if");
       console.log("error deleting registration " + err);
       res.send({ success: false, message: err.message });
     }
     else {
+      console.log("breaks in route else");
       res.status(200).send({success: true,
                               message:"Registration has been deleted!", 
                               redirect: "/"});

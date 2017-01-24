@@ -106,8 +106,17 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
 
 
     $scope.deleteRegistration = function(){
+        var csrf = $('#csrf').val();
 
-        $http.delete('/registrations/delete' + username + '/' + regId, data).then(
+        data = {_csrf:csrf};
+        console.log(data);
+        
+        $http({ //need to do this kind of http req because angulars $http.delete cannot send the csrf token :(
+            method: 'DELETE',
+            url: '/registrations/delete/' + username + '/' + regId,
+            data: data,
+            headers: {'Content-Type': 'application/json;charset=utf-8'}
+        }).then(
             function(result){
                 var data = result.data;
                 if (data.success) {
@@ -123,6 +132,7 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
             }, //if call to server is sucessful, redirects to dashboard
             function (result){
                 var data = result.data;
+                console.log(data);
                 addMessage('A network error might have occurred. Please try again.', false);
             });
     };
