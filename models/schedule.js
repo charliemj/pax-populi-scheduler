@@ -3,7 +3,7 @@ var validators = require("mongoose-validators");
 var ObjectId = mongoose.Schema.Types.ObjectId;
 var User = require("../models/user.js"); 
 var utils = require("../javascripts/utils.js");
-
+var Registration = require("../models/registration.js"); 
 
 var scheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
@@ -22,7 +22,9 @@ var scheduleSchema = mongoose.Schema({
     studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-    course: {type: String}
+    course: {type: String},
+    studentReg: {type: ObjectId, ref:"Registration", required:true},
+    tutorReg: {type: ObjectId, ref:"Registration", required:true}
 });
 
 
