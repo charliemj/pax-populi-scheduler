@@ -33,14 +33,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
         if (err) {
           res.send({success: false, message: err.message});
         } else {
-            var regDateList = []; // list containing dateAdded param of all unmatched registrations for user
-            var regIdList = []; // list containing ids of all unmatched registrations for the user 
-            for (var i=0; i < registrations.length; i++) {
-                regIdList.push(registrations[i]._id); 
-                regDateList.push(registrations[i].dateAdded);    
-            }
-            data.regIdList = regIdList;
-            data.regDateList = regDateList;
+            data.registrations = registrations;
             if (utils.isRegularUser(user.role)) {
                 res.render('dashboard', data)
             } else {

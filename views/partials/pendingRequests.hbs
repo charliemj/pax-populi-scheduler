@@ -1,13 +1,13 @@
 {{#each pendingUsers}}
 
-<div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-4 pending-request-container' id='pending-request-container-{{_id}}'>
+<div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-4 pending-request-container tile-container' id='pending-request-container-{{_id}}'>
   <div class='tile pending-request-tile' name="pending-request-{{_id}}" data-id='{{_id}}'>
   	<div class='tile-icon' style='float: left'><img class='icon' src="/images/user.gif"></img></div>
-  	<div class='pending-request-header'>
+  	<div class='pending-request-header tile-header'>
     	<a data-toggle="modal" data-target='#pending-request-modal-{{_id}}'>
     		<h4 class='tile-title'>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</h4>
     	</a>
-    	<p class='tile-subtitle'>{{role}}<h class='small-text'>{{#if this.onHold}}(waitlisted){{/if}}<h></p>
+    	<p class='tile-subtitle'>{{role}}<h class='small-text'>{{#if onHold}}(waitlisted){{/if}}</h></p>
 
     </div>
     </div>
@@ -26,14 +26,14 @@
 	  </div>
 	</div>    
     <div>
-		<input id='username-{{this._id}}' type="hidden" value="{{username}}"></input>
-		<input id='requestToken-{{this._id}}' type="hidden" value="{{requestToken}}"></input>
+		<input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
+		<input id='requestToken-{{_id}}' type="hidden" value="{{requestToken}}"></input>
 		<input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
 		<center>
-			<button id='approve-button-{{this._id}}' class='btn btn-success btn-hg approve-button'>Approve</button>
-			<button id='reject-button-{{this._id}}' class='btn btn-danger btn-hg reject-button'>Reject</button>
-			{{#ifNot this.onHold}}
-				<button id='waitlist-button-{{this._id}}' class='btn btn-warning btn-hg waitlist-button'>Waitlist</button>
+			<button id='approve-button-{{_id}}' class='btn btn-success btn-hg approve-button'>Approve</button>
+			<button id='reject-button-{{_id}}' class='btn btn-danger btn-hg reject-button'>Reject</button>
+			{{#ifNot onHold}}
+				<button id='waitlist-button-{{_id}}' class='btn btn-warning btn-hg waitlist-button'>Waitlist</button>
 			{{/ifNot}}
 		</center>
     </div>

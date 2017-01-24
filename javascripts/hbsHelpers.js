@@ -1,3 +1,5 @@
+var dateFormat = require('dateformat');
+
 var HbsHelpers = function() {
     var that = Object.create(HbsHelpers.prototype);
 
@@ -11,6 +13,10 @@ var HbsHelpers = function() {
         }
         return options.inverse(this);
     }
+
+    that.formatDate = function (date) {
+        return dateFormat(date, "mmm d, yyyy");
+    };
 
     that.isRegularUser = function (role, options) {
     	if (role.toLowerCase() !== 'administrator' && role.toLowerCase() !== 'coordinator') {
