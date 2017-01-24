@@ -41,6 +41,27 @@ var Authentication = function() {
         }
     }
 
+    that.isAdministrator = function (req, res, next) {
+        var user = req.session.passport.user;
+        if (utils.isAdministrator(user.role)) {
+            next();
+        } else {
+            res.render('home', {title: 'Pax Populi Scheduler',
+                                message: 'You do not have the right permission to proceed',
+                                csrfToken: req.csrfToken(),
+                                userTypes: enums.userTypes(),
+                                genders: enums.genders(),
+                                confirmation: enums.confirmation(),
+                                studentSchools: enums.studentSchools(),
+                                tutorSchools: enums.tutorSchools(),
+                                studentEducationLevels: enums.studentEducationLevels(),
+                                tutorEducationLevels: enums.tutorEducationLevels(),
+                                majors: enums.majors(),
+                                interests: enums.interests(),
+                                ref_path: req.query.ref_path});
+        }
+    }
+
     /*
     * Encrypts the password using hashing and salting
     * @param {String} password - the password to encrypt

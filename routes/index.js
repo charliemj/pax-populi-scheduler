@@ -156,7 +156,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
 });
 
 // Directs admin to request page
-router.get('/respond/:username/:requestToken', authentication.isAuthenticated, function(req, res, next) {
+router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], function(req, res, next) {
     var username = req.params.username;
     var user = req.session.passport.user;
     User.getUser(username, function (err, accountUser) {
@@ -175,7 +175,7 @@ router.get('/respond/:username/:requestToken', authentication.isAuthenticated, f
 });
 
 // Approves the account
-router.put('/approve/:username/:requestToken', parseForm, csrfProtection, function(req, res, next) {
+router.put('/approve/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     User.respondToAccountRequest(req.params.username, req.params.requestToken, true, false, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
@@ -198,7 +198,7 @@ router.put('/approve/:username/:requestToken', parseForm, csrfProtection, functi
 });
 
 // Rejects the account
-router.put('/reject/:username/:requestToken', parseForm, csrfProtection, function(req, res, next) {
+router.put('/reject/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     User.respondToAccountRequest(req.params.username, req.params.requestToken, false, false, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
@@ -219,7 +219,7 @@ router.put('/reject/:username/:requestToken', parseForm, csrfProtection, functio
 });
 
 // Waitlists the account
-router.put('/waitlist/:username/:requestToken', parseForm, csrfProtection, function(req, res, next) {
+router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     User.respondToAccountRequest(req.params.username, req.params.requestToken, true, true, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
