@@ -1,19 +1,104 @@
-import argparse
-import string_parser
+import pytz
+from availability import Availability, WeeklyTime
+from datetime import timedelta
 
-def main(registrations, city_capacity):
-	# matches = get_matches(registrations, city_capacity) # feed into Simon's function
-	# hardcoding results for now
-	matches = [{'student_ID': 's1', 'UTC_class_schedule': ['2017-01-30 04:00', '2017-02-06 04:00', '2017-02-13 04:00', '2017-02-20 04:00', '2017-02-27 04:00', '2017-03-06 04:00', '2017-03-13 03:00', '2017-03-20 03:00', '2017-03-27 03:00', '2017-04-03 03:00', '2017-04-10 03:00'], 'tutor_ID': 't2', 'student_class_schedule': ['2017-01-29 23:00', '2017-02-05 23:00', '2017-02-12 23:00', '2017-02-19 23:00', '2017-02-26 23:00', '2017-03-05 23:00', '2017-03-12 23:00', '2017-03-19 23:00', '2017-03-26 23:00', '2017-04-02 23:00', '2017-04-09 23:00'], 'tutor_class_schedule': ['2017-01-30 04:00', '2017-02-06 04:00', '2017-02-13 04:00', '2017-02-20 04:00', '2017-02-27 04:00', '2017-03-06 04:00', '2017-03-13 03:00', '2017-03-20 03:00', '2017-03-27 03:00', '2017-04-03 03:00', '2017-04-10 03:00']}, {'student_ID': 's2', 'UTC_class_schedule': ['2017-01-29 20:15', '2017-02-05 20:15', '2017-02-12 20:15', '2017-02-19 20:15', '2017-02-26 20:15', '2017-03-05 20:15', '2017-03-12 20:15', '2017-03-19 20:15', '2017-03-26 19:15', '2017-04-02 19:15', '2017-04-09 19:15'], 'tutor_ID': 't1', 'student_class_schedule': ['2017-01-29 23:45', '2017-02-05 23:45', '2017-02-12 23:45', '2017-02-19 23:45', '2017-02-26 23:45', '2017-03-05 23:45', '2017-03-12 23:45', '2017-03-19 23:45', '2017-03-26 23:45', '2017-04-02 23:45', '2017-04-09 23:45'], 'tutor_class_schedule': ['2017-01-29 23:45', '2017-02-05 23:45', '2017-02-12 23:45', '2017-02-19 23:45', '2017-02-26 23:45', '2017-03-05 23:45', '2017-03-12 23:45', '2017-03-19 23:45', '2017-03-26 23:45', '2017-04-02 23:45', '2017-04-09 23:45']}]
-	for match in matches:
-		print string_parser.escape_single_quotes(str(match))
+"""
+Represents a match between a student and a tutor.
+"""
+class Match:
+    def __init__(self, student, tutor, course_start_wt_UTC,
+                 earliest_course_start_UTC, weeks_per_course):
+        """
+        Args:
+            student: A student User object.
+            tutor: A tutor User object.
+            course_start_wt_UTC: A WeeklyTime object representing the
+                time in UTC for student and tutor to hold their course.
+            earliest_course_start_UTC: A naive datetime object representing the
+                earliest possible datetime in UTC for the first course.
+            weeks_per_course: A positive integer representing the number of
+                occurrences of the course, assuming the course meets once per
+                week.
+        """
+        if student.user_type != 'STUDENT':
+            raise ValueError('student must have the user_type "STUDENT"')
+        if tutor.user_type != 'TUTOR':
+            raise ValueError('tutor must have the user_type "TUTOR"')
+        if weeks_per_course <= 0:
+            raise ValueError('weeks_per_course must be a positive integer')
+        self.student = student
+        self.tutor = tutor
+        self.shared_courses = student.shared_courses(tutor)
+        self.course_start_wt_UTC = course_start_wt_UTC
+        self.earliest_course_start_UTC = earliest_course_start_UTC
+        self.weeks_per_course = weeks_per_course
+        (self.student_course_schedule, self.tutor_course_schedule, self.UTC_course_schedule) = self.get_course_schedules()
 
+    def get_course_schedules(self):
+        """
+        Computes the datetimes of the student's course schedule and of the
+        tutor's course schedule.
 
-if __name__ == '__main__':
-	parser = argparse.ArgumentParser()
-	parser.add_argument("registrations", type=string_parser.parse_dictionary,
-	                    help="a list of unmatched registrations")
-	parser.add_argument("city_capacity", type=string_parser.parse_dictionary,
-	                    help="dictionary mapping each city to its current capacity")
-	args = parser.parse_args()
-	main(args.registrations, args.city_capacity)
+        Returns:
+            student_course_schedule: A list of datetimes of course start times
+                localized to the student's timezone.
+            tutor_course_schedule: A list of datetimes of course start times
+                localized to the tutor's timezone.
+            UTC_course_schedule: A list of datetimes of course start times
+                localized to UTC.
+        """
+        localized_UTC = pytz.utc.localize(self.earliest_course_start_UTC)
+        earliest_course_start_student = localized_UTC.astimezone(self.student.tz)
+        student_wt = Availability.new_timezone_wt(self.course_start_wt_UTC,
+                                                  localized_UTC,
+                                                  self.student.tz_string)
+        student_first_course_dt = student_wt.first_datetime_after(earliest_course_start_student)
+        student_course_schedule_naive = [student_first_course_dt
+                                              + timedelta(Availability.DAYS_PER_WEEK*i)
+                                              for i in range(self.weeks_per_course)]
+        student_course_schedule = map(lambda x: self.student.tz.localize(x),
+                                     student_course_schedule_naive) 
+        tutor_course_schedule = [student_dt.astimezone(self.tutor.tz)
+                                for student_dt in student_course_schedule]
+        UTC_course_schedule = [student_dt.astimezone(pytz.utc)
+                              for student_dt in student_course_schedule]
+        return (student_course_schedule, tutor_course_schedule, UTC_course_schedule)
+
+    def daylight_saving_valid(self):
+        """Determines whether or not the match is valid during all weeks of the
+        schedule. Even though the match will definitely be valid on 
+        earliest_course_start_UTC, it is possible that the student or tutor will
+        no longer be able to make the course if daylight saving occurs for the
+        student or for the tutor as the course progresses.
+
+        Returns:
+            A boolean whether or not both the student and the tutor can make
+                all courses in their respective schedules.
+        """
+        for student_dt in self.student_course_schedule:
+            student_wt = WeeklyTime.from_datetime(student_dt)
+            index = Availability.SLOT_START_TIME_TO_INDEX[student_wt]
+            if not self.student.availability.free_course_slots[index]:
+                return False
+        for tutor_dt in self.tutor_course_schedule:
+            tutor_wt = WeeklyTime.from_datetime(tutor_dt)
+            index = Availability.SLOT_START_TIME_TO_INDEX[tutor_wt]
+            if not self.tutor.availability.free_course_slots[index]:
+                return False
+        return True
+
+    def to_dict(self):
+        dt_format = '%Y-%m-%d %H:%M'
+        student_schedule_strings = [dt.strftime(dt_format)
+                                    for dt in self.student_course_schedule]
+        tutor_schedule_strings = [dt.strftime(dt_format)
+                                  for dt in self.tutor_course_schedule]
+        UTC_schedule_strings = [dt.strftime(dt_format)
+                                for dt in self.UTC_course_schedule]    
+        match_dict = {'student_ID': self.student.ID,
+                      'tutor_ID': self.tutor.ID,
+                      'shared_courses': self.shared_courses,
+                      'student_course_schedule': student_schedule_strings,
+                      'tutor_course_schedule': tutor_schedule_strings,
+                      'UTC_course_schedule': UTC_schedule_strings,}
+        return match_dict
