@@ -85,7 +85,6 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
         var data = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime: earliestStartTime};
 
         $http.put('/registrations/update/'+ username +'/' + regId, data).then(
-            //TODO better alert for sucessful registration
             function (result){
                 var data = result.data;
                 if (data.success) {
@@ -107,7 +106,25 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
 
 
     $scope.deleteRegistration = function(){
-        
+
+        $http.delete('/registrations/delete' + username + '/' + regId, data).then(
+            function(result){
+                var data = result.data;
+                if (data.success) {
+                    addMessage(data.message, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect;
+                        }, 2500);   
+                    }
+                } else {
+                    addMessage(data.message, false);
+                }
+            }, //if call to server is sucessful, redirects to dashboard
+            function (result){
+                var data = result.data;
+                addMessage('A network error might have occurred. Please try again.', false);
+            });
     };
 
 
