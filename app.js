@@ -35,7 +35,8 @@ app.engine('.hbs', exphbs({extname: '.hbs',
                            helpers: {toLowerCase: hbsHelpers.lowerCase,
                                      isRegularUser: hbsHelpers.isRegularUser,
                                       isAdministrator: hbsHelpers.isAdministrator,
-                                      isCoordinator: hbsHelpers.isCoordinator}
+                                      isCoordinator: hbsHelpers.isCoordinator,
+                                      ifNot: hbsHelpers.ifNot}
                           }));
 app.set('view engine', 'hbs');
 

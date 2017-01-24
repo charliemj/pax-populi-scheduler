@@ -1,4 +1,6 @@
 <script src='/javascripts/dashboard.js'></script>
+<script src='/javascripts/login.js'></script>
+<link rel="stylesheet" href="/stylesheets/dashboard.css"/>
 <div class='tab-content'>
 <h1>{{title}}</h1>
 <div class='content' id='dashboard-content'>
@@ -6,7 +8,7 @@
 <input type="hidden" id='regIds' name="regIds" value="{{regIdList}}">
 <input type="hidden" id='regDates' name="regDates" value="{{regDateList}}">
 {{#isRegularUser role}}
-<div id="registrations">
+<div class='row' id="registrations">
 	<span class='title-toggle' id='registrations-toggle' data-toggle="collapse" data-target="#dashboard-registrations"><h3>Your Registrations<span class="badge hide notifs-count"></span>
 	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
   	<div id='dashboard-registrations' class='collapse in'>
@@ -14,8 +16,8 @@
  </div>
 {{/isRegularUser}}
 {{#isAdministrator role}}
-<div id="pendingRegistrations">
-	<span class='title-toggle' id='pendingRegistrations-toggle' data-toggle="collapse" data-target="#dashboard-pendingRegistrations"><h3>Pending Registrations<span class="badge hide notifs-count"></span>
+<div class='row' id="pendingRegistrations">
+	<span class='title-toggle' id='pendingRegistrations-toggle' data-toggle="collapse" data-target="#dashboard-pendingRegistrations"><h3>Pending Requests<span class="badge hide notifs-count"></span>
 	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
   	<div id='dashboard-pendingRegistrations' class='collapse in'>
   		{{> pendingRegistrations}}
@@ -24,7 +26,7 @@
 {{/isAdministrator}}
 {{#isRegularUser role}}
 {{else}}
-<div id="schedules">
+<div class='row' id="schedules">
 	<span class='title-toggle' id='schedules-toggle' data-toggle="collapse" data-target="#dashboard-schedules"><h3>Schedules<span class="badge hide notifs-count"></span>
 	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
   	<div id='dashboard-schedules' class='collapse in'>

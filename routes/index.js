@@ -160,8 +160,10 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
     var username = req.params.username;
     var user = req.session.passport.user;
     User.getUser(username, function (err, accountUser) {
+        accountUser.password = undefined;
+        console.log(accountUser);
         var data = {title: 'Pax Populi Scheduler',
-                    message: utils.makeProfileTable(accountUser),
+                    user: accountUser,
                     username: username,
                     fullName: user.fullName,
                     onHold: user.onHold,
@@ -245,14 +247,18 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     console.log(req.body);
     var userJSON = authentication.createUserJSON(req.body, function (err, userJSON) {
         if (err) {
-            res.send({success: false, message: err.message});
+            res.render('home', {title: 'Pax Populi Scheduler',
+                                message: err.message,
+                                csrfToken: req.csrfToken()});
         } else {
             console.log('userJSON', userJSON);
             data = {title: 'Pax Populi Scheduler',
                     csrfToken: req.csrfToken()};
             User.signUp(userJSON, req.devMode, function (err, user) {
                 if (err) {
-                    res.json({'success': false, 'message': err.message});
+                    res.render('home', {title: 'Pax Populi Scheduler',
+                                        message: err.message,
+                                        csrfToken: req.csrfToken()});
                 } else {
                     res.render('home', {title: 'Pax Populi Scheduler',
                                         message: 'Sign up successful! We have sent you a verification email.'

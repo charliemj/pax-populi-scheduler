@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     regIds = registrationIds.split(","); //array of reg ids
     regDates = registrationDates.split(","); //array containing the date that each reg was submitted
-    console.log(regDates);
+    // console.log(regDates);
     $.ajax({
         url: '/users/' + username,
         method: 'GET',

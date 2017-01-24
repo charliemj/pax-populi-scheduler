@@ -5,6 +5,13 @@ var HbsHelpers = function() {
     	return string.toLowerCase();
     }
 
+    that.ifNot = function (bool, options) {
+        if (!bool) {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    }
+
     that.isRegularUser = function (role, options) {
     	if (role.toLowerCase() !== 'administrator' && role.toLowerCase() !== 'coordinator') {
     		return options.fn(this);

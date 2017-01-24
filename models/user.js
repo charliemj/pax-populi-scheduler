@@ -125,6 +125,7 @@ UserSchema.methods.setRequestToken = function (token, callback) {
 */
 UserSchema.methods.approve = function (callback) {
     this.approved = true;
+    this.onHold = false;
     this.save(callback);
 };
 
@@ -189,7 +190,7 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
     this.findOne({username: username}, function (err, user) {
         if (err || (!err & !user)) {
             callback({success:false, message: 'Invalid username'});
-        } else if (user.approved) {
+        } else if (user.approved && !user.onHold) {
             callback({success:false, message: 'The account is already approved'});
         } else if (user.rejected) {
             callback({success:false, message: 'The account is already rejected'});
@@ -461,6 +462,20 @@ UserSchema.statics.getUser = function(username, callback){
         }
     });//end findOne
 };
+
+UserSchema.statics.getPendingUsers = function (callback) {
+    // {$or: [{student: user._id}, {tutor: user._id}]}
+    this.find({$and: [{verified: true}, 
+                        {$or: [{$and: [{approved:false}, {rejected: false}, {onHold: false}]}, 
+                                {onHold: true, approved: true}]}]}, function (err, users) {
+        console.log('pending', users);
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            callback(null, users);
+        }
+    });
+}
 
 var UserModel = mongoose.model("User", UserSchema);
 

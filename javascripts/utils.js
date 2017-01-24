@@ -56,36 +56,6 @@ var Utils = function() {
         return role.toLowerCase() === 'coordinator';
     }
 
-    that.makeProfileTable = function (user) {
-        var table = '<table class="table table-hover"><tbody>'
-                        + '<tr><th>Full Name</th><td>{} {}</td>'.format(user.firstName, user.lastName)
-                        + '<tr><th>Email Address</th><td>{}</td>'.format(user.email);
-        if (that.isCoordinator(user.role)) {
-                if (user.schoolInCharge) {
-                    table += '<tr><th>School in Charge</th><td>{}</td>'.format(user.schoolInCharge);
-                } else if (user.regionInCharge) {
-                    table += '<tr><th>Region in Charge</th><td>{}</td>'.format(user.regionInCharge);
-                }
-                if (user.countryInCharge) {
-                    table += '<tr><th>Country in Charge</th><td>{}</td>'.format(user.countryInCharge);
-                }  
-            }
-        if (that.isRegularUser(user.role)) {
-            table += '<tr><th>Gender</th><td>{}</td>'.format(user.gender)
-                        + '<tr><th>Date of Birth</th><td>{}</td>'.format(that.formatDate(user.dateOfBirth))
-                        + '<tr><th>School/Institution</th><td>{}</td>'.format(user.school)
-                        + '<tr><th>Education Level</th><td>{}</td>'.format(user.educationLevel)
-                        + '<tr><th>Major</th><td>{}</td>'.format(user.major)
-                        + '<tr><th>Currently Enrolled</th><td>{}</td>'.format(user.enrolled ? 'Yes': 'No')
-                        + '<tr><th>Interests</th><td>{}</td>'.format(user.interests);
-                        + '<tr><th>Nationality</th><td>{}</td>'.format(user.nationality)
-                        + '<tr><th>Country</th><td>{}</td>'.format(user.country)
-                        + '<tr><th>Region</th><td>{}</td>'.format(user.region)
-        }                
-        table += '</tbody></table>';
-        return table;
-    }
-
     Object.freeze(that);
     return that;
 };
