@@ -6,7 +6,7 @@ var email = require('../javascripts/email.js');
 var enums = require("../javascripts/enums.js");
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
-
+var regexs = require("../javascripts/regexs.js");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true},
@@ -16,30 +16,41 @@ var UserSchema = mongoose.Schema({
     approved: {type: Boolean, default: false},
     rejected: {type: Boolean, default: false},
     requestToken: {type: String, default: null},
-    inPool: {type: Boolean, default: false},
+    inPool: {type: Boolean, default: false}, 
     onHold: {type: Boolean, default: false},
-    isTutor: {type: Boolean, default: false}, // whether is a tutor or student
+    role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
     alternativeEmail: {type: String, required: true},
     firstName: {type: String, required: true},
     middleName: {type: String},
     lastName: {type: String, required: true},
     nickname: {type: String},
-    gender: {type: String, enum: enums.genders(), required: true},
-    dateOfBirth: {type: Date, required: true},
-    phoneNumber: {type: String, required: true},
-    skypeId: {type: String, required: true},
-    school: {type: String, required: true},
-    educationLevel: {type: String, required: true},
-    enrolled: {type: String, required: true},
-    major: {type: String, required: true, default: 'N/A'},
+    gender: {type: String, enum: enums.genders()},
+    dateOfBirth: {type: Date},
+    phoneNumber: {type: String, require: true},
+    skypeId: {type: String},
+    school: {type: String, default: 'N/A'},
+    educationLevel: {type: String},
+    enrolled: {type: String},
+    major: {type: String, default: 'N/A'},
     country:{type: String, required: true},
     region: {type: String, required: true},
-    timezone: {type: String, require: true},
-    nationality: {type: String, required: true},
-    interests: [{type: String, required: true}]
+    timezone: {type: String},
+    nationality: {type: String},
+    interests: [{type: String}]
 
 });
+
+UserSchema.path("role").validate(function(role) {
+    if (role === 'Student' || role === 'Tutor') {
+        if (!this.gender || !this.dateOfBirth || !this.educationLevel || !this.skypeId ||
+            !this.school || !this.educationLevel || !this.enrolled || !this.major ||
+            !this.timezone || !this.nationality || !this.interests) {
+            return false;
+        }
+    }
+    return true;
+}, "Missing required personal info from the user");
 
 UserSchema.path("username").validate(function(username) {
     return username.trim().length >= enums.minUsernameLength() || 
@@ -150,7 +161,7 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
             callback({success:false, message: 'Invalid username'});
         } else if (user.verified) {
             console.log('already verified');
-            callback({success:false, isVerified: true, message: 'The account is already verified, please log in below:'}, user);
+            callback({success:false, isVerified: true, message: 'The account is already verified'}, user);
         } else if (user.verificationToken !== token) {
             callback({success:false, message: 'Invalid verification token'});
         } else {
@@ -220,7 +231,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                                     rejected: user.rejected,
                                     onHold: user.onHold,
                                     inPool: user.inPool,
-                                    isTutor: user.isTutor,
+                                    role: user.role,
                                     fullName: user.firstName + ' ' + user.lastName});
                 } else {
                     callback({message:'Please enter a correct password'});
@@ -263,7 +274,8 @@ UserSchema.statics.signUp = function (userJSON, devMode, callback) {
             });
             
         } else {
-            callback({message: 'There is already an account with this username'});
+            callback({success: false, message: 'There is already an account with this username, '
+                                + 'make sure you enter your username correctly'});
         }
     });
 };

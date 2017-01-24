@@ -42,7 +42,7 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    var sendEmail = function (emailAddress, subject, htmlContent) {
+    var sendEmail = function (emailAddress, subject, htmlContent, callback) {
         var sendFrom = process.env.GMAIL_ADDRESS || config.emailAddress();
         var mailOptions = {
             from: 'Pax Populi Scheduler 6.S187 <' + sendFrom + '>', // sender address
@@ -55,10 +55,10 @@ var Email = function() {
         that.transporter.sendMail(mailOptions, function(err, info){
             if(err){
                 console.log('could not send', err.message);
-                return {success: false};
+                return callback({success: false, message: 'Failed to send the email'});
             }
             console.log('sending succeeded');
-            return {success: true};
+            return callback(null);
         });
     };
 
@@ -95,8 +95,8 @@ var Email = function() {
             }
             var content = '{}<p>Hi {}!<br><br>Confirm your Pax Populi Scheduler account by clicking on the confirm button below.<form action="{}"><input type="submit" value="Confirm" /></form>{}</p>'.format(that.welcomeMessage, user.firstName, link, that.signature);
             console.log('about to send a verification email to', user.email);
-            sendEmail(user.email, subject, content);
-            callback(null, user);
+            sendEmail(user.email, subject, content, callback);
+
         });
     };
 
@@ -111,33 +111,12 @@ var Email = function() {
             if (err) {
                 return callback({success: false, message: err.message});
             }
-            console.log('in email.js', err, user);
-            var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstname, user.lastName);
-            var link;
-            if (developmentMode) {
-                link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
-            } else {
-                link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
-            }
-            var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, config.adminFirstName(), config.adminLastName())
-                            + '{} {} has just requested to join Pax Populi as a {}. '.format(user.firstName, user.lastName, user.isTutor ? 'tutor': 'student')
-                            + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
-                            + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
-                            + '<li>Gender: {}</li>'.format(user.gender)
-                            + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))
-                            + '<li>School: {}</li>'.format(user.school)
-                            + '<li>Education Level: {}</li>'.format(user.educationLevel)
-                            + '<li>Major: {}</li>'.format(user.major)
-                            + '<li>Currently Enrolled: {}</li>'.format(user.enrolled ? 'Yes': 'No')
-                            + '<li>Country: {}</li>'.format(user.country)
-                            + '<li>Region: {}</li>'.format(user.region)
-                            + '<li>Nationality: {}</li>'.format(user.nationality)
-                            + '<li>Interests: {}</li></ul><br>'.format(user.interests)
-            content += '<form action="{}"><input type="submit" value="Respond to Request"/></form>'.format(link)
-                            + '{}</p>'.format(that.signature);
+            var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
+            var content = that.makeApprovalRequestEmailContent(user, developmentMode);
+            console.log(content);
             console.log('about to send an approval request email to', user.email);
-            sendEmail(config.adminEmailAddress(), subject, content); // for now send it back to the user
-            callback(null, user);
+            sendEmail(config.adminEmailAddress(), subject, content, callback); // for now send it back to the user
+
         });
     };
 
@@ -152,7 +131,7 @@ var Email = function() {
         var subject = 'Updates on the status of your Pax Populi account';
         var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been approved. You can now log in and register for a class.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
-        return sendEmail(user.email, subject, emailContent);
+        return sendEmail(user.email, subject, emailContent, callback);
     };
 
     /**
@@ -166,7 +145,7 @@ var Email = function() {
         var subject = 'Updates on the status of your Pax Populi account';
         var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been rejected.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
-        return sendEmail(user.email, subject, emailContent);
+        return sendEmail(user.email, subject, emailContent, callback);
     };
 
     /**
@@ -180,8 +159,37 @@ var Email = function() {
         var subject = 'Updates on the status of your Pax Populi account';
         var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been approved. However, you are currenly on the waitlist. So although you can log in to the website, you cannot register for any class until further notice from us.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
-        return sendEmail(user.email, subject, emailContent);
+        return sendEmail(user.email, subject, emailContent, callback);
     };
+
+    that.makeApprovalRequestEmailContent = function (user, developmentMode) {
+        var link;
+            if (developmentMode) {
+                link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
+            } else {
+                link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
+            }
+        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, config.adminFirstName(), config.adminLastName())
+                            + '{} {} has just requested to join Pax Populi as a/an {}. '.format(user.firstName, user.lastName, user.role.toLowerCase())
+                            + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
+                            + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
+                            + '<li>School/Institution: {}</li>'.format(user.school)
+                            + '<li>Country: {}</li>'.format(user.country)
+                            + '<li>Region: {}</li>'.format(user.region)
+                            + '<li>Email Address: {}'.format(user.email);
+            if (utils.notAdmin(user)) {
+                content += '<li>Gender: {}</li>'.format(user.gender)
+                            + '<li>Date of Birth: {}</li>'.format(utils.formatDate(user.dateOfBirth))
+                            + '<li>Nationality: {}</li>'.format(user.nationality)
+                            + '<li>Major: {}</li>'.format(user.major)
+                            + '<li>Education Level: {}</li>'.format(user.educationLevel)
+                            + '<li>Currently Enrolled: {}</li>'.format(user.enrolled ? 'Yes': 'No')
+                            + '<li>Interests: {}</li>'.format(user.interests);
+            }                            
+            content += '</ul><br><form action="{}"><input type="hidden" name="ref_path" value="{}"><input type="submit" value="Respond to Request"/></form>'.format(link, link)
+                            + '{}</p>'.format(that.signature);
+        return content;
+    }
 
     Object.freeze(that);
     return that;

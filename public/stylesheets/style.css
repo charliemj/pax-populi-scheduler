@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Lato');
 
 body {
-  padding: 50px;
+  padding-top: 50px;
+  padding-bottom: 50px;
   font: 14px Lato;
 }
 
@@ -29,6 +30,11 @@ input {
 	padding-right: 2%;
 }
 
+.register-modal-dialog {
+  width: 42%;
+  min-width: 200px;
+}
+
 #main-content {
 	padding: 2%;
 }
@@ -36,7 +42,7 @@ input {
 .modal-title {
 	font-weight: bold;
 	font-size: 24px;
-	font-family: Arial;
+	font-family: Lato;
 	padding-left: 2%;
 }
 
@@ -49,12 +55,37 @@ input {
 	text-justify: inter-word;
 }
 
-.modal-messages, #messages {
-   	left: 2%;
-   	max-width: 25%;
-	position: fixed;
-	bottom: 0;
-	z-index: 1050;
+#messages {
+  padding: 10px;
+}
+
+.success {
+  border-color: #27AE60;
+  /*background: #ABEBC6;*/
+  border-style: solid;
+  border-width: medium;
+  border-radius: 5px;
+}
+
+.error {
+  border-color: #CD6155;
+/*  background: #F5B7B1;*/
+  border-style: solid;
+  border-width: medium;
+  border-radius: 5px;
+}
+
+.message-modal-dialog {
+    width: 35%;
+}
+
+.ui-widget {
+  font-family: Lato;
+  font-size: 14px;
+}
+
+.ui-widget-header {
+  background: #9d9d9d;
 }
 
 .tab-content {

@@ -5,8 +5,4 @@ var app = angular.module('timezoneSelect', ['angular-timezone-selector']).config
 app.controller('tzControl', ['$scope', function ($scope) {
   $scope.timezone = '';
 
-  // $scope.formSubmit = function (){
-  //   //console.log($scope.timezone);
-  // };
-
 }]);

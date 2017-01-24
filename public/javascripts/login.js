@@ -10,18 +10,18 @@ $(document).ready(function () {
             data: {username: username, verificationToken: verificationToken, _csrf: csrf},
             success: function(data) {
                 if (data.success) {
-                    addMessage(data.message, 'success', false, true);
+                    addMessage(data.message, true);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
                         }, 2500);   
                     }
                 } else {
-                    addMessage(data.message, 'danger', false, true);
+                    addMessage(data.message, false);
                 }
             },
             error: function(err) {
-                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
+                addMessage('A network error might have occurred. Please try again.', false);
             }
         });
     });
@@ -38,28 +38,19 @@ $(document).ready(function () {
             data: {username: username, requestToken: requestToken, _csrf: csrf},
             success: function(data) {
                 if (data.success) {
-                    addMessage(data.message, 'success', false, true);
+                    addMessage(data.message, true);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
                         }, 2500);   
                     }
                 } else {
-                    addMessage(data.message, 'danger', false, true);
+                    addMessage(data.message, false);
                 }
             },
             error: function(err) {
-                addMessage('A network error might have occurred. Please try again.', 'danger', false, true);
+                addMessage('A network error might have occurred. Please try again.', false);
             }
         });
-    });
-
-    $('#register-modal').on('shown.bs.modal', function() {
-        // when user fills in username and password in the main page
-        // then clicks sign up, help them fill up the sign up page
-        $('#username-register-box').val($('#username-box').val());
-        $('#password-register-box').val($('#password-box').val());
-
-        $('#username-register-box').focus();
     });
 });

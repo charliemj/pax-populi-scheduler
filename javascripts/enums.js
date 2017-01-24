@@ -15,7 +15,7 @@ var Enums = function() {
     }
 
     that.userTypes = function () {
-        return ["Student", "Tutor"];
+        return ["Student", "Tutor", "Administrator"];
     }
 
     that.genders = function () {
@@ -56,7 +56,7 @@ var Enums = function() {
     }
 
     that.majors = function () {
-        return ["International Relatinos or Global Studies", "Economics",
+        return ["International Relations or Global Studies", "Economics",
                   "Management", "English", "Sociology", "Not Applicable",
                   "Other",]
     }
@@ -67,6 +67,10 @@ var Enums = function() {
                 "Fine Arts", "Sports", "Education", "Foreign Languages", 
                 "Other"]
     }
+
+    that.courses = function(){
+        return ["Beginner Math", "Advanced Math", "Beginner English", "Intermediate English", "Advanced English", "Intermediate Math"]
+    };
 
    	Object.freeze(that);
     return that;
