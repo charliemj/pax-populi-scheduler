@@ -16,6 +16,13 @@ class WeeklyTime:
     DAYS_PER_WEEK = 7
 
     def __init__(self, day_of_week_index, hour, minute):
+        """
+        Args:
+            day_of_week_index: An integer in range(7) representing the day of
+                the week, where 0 is Sunday.
+            hour: An integer in range(24) representing the hour of the day.
+            minute: An integer in range(60) representing the minute.
+        """
         if day_of_week_index not in range(7):
             raise ValueError('day_of_week_index must be in range(7)')
         if hour not in range(24):
@@ -40,7 +47,16 @@ class WeeklyTime:
 
     @classmethod
     def from_datetime(cls, dt):
-        # In Python, 0 corresponds to Monday
+        """Instantiates a WeeklyTime object from a datetime.
+
+        Args:
+            dt: A datetime.
+
+        Returns:
+            A WeeklyTime object with the same day of the week, hour, and minute
+                as dt.
+        """
+        # 0 corresponds to Monday in .weekday()
         day_of_week_index = (dt.weekday() + 1) % cls.DAYS_PER_WEEK
         return cls(day_of_week_index, dt.hour, dt.minute)
 
@@ -55,7 +71,7 @@ class WeeklyTime:
             The first datetime with the same (day of week, hour, minute) as
                 self that is greater or equal to dt.
         """
-        # In Python, 0 corresponds to Monday
+        # 0 corresponds to Monday in .weekday()
         input_day_of_week_index = (dt.weekday() + 1) % self.DAYS_PER_WEEK
         # If input datetime is same day of week as self, then output datetime
         # is either 0 or 7 days after input datetime
@@ -101,11 +117,17 @@ class Availability:
         SLOT_START_TIME_TO_INDEX[SLOT_START_TIMES[i]] = i
 
     def __init__(self, free_slots):
-        # boolean array, i-th entry is whether or not user is free for the slot starting at SLOT_START_TIMES[i]
+        """
+        Args:
+            free_slots: A boolean array of length SLOTS_PER_WEEK such that
+                free_slots[i] is whether or not the user is free for the slot
+                starting at SLOT_START_TIMES[i].
+        """
         if len(free_slots) != self.SLOTS_PER_WEEK:
             raise ValueError('free_slots must have length SLOTS_PER_WEEK')
         self.free_slots = free_slots
-        # boolean array, i-th entry is whether or not user is free to start a course at SLOT_START_TIMES[i]
+        # boolean array such that i-th entry is whether or not user is free to
+        # start a course at SLOT_START_TIMES[i]
         self.free_course_slots = []
         for i in range(self.SLOTS_PER_WEEK):
             is_free = all(self.free_slots[(i+j)%self.SLOTS_PER_WEEK]
@@ -124,14 +146,39 @@ class Availability:
         return self.free_slots == other.free_slots
 
     @classmethod
-    def time_string_to_index(cls, time_string):
-        hours = int(time_string.split(':')[0])
-        minutes = int(time_string.split(':')[1])
+    def time_str_to_index(cls, time_str):
+        """Converts time string of the form 'HH:MM' to the corresponding index
+        of SLOT_START_TIMES.
+
+        Args:
+            time_str: A string of the form 'HH:MM' representing a time with
+                a specified hour and minute.
+
+        Returns:
+            An integer i such that cls.SLOT_START_TIMES[i] corresponds to
+                time_str.
+        """
+        hours = int(time_str.split(':')[0])
+        minutes = int(time_str.split(':')[1])
         return (cls.MINUTES_PER_HOUR * hours + minutes) / cls.MINUTES_PER_SLOT
 
     @classmethod
     def parse_dict(cls, availability_dict):
         """
+        Extracts the free time slots from an availability dictionary.
+
+        Args:
+            availability_dict: A dict mapping a day of the week index expressed
+                as a string to a list of lists of length two. Each internal
+                list of length two is of the form [start_time, end_time], where
+                start_time and end_time are the start and end times in the form
+                'HH:MM' of when the user is available.
+
+                ex. {'0': [['00:00', '02:30'], ['23:00', '24:00']],
+                     '4': [['17:30', '18:00']]}
+                means that the user is free 12am-2:30am Sunday, 11:30pm Sunday
+                to 12am Monday, and 5:30pm-6pm on Thursday.
+
         Returns:
             free_slots_indices: A set of indices i such that the user is free
                 during the slot starting at cls.SLOT_START_TIMES[i]
@@ -146,13 +193,31 @@ class Availability:
             for interval in intervals:
                 if len(interval) != 2:
                     raise ValueError('time interval in availability_dict must have length 2')
-                start_index = day_slot_index + cls.time_string_to_index(interval[0])
-                end_index = day_slot_index + cls.time_string_to_index(interval[1])
+                start_index = day_slot_index + cls.time_str_to_index(interval[0])
+                end_index = day_slot_index + cls.time_str_to_index(interval[1])
                 free_slots_indices.update(range(start_index, end_index))
         return free_slots_indices
 
     @classmethod
     def from_dict(cls, availability_dict):
+        """Instantiates an Availability object from an availability dictionary.
+
+        Args:
+            availability_dict: A dict mapping a day of the week index expressed
+                as a string to a list of lists of length two. Each internal
+                list of length two is of the form [start_time, end_time], where
+                start_time and end_time are the start and end times in the form
+                'HH:MM' of when the user is available.
+
+                ex. {'0': [['00:00', '02:30'], ['23:00', '24:00']],
+                     '4': [['17:30', '18:00']]}
+                means that the user is free 12am-2:30am Sunday, 11:30pm Sunday
+                to 12am Monday, and 5:30pm-6pm on Thursday.
+
+        Returns:
+            An Availability object with free slots given by the intervals in
+                availability_dict.
+        """
         for day_index_str in availability_dict:
             if day_index_str not in map(str, range(cls.DAYS_PER_WEEK)):
                 raise ValueError('Each key in availability_dict must be a string form of an integer in range(7)')
@@ -183,14 +248,13 @@ class Availability:
             raise ValueError('offset_string must start with "+" or "-"')
         return offset_minutes
 
-    # move this to WeeklyTime class
     @classmethod
     def new_timezone_wt(cls, wt, localized_dt, new_tz_string):
         """
         Shifts a WeeklyTime to a new timezone.
 
         Args:
-            wt: A WeeklyTime object.
+            wt: A WeeklyTime object in SLOT_START_TIMES.
             localized_dt: A localized datetime whose timezone is the current 
                 timezone of wt. Also used as the reference datetime for the
                 timezone conversion.
@@ -319,6 +383,9 @@ if __name__ == '__main__':
                      '5': [],
                      '6': [['22:00','24:00']]}
     availability_dict2 = {'0':[['5:30', '15:00']]}
+    dict3 ={'0': [['00:00', '02:30'], ['23:00', '24:00']],
+                     '4': [['17:30', '18:00']],
+                     '6': [['16:00', '17:45'], ['22:00', '22:15']]}
     a = Availability.from_dict(availability_dict)
     a2 = Availability.from_dict(availability_dict2)
     wt = WeeklyTime(0, 12, 15)
@@ -326,5 +393,5 @@ if __name__ == '__main__':
     new_tz_string = 'UTC'
     dt = datetime(2017, 7, 15)
     localized_dt = current_tz.localize(dt)
-    print a2
+    #print a2
 

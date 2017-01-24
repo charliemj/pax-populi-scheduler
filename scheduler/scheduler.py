@@ -88,10 +88,10 @@ if __name__ == '__main__':
     a2 = Availability.from_dict({'4': [['0:00', '24:00']], '3': [['3:00','12:00']]})
     a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['0:00','12:00']]})
     a4 = Availability.from_dict({'4': [['0:00', '2:30']]})
-    students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',1,['a','b','d'],date(2017,1,1)))
-    students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',1,['b'],date(2015,2,2)))
-    tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',1,['a','c'],date(2018,4,1)))
-    tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',1,['b'],date(2017,1,1)))
+    students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['a','b','d'],date(2017,1,1)))
+    students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',['b'],date(2015,2,2)))
+    tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['a','c'],date(2018,4,1)))
+    tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b'],date(2017,1,1)))
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)

@@ -13,7 +13,7 @@ class User:
     EARLIEST_START_DATE_OFFSET_DAYS = 7
 
     def __init__(self, ID, user_type, gender, gender_preference, availability,
-                 tz_string, city_ID, courses, earliest_start_date):
+                 tz_string, courses, earliest_start_date):
         """
         Args:
             ID: A string representing the user's ID. Must uniquely identify a
@@ -25,9 +25,6 @@ class User:
             availability: An Availability object representing the user's weekly
                 availability in his timezone.
             tz_string: A string representing a timezone in the pytz database.
-            city_ID: A string representing the ID of the city that user lives in.
-            self.earliest_start_date: A date object representing the earliest
-                date that the user can start a course in the user's timezone.
             courses: A list of course names (strings) that the user can be in.
             earliest_start_date: A date object representing the earliest
                 possible start date for a course in the user's timezone
@@ -48,7 +45,6 @@ class User:
         self.gender_preference = gender_preference
         self.availability = availability
         self.tz_string = tz_string
-        self.city_ID = city_ID
         self.tz = pytz.timezone(tz_string)
         self.courses = courses
         self.courses_set = set(self.courses)
