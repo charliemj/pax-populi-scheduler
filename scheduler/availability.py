@@ -373,25 +373,3 @@ class Availability:
         forward_shift_minutes = (self.UTC_offset_minutes(datetime_new_tz)
                                  - self.UTC_offset_minutes(datetime_current_tz))
         return self.forward_shifted(forward_shift_minutes)
-
-if __name__ == '__main__':
-    availability_dict = {'0': [['5:00', '5:30'], ['8:00','11:00']],
-                     '1': [],
-                     '2': [],
-                     '3': [],
-                     '4': [],
-                     '5': [],
-                     '6': [['22:00','24:00']]}
-    availability_dict2 = {'0':[['5:30', '15:00']]}
-    dict3 ={'0': [['00:00', '02:30'], ['23:00', '24:00']],
-                     '4': [['17:30', '18:00']],
-                     '6': [['16:00', '17:45'], ['22:00', '22:15']]}
-    a = Availability.from_dict(availability_dict)
-    a2 = Availability.from_dict(availability_dict2)
-    wt = WeeklyTime(0, 12, 15)
-    current_tz = pytz.timezone('US/Eastern')
-    new_tz_string = 'UTC'
-    dt = datetime(2017, 7, 15)
-    localized_dt = current_tz.localize(dt)
-    #print a2
-

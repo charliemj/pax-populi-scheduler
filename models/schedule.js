@@ -7,6 +7,7 @@ var Registration = require("../models/registration.js");
 var PythonShell = require('python-shell');
 
 
+
 var scheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
@@ -63,14 +64,7 @@ scheduleSchema.statics.getSchedules = function (user, callback) {
 scheduleSchema.statics.getMatches = function (callback){
 
     Registration.getUnmatchedRegistrations(function (err, registrations) {
-        // Inputs to Simon's script, hardcoding for now.
-        var registrations = [{'user': '1111', 'availability': {'0': ['11:00 - 13:00'], '3': ['2:00 - 5:00']},
-                            'genderPref': ['Male', 'Female'], 'course': 'Intermediate English',
-                            'isMatched': false},
-                          {'user': '1112', 'availability': {'1': ['10:00 - 12:00'], '5': ['1:00 - 5:00']},
-                            'genderPref': ['Female'], 'course': 'Intermediate English',
-                            'isMatched': false}
-                        ];
+        console.log('unmatched registrations', registrations);
 
         var options = {
             mode: 'json',
