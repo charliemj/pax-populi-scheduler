@@ -32,61 +32,65 @@
   			<button id='interests-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#interests">Interests</button>
   			<button id='courses-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#courses">Courses</button>
   			<div id='edit-container'>
-	  			<div id='student-schools' class='collapse default-inputs'>
-	  				<div class="input-fields-wrap">
-		  				{{#each studentSchools}}
-		  					<div class="form-group">
-		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
-		  					</div>
-		  				{{/each}}
+  				<form id='edit-defaults' method='post' action='/editFormDefaults'>
+  					<input type="hidden" name="_csrf" value="{{csrfToken}}">
+		  			<div id='student-schools' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each studentSchools}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="studentSchools[]" value="{{this}}"/>
+			  						<a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
 		  			</div>
-		  			<button class="add-field-button btn btn-info btn-hg">+</button>
-		  			<button class="save-button btn btn-primary btn-hg">Save</button>
-	  			</div>
-	  			<div id='tutor-schools' class='collapse default-inputs'>
-	  				<div class="input-fields-wrap">
-		  				{{#each tutorSchools}}
-		  					<div class="form-group">
-		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
-		  					</div>
-		  				{{/each}}
+		  			<div id='tutor-schools' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each tutorSchools}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="tutorSchools[]" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
 		  			</div>
-		  			<button class="add-field-button btn btn-info btn-hg">+</button>
-		  			<button class="save-button btn btn-primary btn-hg">Save</button>
-	  			</div>
-	  			<div id='majors' class='collapse default-inputs'>
-	  				<div class="input-fields-wrap">
-		  				{{#each majors}}
-		  					<div class="form-group">
-		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
-		  					</div>
-		  				{{/each}}
+		  			<div id='majors' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each majors}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="majors[]" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
 		  			</div>
-		  			<button class="add-field-button btn btn-info btn-hg">+</button>
-		  			<button class="save-button btn btn-primary btn-hg">Save</button>
-	  			</div>
-	  			<div id='interests' class='collapse default-inputs'>
-	  				<div class="input-fields-wrap">
-		  				{{#each interests}}
-		  					<div class="form-group">
-		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
-		  					</div>
-		  				{{/each}}
+		  			<div id='interests' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each interests}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="interests[]" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
 		  			</div>
-		  			<button class="add-field-button btn btn-info btn-hg">+</button>
-		  			<button class="save-button btn btn-primary btn-hg">Save</button>
-	  			</div>
-	  			<div id='courses' class='collapse default-inputs'>
-	  				<div class="input-fields-wrap">
-		  				{{#each courses}}
-		  					<div class="form-group">
-		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
-		  					</div>
-		  				{{/each}}
+		  			<div id='courses' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each courses}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="courses[]" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
 		  			</div>
-		  			<button class="add-field-button btn btn-info btn-hg">+</button>
-		  			<button class="save-button btn btn-primary btn-hg">Save</button>
-	  			</div>
+		  		</form>
 	  		</div>
 		</div>
 	</div>

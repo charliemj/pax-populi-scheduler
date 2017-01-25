@@ -55,29 +55,30 @@ $(document).ready(function () {
         });
     });
 
-    $('.default-button').click(function (e) {
-    	if (!$(this).attr('aria-expanded')) {
-    		$(this).addClass('pressed');
-    	} else {
+    $('.default-button').unbind('click').click(function (e) {
+    	var target = $($(this).attr('data-target'));
+    	var classes = target.attr('class').split(' ');
+    	if (classes.indexOf('in') > -1) {
     		$(this).removeClass('pressed');
+    	} else {
+    		$(this).addClass('pressed');
     	}
     });
-
-    var max_fields      = 10; //maximum input boxes allowed
-    var wrapper         = $(".input-fields-wrap"); //Fields wrapper
-    var add_button      = $(".add-field-button"); //Add button ID
+ 
+    var addButton = $(".add-field-button");
     
-    var x = 1; //initlal text box count
-    $(add_button).click(function(e){ //on add input button click
+    $(addButton).unbind('click').click( function (e) {
         e.preventDefault();
-        if(x < max_fields){ //max input box allowed
-            x++; //text box increment
-            $(wrapper).append('<div class="form-group"><input type="text" name="mytext[]"/><a href="#" class="remove_field">Remove</a></div>'); //add input box
-        }
+        var thisWrapper = $(this).parent().find(".input-fields-wrap");
+        console.log(thisWrapper);
+        var name = $(thisWrapper).find('.form-control').attr('name');
+        $(thisWrapper).append('<div class="form-group"><input class="form-control" type="text" name="'+ name + '"/><a href="#" class="remove_field">Remove</a></div>'); //add input box
     });
-    
-    $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
-        e.preventDefault(); $(this).parent('div').remove(); x--;
+
+    var wrapper = $('.input-fields-wrap');
+    $(wrapper).on("click",".remove-field", function (e) { //user click on remove text
+        e.preventDefault();
+        $(this).parent('div').remove();
     });
 
 });
