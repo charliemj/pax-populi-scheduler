@@ -129,7 +129,7 @@ var Email = function() {
     */
     that.sendApprovalEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been approved. You can now log in and register for a class.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved! You can now log in and register for a class.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
@@ -143,7 +143,7 @@ var Email = function() {
     */
     that.sendRejectionEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been rejected.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Sorry, you have not been approved by an administrator and will not be able to login or register for classes. If you have any concerns or would like us to re-evaluate your account, please email Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
@@ -157,7 +157,7 @@ var Email = function() {
     */
     that.sendWaitlistEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that your Pax Populi account has been approved. However, you are currenly on the waitlist. So although you can log in to the website, you cannot register for any class until further notice from us.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved. However, due to limited capacity, you are currenly waitlisted. This means that while you can now sign in to your account, you cannot register for classes just yet. We will notify you when you can register for a class. Sorry for the inconvenience!<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
