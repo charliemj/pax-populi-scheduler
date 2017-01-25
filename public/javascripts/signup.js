@@ -31,16 +31,15 @@ $(document).ready(function () {
 		    default:
 		        break;
 		}
+
+		$("#incharge").hide();
+	    
 	});
 
 	$('input:radio[name="in-charge"]').change(
 	    function () {
-	    	$('#in-charge-of').empty();
-	    	var countryHTML = $('.country').clone();
-	    	countryHTML.find('select').attr('name', 'countryInCharge');
-	    	var regionHTML = $('.region').clone();
-	    	regionHTML.find('select').attr('name', 'regionInCharge');
-	    	regionHTML = countryHTML.add(regionHTML);
+
+            
             var schoolHTML = $('#tutor-schools').clone();
             schoolHTML.find('select').attr('name', 'schoolInCharge');
 
@@ -51,10 +50,12 @@ $(document).ready(function () {
 	        			$('#in-charge-of').html(schoolHTML);
 	        			break;
 	        		case 'Region':
-	        			$('#in-charge-of').html(regionHTML);
+	        			$("#incharge").show();
 	        			break;
 	        		case 'Country':
-	        			$('#in-charge-of').html(countryHTML);
+	        			$("#incharge").show();
+	        			$("#regionHere2").hide();
+	        			$("#regionHere2").val("--"); //no region selected
 	        			break;
 	        	}
 	            

@@ -222,8 +222,9 @@
                   </div>
                   <div class="formErr" id="nationalityErrors"></div>
                 </div>
+
                 <div class='student tutor'>
-                  <div class="form-group country">
+                  <div class="form-group country" >
                     <label class="control-label">Country*</label>
                     <div>
                       <!--Source: https://github.com/benkeen/country-region-selector-->
@@ -237,6 +238,7 @@
                     </div>
                   </div>
                 </div>
+
                 <div class="form-group student tutor">
                   <label class="control-label">Select your timezone*: <b>{[{timezone}]}</b></label>
                   <div>
@@ -278,6 +280,24 @@
                   </div>
                 </div>
                 <div id='in-charge-of'></div>
+
+                <div class='form-group in-charge coordinator' id="incharge">
+                  <div class="form-group country" >
+                    <label class="control-label">Country*</label>
+                    <div>
+                      <!--Source: https://github.com/benkeen/country-region-selector-->
+                      <select name="countrySel" class="form-control signup-input crs-country" data-region-id="regionHere2" required></select>
+                    </div>
+                  </div>
+                  <div class="form-group region">
+                    <label class="control-label">Region*</label>
+                    <div>
+                      <select name="regionSel" class='form-control signup-input ' id="regionHere2"></select>
+
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
             {{> agreements}}

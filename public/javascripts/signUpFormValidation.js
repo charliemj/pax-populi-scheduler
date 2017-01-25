@@ -27,7 +27,7 @@ $(document).ready(function(){
         var birthdayYear = parseInt(DOB.substring(0,4));
         var currentYear = new Date().getFullYear();
         
-        if (birthdayYear >= currentYear ){
+        if (birthdayYear >= currentYear && regularUser){
             $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
         }
         
