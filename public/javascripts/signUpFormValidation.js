@@ -1,13 +1,9 @@
 $(document).ready(function(){
-    
-
-    //TODO maybe other validation to make sure that fields are checked
-    
+        
     $("#register-button").click(function(){
 
         var validForm = true;
         var notAllowedPattern = new RegExp (JSON.parse($("#notAllowedRegex").val()));
-
 
         var firstName = $("#firstName-register-box").val();
         var middleName = $("#middleName-register-box").val();
@@ -16,13 +12,24 @@ $(document).ready(function(){
         var phone = $("#phone-number-box").val();
         var skype = $("#skypeId-register-box").val();
         var nationality = $("#nationality-register-box").val();
-        var notAdmin = $('.role :selected').text().toLowerCase() !== 'administrator';
+        var DOB = $("#dob-register-box").val();
+        var role = $('.role :selected').text().toLowerCase();
+        var regularUser = role !== 'administrator' && role != 'coordinator';
 
-        if($("input[name=timezone]").val() == "" && notAdmin){
+
+        if($("input[name=timezone]").val() == "" && regularUser){
             validForm = false;
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
+
+        var birthdayYear = parseInt(DOB.substring(0,4));
+        var currentYear = new Date().getFullYear();
+        
+        if (birthdayYear >= currentYear ){
+            $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
+        }
+        
 
         if(notAllowedPattern.test(firstName)){
             validForm = false;

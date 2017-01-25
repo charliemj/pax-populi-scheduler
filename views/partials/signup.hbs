@@ -117,6 +117,7 @@
                   <div>
                     <input id='dob-register-box' class='form-control signup-input' type='date' name='dateOfBirth' placeholder='Date of Birth' required></input>
                   </div>
+                  <div class="formErr" id="DOBErrors"></div>
                 </div>
                 <div class="form-group">
                   <label class="control-label">Phone Number*</label>
@@ -132,7 +133,7 @@
                   </div>
                   <div class="formErr" id="skypeErrors"></div>
                 </div>
-                <div class='multiple-choice'>
+                <div class='multiple-choice student tutor'>
                   <div id='student-schools' class="form-group student">
                     <label class="control-label">School/Institution*</label>
                     <div>
@@ -144,7 +145,7 @@
                     </select>
                     </div>
                   </div>
-                  <div id='tutor-schools' class="form-group tutor admin">
+                  <div id='tutor-schools' class="form-group tutor admin coordinator">
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id="tutorSchool" name='tutorSchool' class='form-control signup-input' required>
@@ -221,17 +222,19 @@
                   </div>
                   <div class="formErr" id="nationalityErrors"></div>
                 </div>
-                <div class="form-group">
-                  <label class="control-label">Country*</label>
-                  <div>
-                    <!--Source: https://github.com/benkeen/country-region-selector-->
-                    <select name="country" class="form-control signup-input crs-country" data-region-id="regionHere" required></select>
+                <div class='student tutor'>
+                  <div class="form-group country">
+                    <label class="control-label">Country*</label>
+                    <div>
+                      <!--Source: https://github.com/benkeen/country-region-selector-->
+                      <select name="country" class="form-control signup-input crs-country" data-region-id="regionHere" required></select>
+                    </div>
                   </div>
-                </div>
-                <div class="form-group">
-                  <label class="control-label">Region*</label>
-                  <div>
-                    <select name="region" class='form-control signup-input ' id="regionHere" required></select>
+                  <div class="form-group region">
+                    <label class="control-label">Region*</label>
+                    <div>
+                      <select name="region" class='form-control signup-input ' id="regionHere" required></select>
+                    </div>
                   </div>
                 </div>
                 <div class="form-group student tutor">
@@ -241,7 +244,6 @@
                   </div>
                   <div class="formErr" id="timezoneErrors"></div>
                 </div>
-                
                 <div class='mulitple-choice'>
                   <div class="form-group tutor student">
                     <label class="control-label">Interests*</label>
@@ -261,6 +263,21 @@
                     </div>
                   </div>}}
                 </div>
+                <div class="form-group in-charge coordinator">
+                  <label class="control-label">Which of the following are you in charge of?</label>
+                  <div>
+                    <div class="radio">
+                      <label><input type="radio" name="in-charge" value='School'>School</label>
+                    </div>
+                    <div class="radio">
+                      <label><input type="radio" name="in-charge" value='Region'>Region</label>
+                    </div>
+                    <div class="radio">
+                      <label><input type="radio" name="in-charge" value='Country'>Country</label>
+                    </div>
+                  </div>
+                </div>
+                <div id='in-charge-of'></div>
               </div>
             </div>
             {{> agreements}}

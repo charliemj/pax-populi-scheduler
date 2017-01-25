@@ -6,10 +6,6 @@ body {
   font: 14px Lato;
 }
 
-.modal-title {
-	font-family: Lato;
-}
-
 a {
   color: #00B7FF;
 }
@@ -25,7 +21,7 @@ input {
     *display: inline; 
 }
 
-#register-form {
+.register-form {
 	padding-left: 2%;
 	padding-right: 2%;
 }
@@ -114,6 +110,36 @@ input {
   	background-image: linear-gradient(to bottom,#27AE60 0,#27AE60 100%);;
 }
 
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active, .btn-success {
+    color: #ffffff;
+    background-color: #27AE60;
+    border-color: #27AE60;
+    background-image: linear-gradient(to bottom,#27AE60 0,#27AE60 100%);;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active, .btn-danger {
+    color: #ffffff;
+    background-color: #E74C3C;
+    border-color: #E74C3C;
+    background-image: linear-gradient(to bottom,#E74C3C 0,#E74C3C 100%);;
+}
+
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active, .btn-warning {
+    color: #ffffff;
+    background-color: #F5B041;
+    border-color: #F5B041;
+    background-image: linear-gradient(to bottom,#F5B041 0,#F5B041 100%);;
+}
+
 .btn-info:hover,
 .btn-info:focus,
 .btn-info:active,
@@ -126,4 +152,26 @@ input {
 
 .footer {
 	padding-bottom: 10%;
+}
+
+.glyphicon.glyphicon-chevron-down {
+    font-size: 15px;
+}
+
+.icon {
+  width: 50px;
+  padding-right: 10px;
+}
+
+.modal-title {
+  font-family: Lato;
+  padding-left: 20px;
+}
+
+.btn {
+  margin: 3px;
+}
+
+.small-text {
+  font-size: 10px;
 }
