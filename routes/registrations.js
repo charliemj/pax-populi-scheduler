@@ -79,31 +79,49 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
 //PUT request for updating availablities
 
 router.put('/update/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
-    
-  // make sure that user who is logged in is the user who's reg it is
-  // look up registration by reg_id
-  // perform PUT request to update registration
+  
+  var availability = req.body.availability;
+  var user = req.session.passport.user; 
+  var genderPref = req.body.genderPref;
+  var courses = req.body.courses;
+  var earliestStartTime = req.body.earliestStartTime;
+  var regId = req.params.registration_id;
 
-    var availability = req.body.availability;
-    var user = req.session.passport.user; 
-    var genderPref = req.body.genderPref;
-    var courses = req.body.courses;
-    var earliestStartTime = req.body.earliestStartTime;
-    var regId = req.params.registration_id;
-
-    Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime, 
-        function (err, registration){
-            if (err){
-                console.log("error updating registration " + err);
-                res.send({ success: false, message: err.message });
-            } else {
-                res.status(200).send({success: true,
-                                        message:"Registration has been updated!", 
-                                        redirect: "/"});
-            // TO DO redirect 
-            } 
-        });
+  Registration.updateRegistration(user, regId, genderPref, availability, courses, earliestStartTime, 
+      function (err, registration){
+          if (err){
+              console.log("error updating registration " + err);
+              res.send({ success: false, message: err.message });
+          } else {
+              res.status(200).send({success: true,
+                                      message:"Registration has been updated!", 
+                                      redirect: "/"});
+          } 
+      });
 });
+
+
+//DELETE request for deleting registration objects
+router.delete('/delete/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
+  var regId = req.params.registration_id;
+
+  Registration.deleteRegistration(regId, function(err){
+
+    if (err){
+      console.log("breaks in route if");
+      console.log("error deleting registration " + err);
+      res.send({ success: false, message: err.message });
+    }
+    else {
+      console.log("breaks in route else");
+      res.status(200).send({success: true,
+                              message:"Registration has been deleted!", 
+                              redirect: "/"});
+    }
+  });
+
+});
+
 
 
 module.exports = router;
