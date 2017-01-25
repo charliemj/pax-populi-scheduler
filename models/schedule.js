@@ -8,7 +8,7 @@ var PythonShell = require('python-shell');
 var CronJob = require('cron').CronJob;
 
 
-var scheduleSchema = mongoose.Schema({
+var ScheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
     possibleCourses: {type:[String], required:true},
@@ -30,14 +30,14 @@ var scheduleSchema = mongoose.Schema({
     tutorReg: {type: ObjectId, ref:"Registration", required:true}
 });
 
-scheduleSchema.path("course").validate(function(course) {
+ScheduleSchema.path("course").validate(function(course) {
     return course.trim().length > 0;
 }, "No empty course name.");
 
 // more validation
 
 
-scheduleSchema.statics.getSchedules = function (user, callback) {
+ScheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
         // get personal scheudles
         Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]}, function (err, schedules) {
@@ -67,7 +67,7 @@ scheduleSchema.statics.getSchedules = function (user, callback) {
 }
 
 
-scheduleSchema.statics.getMatches = function (callback){
+ScheduleSchema.statics.getMatches = function (callback){
 
     Registration.getUnmatchedRegistrations(function (err, registrations) {
         // Inputs to Simon's script, hardcoding for now.
@@ -99,9 +99,9 @@ scheduleSchema.statics.getMatches = function (callback){
     });
 };
 
-scheduleSchema.statics.automateMatch = function () {
+ScheduleSchema.statics.automateMatch = function () {
 
-    var job = new CronJob({
+    var schedulerJob = new CronJob({
         cronTime: '00 00 17 * * 7',
         onTick: function() {
             // runs every Sunday at 5pm
@@ -116,10 +116,11 @@ scheduleSchema.statics.automateMatch = function () {
         start: false,
         timeZone: 'America/New_York'
     });
-    job.start();
+    global.schedulerJob = schedulerJob;
+    global.schedulerJob.start();
 }
 
 
 //keep at bottom of file
-var Schedule = mongoose.model("Schedule", scheduleSchema);
+var Schedule = mongoose.model("Schedule", ScheduleSchema);
 module.exports = Schedule;

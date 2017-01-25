@@ -349,4 +349,15 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
     });
 });
 
+router.post('/editFormDefaults', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    console.log(global.enums);
+    global.enums.updateEnum(req.body, function (err, enums) {
+        if (err) {
+            res.send({success: false, message: err.message});
+        } else {
+            res.send({success: true, message: 'Update successful'})
+        }
+    })
+});
+
 module.exports = router;

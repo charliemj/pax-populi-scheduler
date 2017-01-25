@@ -13,7 +13,7 @@ var genderPrefs = ["MALE","FEMALE", "NONE"];
       // '5': [],
       // '6': [[ '06:00', '08:30' ] } //Saturday from 6 am to 8:30am
 
-var registrationSchema = mongoose.Schema({
+var RegistrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
     genderPref: {type: String, enum: genderPrefs, required: true},
@@ -33,7 +33,7 @@ var registrationSchema = mongoose.Schema({
  * @param {Date} earliestStartTime - The earliest possible date a user can start a class. 
  * @param {Function} callback - The function to execute after the registration is created. 
  */
-registrationSchema.statics.createRegistration = function(username, genderPref, availability, courses, earliestStartTime, callback){
+RegistrationSchema.statics.createRegistration = function(username, genderPref, availability, courses, earliestStartTime, callback){
     
     User.getUser(username, function(err,user){
         if (err) {res.send(err + "Problem with getting user");}
@@ -59,7 +59,7 @@ registrationSchema.statics.createRegistration = function(username, genderPref, a
  * @param {User} user - A user object of the current user
  * @param {Function} callback - The function to execute after the unmatched registrations for the user are found.  
  */
-registrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
+RegistrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
     Registration.find({isMatched: false, user: user }, function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
@@ -76,7 +76,7 @@ registrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, ca
  * @param {Function} callback - The function to execute after the registration found. 
  */
 
-registrationSchema.statics.findRegistration = function (regId, user, callback){
+RegistrationSchema.statics.findRegistration = function (regId, user, callback){
 
     Registration.findOne({user: user, _id: regId}, function (err, registration){
 
@@ -96,7 +96,7 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
  * @param {String} regId - the registration id number of the particular registration
  * @param {Function} callback - The function to execute after the registration deleted. 
  */
-registrationSchema.statics.deleteRegistration = function(regId, callback){
+RegistrationSchema.statics.deleteRegistration = function(regId, callback){
     Registration.remove({_id:regId}, function(err){
         if (err){
             console.log("err in schema method");
@@ -119,7 +119,7 @@ registrationSchema.statics.deleteRegistration = function(regId, callback){
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
 
-registrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
+RegistrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
     
     Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now(), courses: courses}, 
     function(err, updatedRegistration){
@@ -137,7 +137,7 @@ registrationSchema.statics.updateRegistration = function (user, regId, genderPre
  * Gets all unmatched registrations in the whole system
  * @param {Function} callback - The function to execute after the unmatched registrations are found.
  */
-registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
+RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
     Registration.find({isMatched: false }, function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
@@ -148,5 +148,5 @@ registrationSchema.statics.getUnmatchedRegistrations = function (callback) {
 };
 
 //keep at bottom of file
-var Registration = mongoose.model("Registration", registrationSchema);
+var Registration = mongoose.model("Registration", RegistrationSchema);
 module.exports = Registration;
