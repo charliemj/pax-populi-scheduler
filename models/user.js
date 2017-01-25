@@ -18,6 +18,7 @@ var UserSchema = mongoose.Schema({
     requestToken: {type: String, default: null},
     inPool: {type: Boolean, default: false}, 
     onHold: {type: Boolean, default: false},
+    archived: {type: Boolean, default: false},
     role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
     alternativeEmail: {type: String, required: true},
@@ -148,6 +149,15 @@ UserSchema.methods.waitlist = function (callback) {
 };
 
 /**
+* Archives the user
+* @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.archive = function (callback) {
+    this.archived = true;
+    this.save(callback);
+};
+
+/**
 * Puts the user to the poll
 * @param {Function} callback - the function that gets called after
 */
@@ -216,6 +226,18 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
         }
     });
 };
+
+UserSchema.statics.archiveUser = function (username, callback) {
+    this.findOne({username: username}, function (err, user) {
+        if (err || (!err & !user)) {
+            callback({success:false, message: 'Invalid username'});
+        } else if (user.archieved) {
+            callback({success:false, message: 'The account is already approved'});
+        } else {
+            user.archive(callback);
+        }
+    });
+}
 
 /*
 * Checks if the provided username and password correspond to any user
@@ -395,28 +417,26 @@ UserSchema.statics.sendWaitlistEmail = function (username, devMode, callback) {
 };
 
 /*
- * Edits the profile of a query user. 
- * @param {String} username - The username of the query user. 
- * @param {Number} newPhoneNumber - The new phone number of the user. 
- * @param {String} newDorm - The new dorm of the user. 
- * @param {Function} callback - The function to execute after the profile is editted. Callback
- * function takes 1 parameter: an error when the request is not properly claimed
- */
-UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, callback) {
-    this.findOne({'username': username}, function(err, user){
-        user.changePhoneNumber(newPhoneNumber, function(err){
-            if (err) {
-                callback(new Error("Invalid phone number."));
-            } else {
-                user.changeDorm(newDorm, function(err){
-                    if (err) {
-                        callback(new Error("Invalid dorm."));
-                    } else {
-                        callback(null);
-                    }
-                });
-            }
-        });
+* Sends an archive email to the user if there exists an account with such username.
+* @param {String} username - username of the user 
+* @param {Boolean} devMode - true if the app is in development mode, false otherwise
+* @param {Function} callback - the function that gets called after the user is created, err argument
+*                              is null if the given the registration succeed, otherwise, err.message
+*/
+UserSchema.statics.sendArchiveEmail = function (username, devMode, callback) {
+    that = this;
+    that.count({ username: username }, function (err, count) {
+        if (count === 0) {
+            callback({message: 'Invalid username'});
+        } else {
+            that.findOne({username: username}, function (err, user) {
+                if (err) {
+                    callback(err);
+                } else {
+                    email.sendArchiveEmail(user, devMode, callback);
+                }
+            });
+        }
     });
 };
 
@@ -459,6 +479,21 @@ UserSchema.statics.getUser = function(username, callback){
         } 
         else {
             callback(null, user);
+        }
+    });//end findOne
+};
+
+UserSchema.statics.searchUsers = function(name, callback){
+    this.find({$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
+                        {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}, 
+                    {$and: [{verified: true, approved: true}]}]},
+        function (err, users){
+        if (err) {
+            console.log("Invalid usernmae");
+            callback(new Error("Invalid username."));
+        } 
+        else {
+            callback(null, users);
         }
     });//end findOne
 };

@@ -72,6 +72,12 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
             data.isValidAccount = true;
             data.username = user.username;
             return res.render('home', data);
+        } else if (!user.verified) {
+            data.message = 'Your account has been archived by the adminstrators. '
+                            + 'You no longer have access to this account';
+            data.isValidAccount = true;
+            data.username = user.username;
+            return res.render('home', data);
         } else if (user.rejected) {
         	data.message = 'Your account has been rejected by the adminstrators so you do not have '
         					+ 'the permission to use this scheduler';
@@ -241,6 +247,27 @@ router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated,
     });
 });
 
+// Archives the account
+router.put('/archive/:username', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    User.archiveUser(req.params.username, function (err, user) {
+        data = {title: 'Pax Populi Scheduler',
+                csrfToken: req.csrfToken()};
+        if (!user || (err || !user.archived)) {
+            data.message = err.message;
+            return res.json({'success': false, message: err.message});
+        }
+        User.sendArchiveEmail(user.username, req.devMode, function (err) {
+            if (err) {
+                return res.render('home', data);
+            }
+            data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
+            data.success = true;
+            data.redirect = '/';
+            res.json(data);
+        });
+    });
+});
+
 // signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 	console.log('signing up...');
@@ -261,7 +288,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                                         csrfToken: req.csrfToken()});
                 } else {
                     res.render('home', {title: 'Pax Populi Scheduler',
-                                        message: 'Sign up successful! We have sent you a verification email.'
+                                        message: 'Sign up successful! We have sent you a verification email. '
                                                   + 'Please check your email.',
                                         csrfToken: req.csrfToken()});
                 }
@@ -279,6 +306,43 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         inPool: user.inPool,
                         role: user.role,
                         csrfToken: req.csrfToken()});
+});
+
+router.get('/settings', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    var user = req.session.passport.user;
+    res.render('settings', {title: 'Settings',
+                            username: user.username,
+                            fullName: user.fullName,
+                            onHold: user.onHold,
+                            inPool: user.inPool,
+                            role: user.role,
+                            csrfToken: req.csrfToken()});
+});
+
+router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    var keyword = req.body.keyword.trim();
+    var user = req.session.passport.user;
+    var data = {title: 'Settings',
+                username: user.username,
+                fullName: user.fullName,
+                onHold: user.onHold,
+                inPool: user.inPool,
+                role: user.role,
+                csrfToken: req.csrfToken()}
+    User.searchUsers(keyword, function (err, users) {
+        if (err) {
+            data.message = 'An error has occured. Please try again.'
+        } else if (users.length === 0) {
+            console.log('--------no result');
+            data.message = 'No results.'
+        } else {
+            users.forEach(function (user) {
+                user.password = undefined;
+            })
+            data.users = users;
+        }
+        res.render('settings', data);
+    });
 });
 
 module.exports = router;

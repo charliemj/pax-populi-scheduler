@@ -5,6 +5,7 @@ var User = require("../models/user.js");
 var utils = require("../javascripts/utils.js");
 var Registration = require("../models/registration.js"); 
 var PythonShell = require('python-shell');
+var CronJob = require('cron').CronJob;
 
 
 var scheduleSchema = mongoose.Schema({
@@ -28,6 +29,12 @@ var scheduleSchema = mongoose.Schema({
     studentReg: {type: ObjectId, ref:"Registration", required:true},
     tutorReg: {type: ObjectId, ref:"Registration", required:true}
 });
+
+scheduleSchema.path("course").validate(function(course) {
+    return course.trim().length > 0;
+}, "No empty course name.");
+
+// more validation
 
 
 scheduleSchema.statics.getSchedules = function (user, callback) {
@@ -90,6 +97,26 @@ scheduleSchema.statics.getMatches = function (callback){
         });
     });
 };
+
+scheduleSchema.statics.automateMatch = function () {
+
+    var job = new CronJob({
+        cronTime: '00 00 17 * * 7',
+        onTick: function() {
+            // runs every Sunday at 5pm
+            Schedule.getMatches(function (err, matches) {
+                if (err) {
+                    console.log('An error has occured', err.message);
+                } else {
+                    console.log('Successfully ran weekly matches!');
+                }
+            });
+        },
+        start: false,
+        timeZone: 'America/New_York'
+    });
+    job.start();
+}
 
 
 //keep at bottom of file
