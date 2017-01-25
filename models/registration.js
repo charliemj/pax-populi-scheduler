@@ -92,6 +92,23 @@ registrationSchema.statics.findRegistration = function (regId, user, callback){
 
 
 /*
+ * Deletes a particular registration for a user. 
+ * @param {String} regId - the registration id number of the particular registration
+ * @param {Function} callback - The function to execute after the registration deleted. 
+ */
+registrationSchema.statics.deleteRegistration = function(regId, callback){
+    Registration.remove({_id:regId}, function(err){
+        if (err){
+            console.log("err in schema method");
+            callback(err);
+        }
+        else{console.log("deletedddd");
+        callback(null);}
+        //otherwise, sucessfully removed!
+    });
+};
+
+/*
  * Updates registration info for a user. 
  * @param {String} user - The user object of the logged in user 
  * @param {String} regId - ID number (assigned by MongoDB) for the registration object. 
