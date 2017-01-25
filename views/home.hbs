@@ -38,6 +38,7 @@
                 <button id='waitlist-button-{{user._id}}' class='btn btn-warning btn-hg waitlist-button'>Waitlist</button>
               </center>
             </div>
+          {{else if archived}}
           {{else if isValidAccount}}
             <form id='verification-form' action='/verify/{{username}}/resend' method='get'>
               <center>

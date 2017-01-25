@@ -259,6 +259,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                                     verified: user.verified,
                                     approved: user.approved,
                                     rejected: user.rejected,
+                                    archived: user.archived,
                                     onHold: user.onHold,
                                     inPool: user.inPool,
                                     role: user.role,

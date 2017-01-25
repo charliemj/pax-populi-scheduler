@@ -72,10 +72,10 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
             data.isValidAccount = true;
             data.username = user.username;
             return res.render('home', data);
-        } else if (!user.verified) {
+        } else if (user.archived) {
             data.message = 'Your account has been archived by the adminstrators. '
                             + 'You no longer have access to this account';
-            data.isValidAccount = true;
+            data.archived = true;
             data.username = user.username;
             return res.render('home', data);
         } else if (user.rejected) {
