@@ -36,7 +36,7 @@ class WeeklyTime:
         self.time = time(hour, minute)
 
     def __str__(self):
-        return self.day_of_week + ' ' + str(self.time)
+        return self.day_of_week + ' ' + self.time.strftime('%H:%M')
 
     def __eq__(self, other):
         return (self.day_of_week_index == other.day_of_week_index
