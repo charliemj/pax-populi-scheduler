@@ -10,11 +10,7 @@ var PythonShell = require('python-shell');
 var scheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
-<<<<<<< HEAD
     possibleCourses: {type:[String], required:true}, 
-=======
-    possibleCourses: {type:[String], required:true},
->>>>>>> master
     studentCoord :{type: ObjectId, ref:"User"},
     tutorCoord :{type: ObjectId, ref:"User"},
     studentClassSchedule: {type: [Date], required:true},
@@ -28,13 +24,9 @@ var scheduleSchema = mongoose.Schema({
     studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-<<<<<<< HEAD
-    course: {type: String} //we don't know yet how ppl will agree on a course
-=======
     course: {type: String},
     studentReg: {type: ObjectId, ref:"Registration", required:true},
     tutorReg: {type: ObjectId, ref:"Registration", required:true}
->>>>>>> master
 });
 
 
@@ -67,8 +59,7 @@ scheduleSchema.statics.getSchedules = function (user, callback) {
     }
 }
 
-<<<<<<< HEAD
-=======
+
 
 scheduleSchema.statics.getMatches = function (callback){
 
@@ -100,7 +91,7 @@ scheduleSchema.statics.getMatches = function (callback){
         });
     });
 };
->>>>>>> master
+
 
 
 //keep at bottom of file
