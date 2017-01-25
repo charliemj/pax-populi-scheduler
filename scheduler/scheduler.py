@@ -96,9 +96,8 @@ if __name__ == '__main__':
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
     d = s.match_output_to_db()
+    #print d
     for pair in d:
         print pair
         for match_dict in d[pair]:
             print match_dict
-
-    

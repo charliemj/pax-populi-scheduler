@@ -41,15 +41,13 @@ router.get('/match', authentication.isAuthenticated, function (req, res, next) {
 							'isMatched': false}
 						];
 
-		var city_capacity = {'Boston': 10, 'Cambridge': 5, 'Bangkok': 3};
-
 		var options = {
 			mode: 'json',
 			scriptPath: './scheduler/',
-			args: [JSON.stringify(registrations), JSON.stringify(city_capacity)]
+			args: [JSON.stringify(registrations)]
 		};
 
-		PythonShell.run('match.py', options, function (err, matches) {
+		PythonShell.run('main.py', options, function (err, matches) {
 		  if (err) {
 		  	throw err;
 		  }
