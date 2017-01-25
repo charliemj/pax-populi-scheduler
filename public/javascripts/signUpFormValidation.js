@@ -1,5 +1,6 @@
 $(document).ready(function(){
-        
+    
+    //checks for some validation on required fields. Will not allow form to be submitted if any of these conditions aren't met.
     $("#register-button").click(function(){
 
         var validForm = true;
@@ -79,6 +80,8 @@ $(document).ready(function(){
         }
     });
 
+
+    //alerts user in realtime to possible registration errors on signup form. Does not actually enforce requirements though. 
 
     $("#username-register-box").blur(function(){
 
