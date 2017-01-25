@@ -41,7 +41,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 // to get the pairs
 router.get('/match', authentication.isAuthenticated, function (req, res, next) {
 
-	
+	Schedule.getMatches(callback);//TODO
 });
 
 module.exports = router; //keep at the bottom of the file
