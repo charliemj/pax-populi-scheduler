@@ -262,7 +262,7 @@ router.put('/archive/:username', [authentication.isAuthenticated, authentication
             }
             data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
             data.success = true;
-            data.redirect = '/';
+            data.redirect = '/settings';
             res.json(data);
         });
     });
@@ -316,7 +316,12 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             onHold: user.onHold,
                             inPool: user.inPool,
                             role: user.role,
-                            csrfToken: req.csrfToken()});
+                            csrfToken: req.csrfToken(),
+                            studentSchools: enums.studentSchools(),
+                            tutorSchools: enums.tutorSchools(),
+                            majors: enums.majors(),
+                            interests: enums.interests(),
+                            courses: enums.courses()});
 });
 
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
@@ -333,7 +338,6 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
         if (err) {
             data.message = 'An error has occured. Please try again.'
         } else if (users.length === 0) {
-            console.log('--------no result');
             data.message = 'No results.'
         } else {
             users.forEach(function (user) {

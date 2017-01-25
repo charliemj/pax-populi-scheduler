@@ -2,3 +2,12 @@
 	width: 300px;
 	padding: 20px;
 }
+
+.default-inputs {
+	width: 50%;
+	padding: 20px;
+}
+
+.add-field-button {
+	width: 50px;
+}

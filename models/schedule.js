@@ -94,6 +94,7 @@ scheduleSchema.statics.getMatches = function (callback){
           // matches is an array consisting of messages collected during execution
           console.log('matches:', typeof matches, matches);
           // process the JSON objs and write to db
+          callback(null, matches);
         });
     });
 };

@@ -39,7 +39,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
-router.get('/match', authentication.isAuthenticated, function (req, res, next) {
+router.put('/match', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 
 	Schedule.getMatches(function (err, matches) {
 		if (err) {

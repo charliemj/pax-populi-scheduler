@@ -22,4 +22,80 @@
 			{{/if}}
 		</div>
 	</div>
+	<div class='row' id="manage-forms">
+		<span class='title-toggle' id='manage-forms-toggle' data-toggle="collapse" data-target="#dashboard-manage-forms"><h3>Manage Forms<span class="badge hide notifs-count"></span>
+		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  		<div id='dashboard-manage-forms' class='collapse in'>
+  			<button id='student-schools-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#student-schools">Student Schools/Institutions</button>
+  			<button id='tutor-schools-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#tutor-schools">Tutor Schools/Institutions</button>
+  			<button id='majors-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#majors">Majors</button>
+  			<button id='interests-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#interests">Interests</button>
+  			<button id='courses-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#courses">Courses</button>
+  			<div id='edit-container'>
+	  			<div id='student-schools' class='collapse default-inputs'>
+	  				<div class="input-fields-wrap">
+		  				{{#each studentSchools}}
+		  					<div class="form-group">
+		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
+		  					</div>
+		  				{{/each}}
+		  			</div>
+		  			<button class="add-field-button btn btn-info btn-hg">+</button>
+		  			<button class="save-button btn btn-primary btn-hg">Save</button>
+	  			</div>
+	  			<div id='tutor-schools' class='collapse default-inputs'>
+	  				<div class="input-fields-wrap">
+		  				{{#each tutorSchools}}
+		  					<div class="form-group">
+		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
+		  					</div>
+		  				{{/each}}
+		  			</div>
+		  			<button class="add-field-button btn btn-info btn-hg">+</button>
+		  			<button class="save-button btn btn-primary btn-hg">Save</button>
+	  			</div>
+	  			<div id='majors' class='collapse default-inputs'>
+	  				<div class="input-fields-wrap">
+		  				{{#each majors}}
+		  					<div class="form-group">
+		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
+		  					</div>
+		  				{{/each}}
+		  			</div>
+		  			<button class="add-field-button btn btn-info btn-hg">+</button>
+		  			<button class="save-button btn btn-primary btn-hg">Save</button>
+	  			</div>
+	  			<div id='interests' class='collapse default-inputs'>
+	  				<div class="input-fields-wrap">
+		  				{{#each interests}}
+		  					<div class="form-group">
+		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
+		  					</div>
+		  				{{/each}}
+		  			</div>
+		  			<button class="add-field-button btn btn-info btn-hg">+</button>
+		  			<button class="save-button btn btn-primary btn-hg">Save</button>
+	  			</div>
+	  			<div id='courses' class='collapse default-inputs'>
+	  				<div class="input-fields-wrap">
+		  				{{#each courses}}
+		  					<div class="form-group">
+		  						<input class='form-control' type="text" name="mytext[]" value="{{this}}"></input>
+		  					</div>
+		  				{{/each}}
+		  			</div>
+		  			<button class="add-field-button btn btn-info btn-hg">+</button>
+		  			<button class="save-button btn btn-primary btn-hg">Save</button>
+	  			</div>
+	  		</div>
+		</div>
+	</div>
+	<div class='row' id="manage-scheduler">
+		<span class='title-toggle' id='manage-scheduler-toggle' data-toggle="collapse" data-target="#dashboard-manage-scheduler"><h3>Manage Scheduler<span class="badge hide notifs-count"></span>
+		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  		<div id='dashboard-manage-scheduler' class='collapse in'>
+			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+			<button id='match-button' class='btn btn-info btn-hg match-button'>Run Matching Algorithm</button>
+		</div>
+	</div>
 </div>
