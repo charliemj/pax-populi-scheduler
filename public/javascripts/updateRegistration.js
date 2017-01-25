@@ -85,7 +85,6 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
         var data = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime: earliestStartTime};
 
         $http.put('/registrations/update/'+ username +'/' + regId, data).then(
-            //TODO better alert for sucessful registration
             function (result){
                 var data = result.data;
                 if (data.success) {
@@ -103,7 +102,42 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
                 var data = result.data;
                 addMessage('A network error might have occurred. Please try again.', false);
             });
-    };//end submitRegistration
+    };//end updateRegistration
+
+
+    $scope.deleteRegistration = function(){
+        var csrf = $('#csrf').val();
+
+        data = {_csrf:csrf};
+        console.log(data);
+        
+        $http({ //need to do this kind of http req because angulars $http.delete cannot send the csrf token :(
+            method: 'DELETE',
+            url: '/registrations/delete/' + username + '/' + regId,
+            data: data,
+            headers: {'Content-Type': 'application/json;charset=utf-8'}
+        }).then(
+            function(result){
+                var data = result.data;
+                if (data.success) {
+                    addMessage(data.message, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect;
+                        }, 2500);   
+                    }
+                } else {
+                    addMessage(data.message, false);
+                }
+            }, //if call to server is sucessful, redirects to dashboard
+            function (result){
+                var data = result.data;
+                console.log(data);
+                addMessage('A network error might have occurred. Please try again.', false);
+            });
+    };
+
+
 }]);//end controller
 
 
