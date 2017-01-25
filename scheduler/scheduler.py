@@ -72,11 +72,43 @@ class Scheduler:
                     student_tutor_to_matches[(student.ID, tutor.ID)] = matches
         return student_tutor_to_matches
     
-    def match_output_to_db(self):
+    def matches_to_schedule_dict(self, matches):
+        if len(matches) == 0:
+            raise ValueError('matches cannot be empty')
+        match_dicts = [match.to_dict() for match in matches]
+        first_match_dict = match_dicts[0]
+        if not all(match_dict['studentID'] == first_match_dict['studentID']
+                   for match_dict in match_dicts):
+            raise ValueError('Every match in matches must have the same student ID')
+        if not all(match_dict['tutorID'] == first_match_dict['tutorID']
+                   for match_dict in match_dicts):
+            raise ValueError('Every match in matches must have the same tutor ID')
+        if not all(match_dict['possibleCourses'] == first_match_dict['possibleCourses']
+                   for match_dict in match_dicts):
+            raise ValueError('Every match in matches must have the same possible courses')
+        student_ID = first_match_dict['studentID']
+        tutor_ID = first_match_dict['tutorID']
+        possible_courses = first_match_dict['possibleCourses']
+        student_possible_schedules = []
+        tutor_possible_schedules = []
+        UTC_possible_schedules = []
+        for match_dict in match_dicts:
+            student_possible_schedules.append(match_dict['studentClassSchedule'])
+            tutor_possible_schedules.append(match_dict['tutorClassSchedule'])
+            UTC_possible_schedules.append(match_dict['UTCClassSchedule'])
+        schedule_dict = {'studentID': student_ID,
+                         'tutorID': tutor_ID,
+                         'possibleCourses': possible_courses,
+                         'studentPossibleSchedules': student_possible_schedules,
+                         'tutorPossibleSchedules': tutor_possible_schedules,
+                         'UTCPossibleSchedules': UTC_possible_schedules}
+        return schedule_dict
+
+    def schedule_dicts_for_database(self):
         student_tutor_to_matches = self.match_max_flow()
-        student_tutor_to_match_dicts = {pair: map(lambda x: x.to_dict(), student_tutor_to_matches[pair])
-                                        for pair in student_tutor_to_matches}
-        return student_tutor_to_match_dicts
+        schedule_dicts = [self.matches_to_schedule_dict(matches)
+                          for matches in student_tutor_to_matches.values()]
+        return schedule_dicts
 
 if __name__ == '__main__':
     from user import User
@@ -88,16 +120,12 @@ if __name__ == '__main__':
     a2 = Availability.from_dict({'4': [['0:00', '24:00']], '3': [['3:00','12:00']]})
     a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['0:00','12:00']]})
     a4 = Availability.from_dict({'4': [['0:00', '2:30']]})
-    students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['a','b','d'],date(2017,1,1)))
+    students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
     students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',['b'],date(2015,2,2)))
-    tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['a','c'],date(2018,4,1)))
-    tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b'],date(2017,1,1)))
+    tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))
+    tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b', 'e'],date(2017,1,1)))
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
-    d = s.match_output_to_db()
-    #print d
-    for pair in d:
-        print pair
-        for match_dict in d[pair]:
-            print match_dict
+    for schedule_dict in s.schedule_dicts_for_database():
+        print schedule_dict

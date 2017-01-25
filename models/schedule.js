@@ -19,8 +19,8 @@ var scheduleSchema = mongoose.Schema({
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDateTime: {type: Date, required:true}, 
-    lastDateTime: {type: Date, required: true}, //so we know when to delete the schedule from the DB
+    firstDateTimeUTC: {type: Date, required:true}, 
+    lastDateTimeUTC: {type: Date, required: true}, //so we know when to delete the schedule from the DB
     studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},

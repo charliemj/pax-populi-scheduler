@@ -89,21 +89,16 @@ class Match:
 
     def to_dict(self):
         dt_format = '%Y-%m-%d %H:%M'
-        date_format = '%Y-%m-%d'
         student_schedule_strings = [dt.strftime(dt_format)
                                     for dt in self.student_course_schedule]
         tutor_schedule_strings = [dt.strftime(dt_format)
                                   for dt in self.tutor_course_schedule]
         UTC_schedule_strings = [dt.strftime(dt_format)
                                 for dt in self.UTC_course_schedule]
-        first_date_UTC = self.UTC_course_schedule[0].strftime(date_format)
-        last_date_UTC = self.UTC_course_schedule[-1].strftime(date_format)
         match_dict = {'studentID': self.student.ID,
                       'tutorID': self.tutor.ID,
-                      'shared_courses': self.shared_courses,
+                      'possibleCourses': self.shared_courses,
                       'studentClassSchedule': student_schedule_strings,
                       'tutorClassSchedule': tutor_schedule_strings,
-                      'UTCClassSchedule': UTC_schedule_strings,
-                      'firstDayUTC': first_date_UTC,
-                      'lastDayUTC': last_date_UTC}
+                      'UTCClassSchedule': UTC_schedule_strings}
         return match_dict
