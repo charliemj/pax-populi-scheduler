@@ -28,6 +28,7 @@ $(document).ready(function(){
         var currentYear = new Date().getFullYear();
         
         if (birthdayYear >= currentYear && regularUser){
+            $('#DOBErrors').empty();
             $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
         }
         
