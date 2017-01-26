@@ -72,7 +72,6 @@ router.post('/:username', authentication.isAuthenticated, function (req, res, ne
                 res.status(200).send( {success: true,
                                         message:"Registration has been submitted!", 
                                         redirect: "/"});
-                //TODO redirect
             }
     });
 });
