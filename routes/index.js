@@ -20,18 +20,6 @@ var parseForm = bodyParser.urlencoded({ extended: false });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    
-    /*
-    Schedule.getMatches(function (err, matches) {
-        if (err) {
-            console.log('An error has occured', err.message);
-        } else {
-            console.log('Successfully ran weekly matches!');
-        }
-    });
-    */
-
-    
     if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
         res.redirect('/users/'+ req.session.passport.user.username);
     } else {
