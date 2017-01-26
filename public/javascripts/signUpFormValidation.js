@@ -24,6 +24,7 @@ $(document).ready(function(){
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
 
+        //TODO -- this is kind of janky :(
         var birthdayYear = parseInt(DOB.substring(0,4));
         var currentYear = new Date().getFullYear();
         
