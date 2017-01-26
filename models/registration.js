@@ -60,10 +60,12 @@ RegistrationSchema.statics.createRegistration = function(username, genderPref, a
  * @param {Function} callback - The function to execute after the unmatched registrations for the user are found.  
  */
 RegistrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
-    Registration.find({isMatched: false, user: user }, function (err, registrations) {
+    Registration.find({isMatched: false, user: user }).populate('user').exec(function (err, registrations) {
+        // console.log(registrations[0]);
         if (err) {
             callback({success: false, message: err.message});
         } else {
+            // console.log('before', registrations[0])
             callback(err, registrations);
         }
     });
@@ -138,7 +140,7 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
  * @param {Function} callback - The function to execute after the unmatched registrations are found.
  */
 RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
-    Registration.find({isMatched: false }, function (err, registrations) {
+    Registration.find({isMatched: false }).populate('user').exec(function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
         } else {

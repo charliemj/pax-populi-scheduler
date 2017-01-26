@@ -10,12 +10,9 @@ var utils = require('../javascripts/utils.js');
 var csrf = require('csurf');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-
-
 //TODO GET req for user
 
 //PUT update schedule for a user --> must send notifications to user/tutor/admin|coordinator 
-
 
 
 //only display schedules that are current. delete schedules for classes that are over. 
@@ -49,7 +46,6 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 	});
 });
 
-// 
 router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	global.schedulerJob.running = !global.schedulerJob.running;
 	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off'});

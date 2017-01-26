@@ -6,7 +6,7 @@ var utils = require("../javascripts/utils.js");
 var Registration = require("../models/registration.js"); 
 var PythonShell = require('python-shell');
 var CronJob = require('cron').CronJob;
-
+var dateFormat = require('dateformat');
 
 var ScheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
@@ -20,8 +20,8 @@ var ScheduleSchema = mongoose.Schema({
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDateTime: {type: Date, required:true}, 
-    lastDateTime: {type: Date, required: true}, //so we know when to delete the schedule from the DB
+    firstDateTimeUTC: {type: Date, required:true}, 
+    lastDateTimeUTC: {type: Date, required: true}, //so we know when to delete the schedule from the DB
     studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
@@ -35,8 +35,6 @@ ScheduleSchema.path("course").validate(function(course) {
 }, "No empty course name.");
 
 // more validation
-
-
 ScheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
         // get personal scheudles
@@ -69,25 +67,52 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
 
 ScheduleSchema.statics.getMatches = function (callback){
 
-    Registration.getUnmatchedRegistrations(function (err, registrations) {
-        // Inputs to Simon's script, hardcoding for now.
-        var registrations = [{'user': '1111', 'availability': {'0': ['11:00 - 13:00'], '3': ['2:00 - 5:00']},
-                            'genderPref': ['Male', 'Female'], 'course': 'Intermediate English',
-                            'isMatched': false},
-                          {'user': '1112', 'availability': {'1': ['10:00 - 12:00'], '5': ['1:00 - 5:00']},
-                            'genderPref': ['Female'], 'course': 'Intermediate English',
-                            'isMatched': false}
-                        ];
+    // Registration.find({isMatched: false, user: user }).populate('user').exec(function (err, registrations) {
+    //     // console.log(registrations[0]);
+    //     if (err) {
+    //         console.log(err)
+    //         // callback({success: false, message: err.message});
+    //     } else {
+    //         console.log('unmatched registrations', registrations.length);
+    //         console.log('after', registrations[0]);
 
-        var city_capacity = {'Boston': 10, 'Cambridge': 5, 'Bangkok': 3};
+    //         var options = {
+    //             mode: 'json',
+    //             pythonPath: '.env/bin/python2.7',
+    //             scriptPath: './scheduler/',
+    //             args: [JSON.stringify(registrations)]
+    //         };
+
+    //         PythonShell.run('main.py', options, function (err, matches) {
+    //           if (err) {
+    //             throw err;
+    //           }
+    //           // matches is an array consisting of messages collected during execution
+    //           console.log('matches:', typeof matches, matches);
+    //           // process the JSON objs and write to db
+    //           callback(null, matches);
+    //         });
+    //     }
+    // });
+
+    Registration.getUnmatchedRegistrations(function (err, registrations) {
+        console.log('unmatched registrations', registrations.length);
+        registrations = registrations.map(function (registration) {
+            registration = registration.toJSON();
+            registration['earliestStartTime'] = dateFormat(registration.earliestStartTime, "yyyy-mm-dd");
+            return registration;
+        });
+
+        console.log(JSON.stringify(registrations));
 
         var options = {
             mode: 'json',
+            pythonPath: '.env/bin/python2.7',
             scriptPath: './scheduler/',
-            args: [JSON.stringify(registrations), JSON.stringify(city_capacity)]
+            args: [JSON.stringify(registrations)]
         };
 
-        PythonShell.run('match.py', options, function (err, matches) {
+        PythonShell.run('main.py', options, function (err, matches) {
           if (err) {
             throw err;
           }
