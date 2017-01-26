@@ -68,29 +68,46 @@ class TestWeeklyTime(unittest.TestCase):
 
 class TestAvailability(unittest.TestCase):
     def setUp(self):
-        self.time_slots_per_week = 672
-        self.always_free_slots = [True for i in range(self.time_slots_per_week)]
+        self.slots_per_week = 672
+
+        # Free slot boolean arrays
+        self.always_free_slots = [True for i in range(self.slots_per_week)]
         self.free_first_five_slots = [True if i < 5         
                                       else False
-                                      for i in range(self.time_slots_per_week)]
-        self.never_free_slots = [False for i in range(self.time_slots_per_week)]
-        self.free_sat_sun_six_slots = [True if i < 3 or i >= self.time_slots_per_week - 3
+                                      for i in range(self.slots_per_week)]
+        self.never_free_slots = [False for i in range(self.slots_per_week)]
+        self.free_sat_sun_six_slots = [True if i < 3 or i >= self.slots_per_week - 3
                                        else False
-                                       for i in range(self.time_slots_per_week)]
+                                       for i in range(self.slots_per_week)]
+        self.nonconsecutive_free_slots = [True if i == 1 or (i >= 3 and i <= 5) or i == 100
+                                          else False
+                                          for i in range(self.slots_per_week)]
+        
+        # Availability dicts
+        self.always_free_dict = {str(i): [['00:00', '24:00']] for i in range(7)}
+        self.free_first_five_dict = {'0': [['00:00', '01:15']]}
+        self.never_free_dict = {}
+        self.free_sat_sun_six_dict = {'0': [['00:00', '00:45']],
+                                      '6': [['23:15', '24:00']]}
+        self.nonconsecutive_free_dict = {'0': [['00:15', '00:30'], ['00:45', '01:30']],
+                                         '1': [['01:00', '01:15']]}
+        
+        # Availability objects
         self.always_free_avail = Availability(self.always_free_slots)
         self.free_first_five_avail = Availability(self.free_first_five_slots)
         self.never_free_avail = Availability(self.never_free_slots)
         self.free_sat_sun_six_avail = Availability(self.free_sat_sun_six_slots)
+        self.nonconsecutive_free_avail = Availability(self.nonconsecutive_free_slots)
 
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
         self.assertEqual(Availability.MINUTES_PER_COURSE, 90)
-        self.assertEqual(Availability.SLOTS_PER_WEEK, self.time_slots_per_week)
+        self.assertEqual(Availability.SLOTS_PER_WEEK, self.slots_per_week)
         self.assertEqual(Availability.SLOT_START_TIMES[0], WeeklyTime(0,0,0))
         self.assertEqual(Availability.SLOT_START_TIMES[-1], WeeklyTime(6,23,45))
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0,0,0)], 0)
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)],
-                         self.time_slots_per_week-1)
+                         self.slots_per_week-1)
 
     def test_time_str_to_index_0000(self):
         self.assertEqual(Availability.time_str_to_index('00:00'), 0)
@@ -106,7 +123,38 @@ class TestAvailability(unittest.TestCase):
 
     def test_initializer_value_error(self):
         with self.assertRaises(ValueError):
+            Availability([])
+        with self.assertRaises(ValueError):
             Availability([True for i in range(671)])
+        with self.assertRaises(ValueError):
+            Availability([True for i in range(673)])
+
+    def test_free_course_slots_always_free_avail(self):
+        self.assertEqual(self.always_free_avail.free_course_slots,
+                         self.always_free_slots)
+
+    def test_free_course_slots_free_first_five_avail(self):
+        self.assertEqual(self.free_first_five_avail.free_course_slots,
+                         self.never_free_slots)
+
+    def test_free_course_slots_free_sat_sun_six_avail(self):
+        free_course_slots = [True if i == self.slots_per_week - 3
+                             else False
+                             for i in range(self.slots_per_week)]
+        self.assertEqual(self.free_sat_sun_six_avail.free_course_slots,
+                         free_course_slots)
+
+    def test_free_course_slots_nonconsecutive_free_avail(self):
+        self.assertEqual(self.nonconsecutive_free_avail.free_course_slots,
+                         self.never_free_slots)
+
+    def test_str_free_first_five_avail(self):
+        avail_str = ('Sunday 00:00 - Sunday 00:15\n'
+                     'Sunday 00:15 - Sunday 00:30\n'
+                     'Sunday 00:30 - Sunday 00:45\n'
+                     'Sunday 00:45 - Sunday 01:00\n'
+                     'Sunday 01:00 - Sunday 01:15')
+        self.assertEqual(str(self.free_first_five_avail), avail_str)
 
     def test_str_never_free_avail(self):
         self.assertEqual(str(self.never_free_avail), '')
@@ -120,7 +168,35 @@ class TestAvailability(unittest.TestCase):
                      'Saturday 23:45 - Sunday 00:00')
         self.assertEqual(str(self.free_sat_sun_six_avail), avail_str)
 
-    def test_
+    def test_str_nonconsecutive_free_avail(self):
+        avail_str = ('Sunday 00:15 - Sunday 00:30\n'
+                     'Sunday 00:45 - Sunday 01:00\n'
+                     'Sunday 01:00 - Sunday 01:15\n'
+                     'Sunday 01:15 - Sunday 01:30\n'
+                     'Monday 01:00 - Monday 01:15')
+        self.assertEqual(str(self.nonconsecutive_free_avail), avail_str)
+    
+    def test_from_dict_always_free_dict(self):
+        self.assertEqual(Availability.from_dict(self.always_free_dict),
+                         self.always_free_avail)
+
+    def test_from_dict_free_first_five_dict(self):
+        self.assertEqual(Availability.from_dict(self.free_first_five_dict),
+                         self.free_first_five_avail)    
+
+    def test_from_dict_never_free_dict(self):
+        self.assertEqual(Availability.from_dict(self.never_free_dict),
+                         self.never_free_avail)
+
+    def test_from_dict_free_sat_sun_six_dict(self):
+        self.assertEqual(Availability.from_dict(self.free_sat_sun_six_dict),
+                         self.free_sat_sun_six_avail)
+
+    def test_from_dict_nonconsecutive_free_dict(self):
+        self.assertEqual(Availability.from_dict(self.nonconsecutive_free_dict),
+                         self.nonconsecutive_free_avail)
+
+    # test class time slots
 
 if __name__ == '__main__':
     unittest.main()

@@ -116,10 +116,10 @@ if __name__ == '__main__':
     from datetime import date
     students = []
     tutors = []
-    a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['0:00','2:30'], ['17:00', '17:15']]})
-    a2 = Availability.from_dict({'4': [['0:00', '24:00']], '3': [['3:00','12:00']]})
-    a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['0:00','12:00']]})
-    a4 = Availability.from_dict({'4': [['0:00', '2:30']]})
+    a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['00:00','02:30'], ['17:00', '17:15']]})
+    a2 = Availability.from_dict({'4': [['00:00', '24:00']], '3': [['03:00','12:00']]})
+    a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['00:00','12:00']]})
+    a4 = Availability.from_dict({'4': [['00:00', '02:30']]})
     students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
     students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',['b'],date(2015,2,2)))
     tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))

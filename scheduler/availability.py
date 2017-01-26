@@ -1,4 +1,5 @@
 import math
+import re
 from datetime import time, datetime, timedelta
 import pytz
 
@@ -161,6 +162,8 @@ class Availability:
             An integer i such that cls.SLOT_START_TIMES[i] corresponds to
                 Sunday at the time given by time_str.
         """
+        if not re.match(r'[0-9][0-9]:[0-9][0-9]', time_str):
+            raise ValueError('time_str must be of the form "HH:MM"') 
         hours = int(time_str.split(':')[0])
         minutes = int(time_str.split(':')[1])
         if hours not in range(cls.HOURS_PER_DAY+1):
