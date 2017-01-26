@@ -8,7 +8,6 @@ var csrf = require('csurf');
 var User = require('../models/user');
 var authentication = require('../javascripts/authentication.js');
 var email = require('../javascripts/email.js');
-var enums = require('../javascripts/global.enums.js');
 var regexs = require("../javascripts/regexs.js");
 var utils = require('../javascripts/utils.js');
 
@@ -32,8 +31,8 @@ router.get('/', function(req, res, next) {
                         	studentEducationLevels: global.enums.studentEducationLevels,
                         	tutorEducationLevels: global.enums.tutorEducationLevels,
                             passwordRegex: JSON.stringify(regexs.passwordPattern),
-                            emailRegex: JSON.stringify(regexs.emailPattern,
-                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern,
+                            emailRegex: JSON.stringify(regexs.emailPattern),
+                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern),
                         	majors: global.enums.majors,
                         	interests: global.enums.interests});
     }
@@ -317,11 +316,11 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             inPool: user.inPool,
                             role: user.role,
                             csrfToken: req.csrfToken(),
-                            studentSchools: global.enums.studentSchools(),
-                            tutorSchools: global.enums.tutorSchools(),
-                            majors: global.enums.majors(),
-                            interests: global.enums.interests(),
-                            courses: global.enums.courses()});
+                            studentSchools: global.enums.studentSchools,
+                            tutorSchools: global.enums.tutorSchools,
+                            majors: global.enums.majors,
+                            interests: global.enums.interests,
+                            courses: global.enums.courses});
 });
 
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
