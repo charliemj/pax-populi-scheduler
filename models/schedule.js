@@ -73,14 +73,21 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
             tutorReg: match.tutorRegID,
             possibleCourses: match.possibleCourses
         }
-        scheduleJSON.studentPossibleSchedules = utils.formatDates(match.studentPossibleSchedules);
-        scheduleJSON.tutorPossibleSchedules = utils.formatDates(match.tutorPossibleSchedules);
-        scheduleJSON.UTCPossibleSchedules = utils.formatDates(match.UTCPossibleSchedules);
-
-        Schedule.create(scheduleJSON, function (err, match) {
+        Registration.markAsMatched([scheduleJSON.tutorReg, scheduleJSON.studentReg], function (err, registration) {
             if (err) {
                 console.log(err);
                 callback({success: false, message: err.message});
+            } else {
+                scheduleJSON.studentPossibleSchedules = utils.formatDates(match.studentPossibleSchedules);
+                scheduleJSON.tutorPossibleSchedules = utils.formatDates(match.tutorPossibleSchedules);
+                scheduleJSON.UTCPossibleSchedules = utils.formatDates(match.UTCPossibleSchedules);
+
+                Schedule.create(scheduleJSON, function (err, match) {
+                    if (err) {
+                        console.log(err);
+                        callback({success: false, message: err.message});
+                    }
+                });
             }
         });
     });

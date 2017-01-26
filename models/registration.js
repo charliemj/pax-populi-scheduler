@@ -23,6 +23,10 @@ var RegistrationSchema = mongoose.Schema({
     dateAdded:{type: Date, default: Date.now}
 });
 
+RegistrationSchema.methods.matched = function (callback) {
+    this.isMatched = true;
+    this.save(callback);
+};
 
 /*
  * Creates a registration object for a user. 
@@ -132,7 +136,27 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
            callback(null, updatedRegistration); //everything worked! 
         }//end else
     });//end update
-};
+}
+
+RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
+    registrationIds.forEach(function (regId) {
+        Registration.findOne({_id: regId}, function (err, registration) {
+            console.log('registration', registration)
+            if (err) {
+                console.log(err);
+                callback({success: false, message: err.message});
+            } else {
+                registration.matched(function (err, registration) {
+                    if (err) {
+                        console.log(err);
+                        callback({success: false, message: err.message});
+                    }
+                })
+            }
+        });
+    });
+    setTimeout(function(){callback(null, registrationIds);}, 2500);  
+}
 
 
 /*
