@@ -15,18 +15,19 @@ def run_scheduler(registrations):
     students = []
     tutors = []
     for registration in registrations:
+        reg_id = registration['_id']
         availability = Availability.from_dict(registration['availability'])
         gender_preference = registration['genderPref']
         courses = registration['courses']
         earliest_start_date_str = registration['earliestStartTime']
         earliest_start_date = datetime.strptime(earliest_start_date_str, '%Y-%m-%d').date()
         user_dict = registration['user']
-        ID = user_dict['_id']
+        user_id = user_dict['_id']
         gender = user_dict['gender'].upper()
         tz_string = user_dict['timezone']
         user_type = user_dict['role'].upper()
-        user = User(ID, user_type, gender, gender_preference, availability,
-                    tz_string, courses, earliest_start_date)
+        user = User(user_id, reg_id, user_type, gender, gender_preference,
+                    availability, tz_string, courses, earliest_start_date)
         if user_type == 'STUDENT':
             students.append(user)
         if user_type == 'TUTOR':
