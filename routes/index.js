@@ -11,6 +11,7 @@ var email = require('../javascripts/email.js');
 var enums = require('../javascripts/enums.js');
 var regexs = require("../javascripts/regexs.js");
 var utils = require('../javascripts/utils.js');
+var Schedule = require("../models/schedule.js");
 
 
 // setup csurf middlewares 

@@ -7,6 +7,7 @@ var Registration = require("../models/registration.js");
 var PythonShell = require('python-shell');
 
 
+
 var scheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
@@ -19,8 +20,8 @@ var scheduleSchema = mongoose.Schema({
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDateTime: {type: Date, required:true}, 
-    lastDateTime: {type: Date, required: true}, //so we know when to delete the schedule from the DB
+    firstDateTimeUTC: {type: Date, required:true}, 
+    lastDateTimeUTC: {type: Date, required: true}, //so we know when to delete the schedule from the DB
     studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
@@ -28,7 +29,6 @@ var scheduleSchema = mongoose.Schema({
     studentReg: {type: ObjectId, ref:"Registration", required:true},
     tutorReg: {type: ObjectId, ref:"Registration", required:true}
 });
-
 
 scheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
@@ -63,24 +63,15 @@ scheduleSchema.statics.getSchedules = function (user, callback) {
 scheduleSchema.statics.getMatches = function (callback){
 
     Registration.getUnmatchedRegistrations(function (err, registrations) {
-        // Inputs to Simon's script, hardcoding for now.
-        var registrations = [{'user': '1111', 'availability': {'0': ['11:00 - 13:00'], '3': ['2:00 - 5:00']},
-                            'genderPref': ['Male', 'Female'], 'course': 'Intermediate English',
-                            'isMatched': false},
-                          {'user': '1112', 'availability': {'1': ['10:00 - 12:00'], '5': ['1:00 - 5:00']},
-                            'genderPref': ['Female'], 'course': 'Intermediate English',
-                            'isMatched': false}
-                        ];
-
-        var city_capacity = {'Boston': 10, 'Cambridge': 5, 'Bangkok': 3};
+        console.log('unmatched registrations', registrations);
 
         var options = {
             mode: 'json',
             scriptPath: './scheduler/',
-            args: [JSON.stringify(registrations), JSON.stringify(city_capacity)]
+            args: [JSON.stringify(registrations)]
         };
 
-        PythonShell.run('match.py', options, function (err, matches) {
+        PythonShell.run('main.py', options, function (err, matches) {
           if (err) {
             throw err;
           }

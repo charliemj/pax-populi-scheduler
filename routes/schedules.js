@@ -10,12 +10,9 @@ var utils = require('../javascripts/utils.js');
 var csrf = require('csurf');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-
-
 //TODO GET req for user
 
 //PUT update schedule for a user --> must send notifications to user/tutor/admin|coordinator 
-
 
 
 //only display schedules that are current. delete schedules for classes that are over. 
@@ -40,7 +37,6 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
 router.get('/match', authentication.isAuthenticated, function (req, res, next) {
-
 	Schedule.getMatches(callback);//TODO
 });
 
