@@ -136,6 +136,8 @@ UserSchema.methods.approve = function (callback) {
 */
 UserSchema.methods.reject = function (callback) {
     this.rejected = true;
+    this.approved = false;
+    this.onHold = false;
     this.save(callback);
 };
 

@@ -11,3 +11,8 @@
 .add-field-button {
 	width: 50px;
 }
+
+.invisible-button {
+	background: none;
+	border: none;
+}

@@ -17,7 +17,7 @@
 			{{#if message}}
 			<div id='search-message'>
 				<center>{{message}}</center>
-			<div>
+			</div>
 			{{else}}
 				{{> users}}
 			{{/if}}
@@ -101,7 +101,7 @@
   		<div id='dashboard-manage-scheduler' class='collapse in'>
 			<input type="hidden" name="_csrf" value="{{csrfToken}}">
 			<button id='match-button' class='btn btn-info btn-hg match-button'>Run Once Now</button>
-			<button type='hidden' id='scheduler-switch'>
+			<button id='scheduler-switch' class='invisible-button'>
 				{{#if schedulerOn}}
 				<input type="checkbox" checked data-toggle="toggle">
 				{{else}}

@@ -52,7 +52,7 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 // 
 router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	global.schedulerJob.running = !global.schedulerJob.running;
-	res.send({success: true, message: 'Toggled switch'});
+	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off'});
 });
 
 module.exports = router; //keep at the bottom of the file
