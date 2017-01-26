@@ -8,7 +8,7 @@ var csrf = require('csurf');
 var User = require('../models/user');
 var authentication = require('../javascripts/authentication.js');
 var email = require('../javascripts/email.js');
-var enums = require('../javascripts/enums.js');
+var enums = require('../javascripts/global.enums.js');
 var regexs = require("../javascripts/regexs.js");
 var utils = require('../javascripts/utils.js');
 
@@ -24,18 +24,18 @@ router.get('/', function(req, res, next) {
     } else {
         res.render('home', {title: 'Pax Populi Scheduler',
                             csrfToken: req.csrfToken(),
-                            userTypes: enums.userTypes(),
-                        	genders: enums.genders(),
-                        	confirmation: enums.confirmation(),
-                        	studentSchools: enums.studentSchools(),
-                        	tutorSchools: enums.tutorSchools(),
-                        	studentEducationLevels: enums.studentEducationLevels(),
-                        	tutorEducationLevels: enums.tutorEducationLevels(),
-                            passwordRegex: JSON.stringify(regexs.passwordPattern()),
-                            emailRegex: JSON.stringify(regexs.emailPattern()),
-                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
-                        	majors: enums.majors(),
-                        	interests: enums.interests()});
+                            userTypes: global.enums.userTypes,
+                        	genders: global.enums.genders,
+                        	confirmation: global.enums.confirmation,
+                        	studentSchools: global.enums.studentSchools,
+                        	tutorSchools: global.enums.tutorSchools,
+                        	studentEducationLevels: global.enums.studentEducationLevels,
+                        	tutorEducationLevels: global.enums.tutorEducationLevels,
+                            passwordRegex: JSON.stringify(regexs.passwordPattern),
+                            emailRegex: JSON.stringify(regexs.emailPattern,
+                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern,
+                        	majors: global.enums.majors,
+                        	interests: global.enums.interests});
     }
 });
 
@@ -317,11 +317,11 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             inPool: user.inPool,
                             role: user.role,
                             csrfToken: req.csrfToken(),
-                            studentSchools: enums.studentSchools(),
-                            tutorSchools: enums.tutorSchools(),
-                            majors: enums.majors(),
-                            interests: enums.interests(),
-                            courses: enums.courses()});
+                            studentSchools: global.enums.studentSchools(),
+                            tutorSchools: global.enums.tutorSchools(),
+                            majors: global.enums.majors(),
+                            interests: global.enums.interests(),
+                            courses: global.enums.courses()});
 });
 
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
@@ -351,11 +351,13 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
 
 router.post('/editFormDefaults', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     console.log(global.enums);
-    global.enums.updateEnum(req.body, function (err, enums) {
+    global.global.enums.updateEnum(req.body, function (err, enums) {
         if (err) {
-            res.send({success: false, message: err.message});
+            // res.send({success: false, message: err.message});
+            res.redirect('/settings');
         } else {
-            res.send({success: true, message: 'Update successful'})
+            // res.send({success: true, message: 'Update successful'});
+            res.redirect('/settings');
         }
     })
 });
