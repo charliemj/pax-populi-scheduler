@@ -102,7 +102,7 @@ ScheduleSchema.statics.getMatches = function (callback){
 ScheduleSchema.statics.automateMatch = function () {
 
     var schedulerJob = new CronJob({
-        cronTime: '00 00 17 * * 7',
+        cronTime: '00 00 17 * * 6',
         onTick: function() {
             // runs every Sunday at 5pm
             Schedule.getMatches(function (err, matches) {

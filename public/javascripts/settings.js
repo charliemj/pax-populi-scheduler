@@ -55,7 +55,31 @@ $(document).ready(function () {
         });
     });
 
-    $('.default-button').unbind('click').click(function (e) {
+	$('#scheduler-switch').click(function () {
+		var csrf = $('#csrf').val();
+        $.ajax({
+            url: '/schedules/toggleSwitch',
+            type: 'PUT',
+            data: {_csrf: csrf},
+            success: function(data) {
+                if (data.success) {
+                    addMessage(data.message, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect;
+                        }, 2500);   
+                    }
+                } else {
+                    addMessage(data.message, false);
+                }
+            },
+            error: function(err) {
+                addMessage('A network error might have occurred. Please try again.', false);
+            }
+        });
+	})
+
+    $('.default-button').click(function (e) {
     	var target = $($(this).attr('data-target'));
     	var classes = target.attr('class').split(' ');
     	if (classes.indexOf('in') > -1) {
@@ -67,7 +91,7 @@ $(document).ready(function () {
  
     var addButton = $(".add-field-button");
     
-    $(addButton).unbind('click').click( function (e) {
+    $(addButton).click( function (e) {
         e.preventDefault();
         var thisWrapper = $(this).parent().find(".input-fields-wrap");
         console.log(thisWrapper);

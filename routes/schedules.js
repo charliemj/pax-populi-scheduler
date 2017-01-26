@@ -40,7 +40,6 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
 router.put('/match', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
-
 	Schedule.getMatches(function (err, matches) {
 		if (err) {
 			res.send({success: false, message: err.message});
@@ -48,6 +47,12 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 			res.send({success: true, message: 'Successfully generated matches!'})
 		}
 	});
+});
+
+// 
+router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
+	global.schedulerJob.running = !global.schedulerJob.running;
+	res.send({success: true, message: 'Toggled switch'});
 });
 
 module.exports = router; //keep at the bottom of the file

@@ -320,7 +320,8 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             tutorSchools: global.enums.tutorSchools,
                             majors: global.enums.majors,
                             interests: global.enums.interests,
-                            courses: global.enums.courses});
+                            courses: global.enums.courses,
+                            schedulerOn: global.schedulerJob.running});
 });
 
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
