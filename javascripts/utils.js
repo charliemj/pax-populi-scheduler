@@ -67,6 +67,14 @@ var Utils = function() {
         return array[0].trim();
     }
 
+    that.formatDates = function (schedules) {
+        return schedules.map(function (schedule) {
+            return schedule.map(function (dateString) {
+                        return new Date(dateString);
+            });
+        });
+    }
+
     Object.freeze(that);
     return that;
 };

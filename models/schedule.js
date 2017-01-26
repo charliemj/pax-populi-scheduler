@@ -12,18 +12,18 @@ var ScheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
     possibleCourses: {type:[String], required:true},
-    studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-    tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-    UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
+    studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
+    tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
+    UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
     studentReg: {type: ObjectId, ref:"Registration", required:true},
     tutorReg: {type: ObjectId, ref:"Registration", required:true},
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
     course: {type: String},
-    studentClassSchedule: {type: [Date], required:true},
-    tutorClassSchedule: {type: [Date], required:true},
-    UTCClassSchedule: {type: [Date], required:true}, // for Admins
+    studentClassSchedule: {type: [Date]},
+    tutorClassSchedule: {type: [Date]},
+    UTCClassSchedule: {type: [Date]}, // for Admins
     firstDateTimeUTC: {type: Date}, 
     lastDateTimeUTC: {type: Date}, //so we know when to delete the schedule from the DB
     studentCoord :{type: ObjectId, ref:"User"},
@@ -64,36 +64,31 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
     }
 }
 
+ScheduleSchema.statics.saveSchedules = function (matches, callback) {
+    matches.forEach(function (match) {
+        var scheduleJSON = {
+            student: match.studentID,
+            tutor: match.tutorID,
+            studentReg: match.studentRegID,
+            tutorReg: match.tutorRegID,
+            possibleCourses: match.possibleCourses
+        }
+        scheduleJSON.studentPossibleSchedules = utils.formatDates(match.studentPossibleSchedules);
+        scheduleJSON.tutorPossibleSchedules = utils.formatDates(match.tutorPossibleSchedules);
+        scheduleJSON.UTCPossibleSchedules = utils.formatDates(match.UTCPossibleSchedules);
 
-ScheduleSchema.statics.getMatches = function (callback){
+        Schedule.create(scheduleJSON, function (err, match) {
+            if (err) {
+                console.log(err);
+                callback({success: false, message: err.message});
+            }
+        });
+    });
+    callback(null, matches);
+}
 
-    // Registration.find({isMatched: false, user: user }).populate('user').exec(function (err, registrations) {
-    //     // console.log(registrations[0]);
-    //     if (err) {
-    //         console.log(err)
-    //         // callback({success: false, message: err.message});
-    //     } else {
-    //         console.log('unmatched registrations', registrations.length);
-    //         console.log('after', registrations[0]);
 
-    //         var options = {
-    //             mode: 'json',
-    //             pythonPath: '.env/bin/python2.7',
-    //             scriptPath: './scheduler/',
-    //             args: [JSON.stringify(registrations)]
-    //         };
-
-    //         PythonShell.run('main.py', options, function (err, matches) {
-    //           if (err) {
-    //             throw err;
-    //           }
-    //           // matches is an array consisting of messages collected during execution
-    //           console.log('matches:', typeof matches, matches);
-    //           // process the JSON objs and write to db
-    //           callback(null, matches);
-    //         });
-    //     }
-    // });
+ScheduleSchema.statics.getMatches = function (callback) {
 
     Registration.getUnmatchedRegistrations(function (err, registrations) {
         console.log('unmatched registrations', registrations.length);
@@ -103,8 +98,6 @@ ScheduleSchema.statics.getMatches = function (callback){
             return registration;
         });
 
-        console.log(JSON.stringify(registrations));
-
         var options = {
             mode: 'json',
             pythonPath: '.env/bin/python2.7',
@@ -112,14 +105,19 @@ ScheduleSchema.statics.getMatches = function (callback){
             args: [JSON.stringify(registrations)]
         };
 
-        PythonShell.run('main.py', options, function (err, matches) {
-          if (err) {
-            throw err;
-          }
-          // matches is an array consisting of messages collected during execution
-          console.log('matches:', typeof matches, JSON.stringify(matches));
-          // process the JSON objs and write to db
-          callback(null, matches);
+        PythonShell.run('main.py', options, function (err, outputs) {
+            if (err) {
+                throw err;
+            }
+            console.log('matches:', JSON.stringify(outputs));
+            var matches = outputs[0];
+            Schedule.saveSchedules(matches, function (err, schedules) {
+                if (err) {
+                    callback({success: false, message: err.message});
+                } else {
+                    callback(null, schedules);
+                }
+            })
         });
     });
 };
