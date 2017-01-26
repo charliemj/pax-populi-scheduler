@@ -70,8 +70,24 @@ class TestAvailability(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_blah(self):
-        self.assertTrue(True)
+    def test_constants(self):
+        self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
+        self.assertEqual(Availability.MINUTES_PER_COURSE, 90)
+        self.assertEqual(Availability.SLOTS_PER_WEEK, 672)
+        self.assertEqual(Availability.SLOT_START_TIMES[0], WeeklyTime(0,0,0))
+        self.assertEqual(Availability.SLOT_START_TIMES[-1], WeeklyTime(6,23,45))
+        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0,0,0)], 0)
+        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)], 671)
 
+    def test_time_str_to_index_0000(self):
+        self.assertEqual(Availability.time_str_to_index('00:00'), 0)
+
+    def test_time_str_to_index_0015(self):
+        self.assertEqual(Availability.time_str_to_index('00:15'), 1)
+
+    def test_time_str_to_index_2345(self):
+        self.assertEqual(Availability.time_str_to_index('23:45'), 95)
+
+    # 2400
 if __name__ == '__main__':
     unittest.main()

@@ -30,7 +30,6 @@ var scheduleSchema = mongoose.Schema({
     tutorReg: {type: ObjectId, ref:"Registration", required:true}
 });
 
-
 scheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
         // get personal scheudles
