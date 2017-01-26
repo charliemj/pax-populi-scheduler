@@ -72,12 +72,13 @@ $(document).ready(function () {
         var thisWrapper = $(this).parent().find(".input-fields-wrap");
         console.log(thisWrapper);
         var name = $(thisWrapper).find('.form-control').attr('name');
-        $(thisWrapper).append('<div class="form-group"><input class="form-control" type="text" name="'+ name + '"/><a href="#" class="remove_field">Remove</a></div>'); //add input box
+        $(thisWrapper).append('<div class="form-group"><input class="form-control" type="text" name="'+ name + '"/><a href="#" class="remove-field">Remove</a></div>'); //add input box
     });
 
     var wrapper = $('.input-fields-wrap');
     $(wrapper).on("click",".remove-field", function (e) { //user click on remove text
         e.preventDefault();
+        console.log($(this).parent('div').html());
         $(this).parent('div').remove();
     });
 

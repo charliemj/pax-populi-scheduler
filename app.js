@@ -91,9 +91,14 @@ app.use(function(req, res, next) {
 // lauch the job of running matching algorithm every week
 Schedule.automateMatch();
 // initialize enums
-Enum.create({}, function (err, enums) {
-  global.enums = enums;
+Enum.initialize(function (err, enums) {
+    if (err) {
+        console.log(err.message);
+    } else {
+        global.enums = enums;
+    }
 })
+
 
 // error handlers
 

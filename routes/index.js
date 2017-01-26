@@ -352,10 +352,11 @@ router.post('/editFormDefaults', [authentication.isAuthenticated, authentication
     console.log(global.enums);
     global.global.enums.updateEnum(req.body, function (err, enums) {
         if (err) {
-            // res.send({success: false, message: err.message});
+            console.log(err.message);
             res.redirect('/settings');
         } else {
-            // res.send({success: true, message: 'Update successful'});
+            console.log('Update successful');
+            global.enums = enums;
             res.redirect('/settings');
         }
     })

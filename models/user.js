@@ -504,7 +504,6 @@ UserSchema.statics.getPendingUsers = function (callback) {
     this.find({$and: [{verified: true}, 
                         {$or: [{$and: [{approved:false}, {rejected: false}, {onHold: false}]}, 
                                 {onHold: true, approved: true}]}]}, function (err, users) {
-        console.log('pending', users);
         if (err) {
             callback({success: false, message: err.message});
         } else {

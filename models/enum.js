@@ -19,11 +19,19 @@ var EnumSchema = mongoose.Schema({
 });
 
 EnumSchema.methods.updateEnum = function (data, callback) {
-    this.update(data, function (err, enums) {
+	var id = this._id;
+	var that = EnumModel;
+    that.update(data, function (err, enums) {
     	if (err) {
     		callback({success: false, message: err.message});
     	} else {
-    		callback(null, enums);
+    		that.findOne({_id: id}, function (err, enums) {
+    			if (err) {
+    				callback({success: false, message: err.message});
+    			} else {
+    				callback(null, enums);
+    			}
+    		});
     	}
     });
 };
@@ -87,6 +95,21 @@ EnumSchema.pre("save", function (next) {
     	Array.prototype.push.apply(this.courses, enums.courses());
   	next();
 });
+
+EnumSchema.statics.initialize = function (callback) {
+	var that = this;
+	that.findOne({}, function (err, enums) {
+    if (err) {
+       	callback({success: false, message: err.message});
+    } else if (!enums) {
+        that.create({}, function (err, enums) {
+            callback(null, enums);
+        })
+    } else {
+        callback(null, enums);
+    }
+})
+}
 
 var EnumModel = mongoose.model("Enum", EnumSchema);
 
