@@ -152,7 +152,10 @@ class Availability:
 
         Args:
             time_str: A string of the form 'HH:MM' representing a time with
-                a specified hour and minute. Allows hour to be 24.
+                a specified hour and minute. Hour must be between 0 and 24,
+                inclusive. (24 is allowed because of intervals like
+                ['20:00','24:00'] exist in availability dictionaries.) Minute
+                must be between 0 and 59, inclusive.
 
         Returns:
             An integer i such that cls.SLOT_START_TIMES[i] corresponds to

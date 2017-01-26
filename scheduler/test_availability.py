@@ -68,16 +68,29 @@ class TestWeeklyTime(unittest.TestCase):
 
 class TestAvailability(unittest.TestCase):
     def setUp(self):
-        pass
+        self.time_slots_per_week = 672
+        self.always_free_slots = [True for i in range(self.time_slots_per_week)]
+        self.free_first_five_slots = [True if i < 5         
+                                      else False
+                                      for i in range(self.time_slots_per_week)]
+        self.never_free_slots = [False for i in range(self.time_slots_per_week)]
+        self.free_sat_sun_six_slots = [True if i < 3 or i >= self.time_slots_per_week - 3
+                                       else False
+                                       for i in range(self.time_slots_per_week)]
+        self.always_free_avail = Availability(self.always_free_slots)
+        self.free_first_five_avail = Availability(self.free_first_five_slots)
+        self.never_free_avail = Availability(self.never_free_slots)
+        self.free_sat_sun_six_avail = Availability(self.free_sat_sun_six_slots)
 
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
         self.assertEqual(Availability.MINUTES_PER_COURSE, 90)
-        self.assertEqual(Availability.SLOTS_PER_WEEK, 672)
+        self.assertEqual(Availability.SLOTS_PER_WEEK, self.time_slots_per_week)
         self.assertEqual(Availability.SLOT_START_TIMES[0], WeeklyTime(0,0,0))
         self.assertEqual(Availability.SLOT_START_TIMES[-1], WeeklyTime(6,23,45))
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0,0,0)], 0)
-        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)], 671)
+        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)],
+                         self.time_slots_per_week-1)
 
     def test_time_str_to_index_0000(self):
         self.assertEqual(Availability.time_str_to_index('00:00'), 0)
@@ -88,6 +101,26 @@ class TestAvailability(unittest.TestCase):
     def test_time_str_to_index_2345(self):
         self.assertEqual(Availability.time_str_to_index('23:45'), 95)
 
-    # 2400
+    def test_time_str_to_index_2400(self):
+        self.assertEqual(Availability.time_str_to_index('24:00'), 96)
+
+    def test_initializer_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability([True for i in range(671)])
+
+    def test_str_never_free_avail(self):
+        self.assertEqual(str(self.never_free_avail), '')
+
+    def test_str_free_sat_sun_six_avail(self):
+        avail_str = ('Sunday 00:00 - Sunday 00:15\n'
+                     'Sunday 00:15 - Sunday 00:30\n'
+                     'Sunday 00:30 - Sunday 00:45\n'
+                     'Saturday 23:15 - Saturday 23:30\n'
+                     'Saturday 23:30 - Saturday 23:45\n'
+                     'Saturday 23:45 - Sunday 00:00')
+        self.assertEqual(str(self.free_sat_sun_six_avail), avail_str)
+
+    def test_
+
 if __name__ == '__main__':
     unittest.main()
