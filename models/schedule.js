@@ -12,22 +12,22 @@ var ScheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
     possibleCourses: {type:[String], required:true},
-    studentCoord :{type: ObjectId, ref:"User"},
-    tutorCoord :{type: ObjectId, ref:"User"},
-    studentClassSchedule: {type: [Date], required:true},
-    tutorClassSchedule: {type: [Date], required:true},
-    UTCClassSchedule: {type: [Date], required:true}, // for Admins
-    adminApproved: {type: Boolean, required: true, default: false},
-    tutorApproved: {type: Boolean, required: true, default: false},
-    studentApproved: {type: Boolean, required: true, default: false},
-    firstDateTimeUTC: {type: Date, required:true}, 
-    lastDateTimeUTC: {type: Date, required: true}, //so we know when to delete the schedule from the DB
     studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-    course: {type: String},
     studentReg: {type: ObjectId, ref:"Registration", required:true},
-    tutorReg: {type: ObjectId, ref:"Registration", required:true}
+    tutorReg: {type: ObjectId, ref:"Registration", required:true},
+    adminApproved: {type: Boolean, required: true, default: false},
+    tutorApproved: {type: Boolean, required: true, default: false},
+    studentApproved: {type: Boolean, required: true, default: false},
+    course: {type: String},
+    studentClassSchedule: {type: [Date], required:true},
+    tutorClassSchedule: {type: [Date], required:true},
+    UTCClassSchedule: {type: [Date], required:true}, // for Admins
+    firstDateTimeUTC: {type: Date}, 
+    lastDateTimeUTC: {type: Date}, //so we know when to delete the schedule from the DB
+    studentCoord :{type: ObjectId, ref:"User"},
+    tutorCoord :{type: ObjectId, ref:"User"}   
 });
 
 ScheduleSchema.path("course").validate(function(course) {
@@ -117,7 +117,7 @@ ScheduleSchema.statics.getMatches = function (callback){
             throw err;
           }
           // matches is an array consisting of messages collected during execution
-          console.log('matches:', typeof matches, matches);
+          console.log('matches:', typeof matches, JSON.stringify(matches));
           // process the JSON objs and write to db
           callback(null, matches);
         });

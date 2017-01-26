@@ -15,7 +15,7 @@ def run_scheduler(registrations):
     students = []
     tutors = []
     for registration in registrations:
-        availability = Availability(registration['availability'])
+        availability = Availability.from_dict(registration['availability'])
         gender_preference = registration['genderPref']
         courses = registration['courses']
         earliest_start_date_str = registration['earliestStartTime']
@@ -35,14 +35,13 @@ def run_scheduler(registrations):
     # Run scheduler
     scheduler = Scheduler(students, tutors)
     schedule_dicts = scheduler.schedule_dicts_for_database()
-    print schedule_dicts
+    print string_parser.escape_single_quotes(str(schedule_dicts))
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("registrations", type=string_parser.parse_dictionary,
                         help="a list of unmatched registrations") 
     args = parser.parse_args()
-    print args.registrations
     run_scheduler(args.registrations)
 
 if __name__ == '__main__':
