@@ -1,8 +1,10 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
-var User = require('../models/user.js');
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var genderPrefs = ["MALE","FEMALE", "NONE"]; 
+var async = require('async');
+var User = require('../models/user.js');
+var email = require('../javascripts/email.js');
+var genderPrefs = ["MALE","FEMALE", "NONE"];
 
 // availability are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -140,7 +142,7 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
 
 RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
     registrationIds.forEach(function (regId) {
-        Registration.findOne({_id: regId}, function (err, registration) {
+        Registration.findOne({_id: regId}).populate('user').exec(function (err, registration) {
             console.log('registration', registration)
             if (err) {
                 console.log(err);
@@ -149,13 +151,15 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
                 registration.matched(function (err, registration) {
                     if (err) {
                         console.log(err);
-                        callback({success: false, message: err.message});
+                    } else {
+                        // inform the student and tutor
+                        email.sendScheduleEmails(registration.user, function () {});
                     }
                 })
             }
         });
     });
-    setTimeout(function(){callback(null, registrationIds);}, 2500);  
+    callback(null, registrationIds);
 }
 
 

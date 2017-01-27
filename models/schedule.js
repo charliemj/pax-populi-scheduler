@@ -1,12 +1,15 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var User = require("../models/user.js"); 
-var utils = require("../javascripts/utils.js");
-var Registration = require("../models/registration.js"); 
+var async = require('async');
 var PythonShell = require('python-shell');
 var CronJob = require('cron').CronJob;
 var dateFormat = require('dateformat');
+var User = require("../models/user.js"); 
+var utils = require("../javascripts/utils.js");
+var email = require('../javascripts/email.js');
+var Registration = require("../models/registration.js"); 
+
 
 var ScheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
@@ -91,7 +94,13 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
             }
         });
     });
-    callback(null, matches);
+    if (matches.length > 0) {
+        email.notifyAdmins(matches.length, function (err) {
+            callback(null, matches);
+        });  
+    } else {
+        callback(null, matches);
+    }
 }
 
 
@@ -139,7 +148,10 @@ ScheduleSchema.statics.automateMatch = function () {
                 if (err) {
                     console.log('An error has occured', err.message);
                 } else {
-                    console.log('Successfully ran weekly matches!');
+                    var numMatches = matches.length;
+                    var message = 'Successfully generated ' +  numMatches + ' new ';
+                    message += numMatches > 1 ? 'matches!': 'match!'
+                    console.log(message);
                 }
             });
         },

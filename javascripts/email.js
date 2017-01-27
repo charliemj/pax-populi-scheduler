@@ -176,6 +176,30 @@ var Email = function() {
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
+    /**
+    * Sends an email to inform the user that they have been matched to someone
+    * @param {Object} user - the user object of the user
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.sendScheduleEmails = function (user, callback) {
+        var subject = 'Updates on the status of your Pax Populi class registration';
+        var emailContent = '{}<p> Hi {}!<br><br>You have been matched to a {} for the class you last registered for. Please log in to our scheduler to finalize your class schedule.<br>{}</p>'.format(that.welcomeMessage, user.firstName, user.role.toLowerCase() === 'student'? 'tutor': 'student', that.signature);
+        sendEmail(user.email, subject, emailContent, callback);
+    };
+
+    /**
+    * Sends an email to inform admins that there are new matches
+    * @param {Number} numMatches - the number of newly generated matches
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.notifyAdmins = function (numMatches, callback) {
+        var subject = 'New matches generated in Pax Populi Scheduler';
+        var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. The students and tutors have been notified. Once they confirm their schedule, you will be able to see the new matches on your dashboard and to approve/reject the matches.<br>{}</p>'.format(that.welcomeMessage, config.adminFirstName(), numMatches, that.signature);
+        sendEmail(config.adminEmailAddress(), subject, emailContent, callback);
+    };
+
     that.makeApprovalRequestEmailContent = function (user, developmentMode) {
         var link;
             if (developmentMode) {
