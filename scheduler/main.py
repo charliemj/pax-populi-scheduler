@@ -6,10 +6,15 @@ from user import User
 from scheduler import Scheduler
 import argparse
 import string_parser
+import json
 from datetime import datetime
 from availability import Availability
 
 def run_scheduler(registrations):
+    """
+    Runs the scheduler and prints a json containing a list of schedule objects
+    to be written to the database.
+    """
     # Convert registrations dict to students, tutors
     students = []
     tutors = []
@@ -35,11 +40,13 @@ def run_scheduler(registrations):
     # Run scheduler
     scheduler = Scheduler(students, tutors)
     schedule_dicts = scheduler.schedule_dicts_for_database()
-    print string_parser.escape_single_quotes(str(schedule_dicts))
+    # print instead of return because python-shell receives this data from Python stdout
+    print json.dumps(schedule_dicts) 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("registrations", type=string_parser.parse_dictionary,
+    parser.add_argument("registrations",
+                        type=string_parser.json_loads_byteified,
                         help="a list of unmatched registrations") 
     args = parser.parse_args()
     run_scheduler(args.registrations)
