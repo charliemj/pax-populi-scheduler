@@ -210,7 +210,7 @@ class User:
         """Returns an availability in a new timezone.
 
         Args:
-            new_tz_str: A string representing the new time zone to shift to.
+            new_tz_str: A string representing the new timezone to shift to.
                 Must be in the pytz timezone database.
             naive_dt_in_new_tz: An naive datetime object that provides the
                 reference time in the timezone new_tz_str with which to 

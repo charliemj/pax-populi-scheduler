@@ -282,7 +282,7 @@ class Availability:
             aware_dt: A timezone-aware datetime whose timezone is the
                 current timezone of wt. Also used as the reference datetime for
                 the timezone conversion.
-            new_tz_str: A string representing the new time zone to shift to.
+            new_tz_str: A string representing the new timezone to shift to.
                 Must be in the pytz timezone database.
 
         Returns:
@@ -355,7 +355,7 @@ class Availability:
         Args:
             forward_shift_minutes: An integer representing the number of
                 minutes to shift self forward in time. This must be a multiple
-                of self.MINUTES_PER_SLOT. 
+                of self.MINUTES_PER_SLOT.
 
         Returns:
             shifted_availability: An Availability object representing self
@@ -368,7 +368,7 @@ class Availability:
                 Tuesday. 
         """
         if forward_shift_minutes % self.MINUTES_PER_SLOT != 0:
-            raise ValueError('MINUTES_PER_SLOT must be a divisor of forward_shift_minutes')
+            raise ValueError('forward_shift_minutes must be a multiple of MINUTES_PER_SLOT')
         n_slots = forward_shift_minutes / self.MINUTES_PER_SLOT
         shifted_free_slots = [self.free_slots[(i-n_slots)%self.SLOTS_PER_WEEK]
                               for i in range(self.SLOTS_PER_WEEK)]
@@ -379,13 +379,13 @@ class Availability:
         """Returns a copy of self after shifting to a new timezone.
 
         Args:
-            current_tz_str: A string representing the time zone of self.
+            current_tz_str: A string representing the timezone of self.
                 Must be in the pytz timezone database.
-            new_tz_str: A string representing the new time zone to shift to.
+            new_tz_str: A string representing the new timezone to shift to.
                 Must be in the pytz timezone database.
             naive_dt_in_new_tz: An naive datetime object that provides the
                 reference time in the timezone new_tz_str with which to
-                calculate UTC offsets. 
+                calculate UTC offsets.
         """
         if current_tz_str not in set(pytz.all_timezones):
             raise ValueError('current_tz must be in the pytz timezone database')

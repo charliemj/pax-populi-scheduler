@@ -58,15 +58,6 @@ class TestWeeklyTime(unittest.TestCase):
         self.assertEqual(self.saturday_0000.first_datetime_after(datetime(2017, 1, 31, 17, 44)),
                          datetime(2017, 2, 4, 0, 0))
 
-    '''
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
-    '''
-
 class TestAvailability(unittest.TestCase):
     def setUp(self):
         self.slots_per_week = 672
@@ -116,6 +107,11 @@ class TestAvailability(unittest.TestCase):
         self.et_no_ds = et.localize(datetime(2017, 11, 5, 2, 0)) 
         self.kabul_2000_1_1 = kabul.localize(self.dt_2000_1_1)
         self.kathmandu_2017_end = kathmandu.localize(self.dt_2017_end)
+
+        # WeeklyTime objects
+        self.sunday_0000 = WeeklyTime(0, 0, 0)
+        self.tuesday_1717 = WeeklyTime(2, 17, 17)
+        self.saturday_2359 = WeeklyTime(6, 23, 59)
 
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
