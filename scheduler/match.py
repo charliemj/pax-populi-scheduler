@@ -95,8 +95,10 @@ class Match:
                                   for dt in self.tutor_course_schedule]
         UTC_schedule_strings = [dt.strftime(dt_format)
                                 for dt in self.UTC_course_schedule]
-        match_dict = {'studentID': self.student.ID,
-                      'tutorID': self.tutor.ID,
+        match_dict = {'studentID': self.student.user_id,
+                      'tutorID': self.tutor.user_id,
+                      'studentRegID': self.student.reg_id,
+                      'tutorRegID': self.tutor.reg_id,
                       'possibleCourses': self.shared_courses,
                       'studentClassSchedule': student_schedule_strings,
                       'tutorClassSchedule': tutor_schedule_strings,

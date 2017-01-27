@@ -9,9 +9,6 @@ var addMessage = function(message, success) {
     $('#messages').empty();
     $('.modal-content').addClass(success ? 'success': 'error');
     $('#messages').text(message);
-    console.log($('#messages').html());
-    console.log($('#message-modal').html());
-    console.log($().jquery);
     try {
     	$('#message-modal').modal('show');
     } catch (err) {

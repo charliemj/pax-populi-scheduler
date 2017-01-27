@@ -19,7 +19,7 @@
           <input type="hidden" value="{{notAllowedRegex}}" name="notAllowedRegex" id="notAllowedRegex">
           <div class='row'>
             <div class='col-xs-10 col-md-10'>
-              <div cflass="form-group">
+              <div class="form-group">
                   <label class="control-label">Register as*</label>
                   <div>
                     <select id= "userType" name='userType' class='form-control signup-input role' required>
@@ -156,12 +156,12 @@
                     </select>
                     </div>
                   </div>
-                  {{!<div class="other form-group">
+                  <div class="other form-group">
                     <label class="control-label">Please specify</label>
                     <div>
                       <input id='other-school-register-box' class='form-control signup-input' type='text' name='school' placeholder='school'></input>
                     </div>
-                  </div>}}
+                  </div>
                 </div>
                 <div id='student-education-level' class="form-group student">
                   <label class="control-label">Education Level (Current or Highest Completed)*</label>
@@ -208,12 +208,12 @@
                       </select>
                     </div>
                   </div>
-                  {{!<div class="other form-group">
+                  <div class="other form-group">
                     <label class="control-label">Please specify</label>
                     <div>
                       <input id='major-register-box' class='form-control signup-input' type='text' name='major' placeholder='major'></input>
                     </div>
-                  </div>}}
+                  </div>
                 </div>
                 <div class="form-group tutor student">
                   <label class="control-label">Nationality*</label>
@@ -256,12 +256,12 @@
                       </select>
                     </div>
                   </div>
-                  {{!<div class="other form-group">
+                  <div class="other form-group">
                     <label class="control-label">If you listed "Other" for Interests, please specify</label>
                     <div>
                       <input id='other-interest-register-box' class='form-control signup-input' type='text' name='interests' placeholder='interest'></input>
                     </div>
-                  </div>}}
+                  </div>
                 </div>
                 <div class="form-group in-charge coordinator">
                   <label class="control-label">Which of the following are you in charge of?</label>
@@ -277,7 +277,16 @@
                     </div>
                   </div>
                 </div>
-                <div id='in-charge-of'></div>
+                <div id='in-charge-of-container'>
+                  <div id='in-charge-of'>
+                  </div>
+                  <div class="other form-group">
+                    <label class="control-label">Please specify</label>
+                    <div>
+                      <input id='other-school-in-charge-register-box' class='form-control signup-input' type='text' name='schoolInCharge' placeholder='school'></input>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
             {{> agreements}}
