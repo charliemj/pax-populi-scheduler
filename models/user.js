@@ -40,9 +40,9 @@ var UserSchema = mongoose.Schema({
     timezone: {type: String, default:null},
     nationality: {type: String, default:null},
     interests: [{type: String, default:null}],
-    countryInCharge: {type: String, default:null},
-    regionInCharge: {type: String, default:null},
-    schoolInCharge: {type: String, default:null}
+    countryInCharge: {type: String},
+    regionInCharge: {type: String},
+    schoolInCharge: {type: String}
 
 });
 
