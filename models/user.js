@@ -7,6 +7,7 @@ var enums = require("../javascripts/enums.js");
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
 var regexs = require("../javascripts/regexs.js");
+var mongooseToCsv = require("mongoose-to-csv");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true},
@@ -21,29 +22,60 @@ var UserSchema = mongoose.Schema({
     archived: {type: Boolean, default: false},
     role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
-    alternativeEmail: {type: String, required: true},
+    alternativeEmail: {type: String, default: null},
     firstName: {type: String, required: true},
-    middleName: {type: String},
+    middleName: {type: String, default:null},
     lastName: {type: String, required: true},
-    nickname: {type: String},
-    gender: {type: String, enum: enums.genders()},
-    dateOfBirth: {type: Date},
+    nickname: {type: String, default:null},
+    gender: {type: String, enum: enums.genders(), default:null},
+    dateOfBirth: {type: Date, default:null},
     phoneNumber: {type: String, require: true},
-    skypeId: {type: String},
-    school: {type: String},
-    educationLevel: {type: String},
-    enrolled: {type: String},
-    major: {type: String},
-    country:{type: String},
-    region: {type: String},
-    timezone: {type: String},
-    nationality: {type: String},
-    interests: [{type: String}],
-    countryInCharge: {type: String},
-    regionInCharge: {type: String},
-    schoolInCharge: {type: String}
+    skypeId: {type: String, default:null},
+    school: {type: String, default:null},
+    educationLevel: {type: String, default:null},
+    enrolled: {type: String, default:null},
+    major: {type: String, default:null},
+    country:{type: String, default:null},
+    region: {type: String, default:null},
+    timezone: {type: String, default:null},
+    nationality: {type: String, default:null},
+    interests: [{type: String, default:null}],
+    countryInCharge: {type: String, default:null},
+    regionInCharge: {type: String, default:null},
+    schoolInCharge: {type: String, default:null}
 
 });
+
+UserSchema.plugin(mongooseToCsv, 
+{
+  headers: 'FirstName LastName UserName Email AltEmail Phone Gender DOB Country Region TimeZone Major educationLevel School Nationality Role SkypeID Interests InChargeOfRegion InChargeOfCountry InChargeOfSchool',
+  constraints: {
+    'Username': 'username',
+    'Email': 'email',
+    'DOB': 'dateofBirth',
+    'FirstName': 'firstName',
+    'LastName': 'lastName',
+    'AltEmail': 'alternativeEmail',
+    'Phone': 'phoneNumber',
+    'SkypeID':'skypeId',
+    'TimeZone': 'timezone',
+    'Country': 'country',
+    'Region': 'region',
+    'Nationality': 'nationality',
+    'Role': 'role',
+    'Gender': 'gender',
+    'School': 'school',
+    'Major': 'major',
+    'Interests': 'interests',
+    'InChargeOfSchool': 'schoolInCharge',
+    'InChargeOfRegion': 'regionInCharge',
+    'InChargeOfCountry': 'countryInCharge',
+    'educationLevel': 'educationLevel'
+
+}
+
+  });
+
 
 UserSchema.path("role").validate(function(role) {
     if (utils.isRegularUser(role)) {
@@ -513,6 +545,15 @@ UserSchema.statics.getPendingUsers = function (callback) {
         }
     });
 }
+
+
+UserSchema.statics.getAllUsers = function(){
+    console.log("trying to make csv");
+    this.find({}).stream().pipe(this.csvTransformStream()).pipe(fs.createWriteStream('users.csv'));
+    console.log("made csv");
+};
+
+
 
 var UserModel = mongoose.model("User", UserSchema);
 

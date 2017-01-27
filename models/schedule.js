@@ -104,6 +104,7 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
 }
 
 
+
 ScheduleSchema.statics.getMatches = function (callback) {
 
     Registration.getUnmatchedRegistrations(function (err, registrations) {
@@ -161,6 +162,7 @@ ScheduleSchema.statics.automateMatch = function () {
     global.schedulerJob = schedulerJob;
     global.schedulerJob.start();
 }
+
 
 
 //keep at bottom of file

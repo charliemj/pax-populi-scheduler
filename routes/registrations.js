@@ -12,14 +12,41 @@ var authentication = require('../javascripts/authentication.js');
 
 router.get('/', authentication.isAuthenticated, function (req, res, next) {
     var user = req.session.passport.user;
-    res.render('registration', {title: 'Register',
-                              csrfToken: req.csrfToken(),
-                              username: user.username,
-                              role: user.role,
-                              fullName: user.fullName,
-                              onHold: user.onHold,
-                              inPool: user.inPool,
-                              courses: enums.courses()});
+
+    Registration.getUnmatchedRegistrationsForUser(user, function(err, registration){
+
+      if (err){
+        console.log("error getting registration " + err);
+        res.send({ success: false, message: err.message });
+      }
+
+      else{
+        console.log("here's the registration");
+        console.log(registration);
+        if (registration.length > 0){
+          res.render('registrationError', {title: 'Register',
+                                csrfToken: req.csrfToken(),
+                                username: user.username,
+                                role: user.role,
+                                fullName: user.fullName,
+                                onHold: user.onHold,
+                                inPool: user.inPool,
+                                courses: enums.courses()});
+        }
+
+        else{
+          res.render('registration', {title: 'Register',
+                                csrfToken: req.csrfToken(),
+                                username: user.username,
+                                role: user.role,
+                                fullName: user.fullName,
+                                onHold: user.onHold,
+                                inPool: user.inPool,
+                                courses: enums.courses()});
+        }
+      }
+
+    });
 
 });
 
@@ -45,7 +72,6 @@ router.post('/:username', authentication.isAuthenticated, function (req, res, ne
                 res.status(200).send( {success: true,
                                         message:"Registration has been submitted!", 
                                         redirect: "/"});
-                //TODO redirect
             }
     });
 });

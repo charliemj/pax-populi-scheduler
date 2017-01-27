@@ -1,5 +1,6 @@
 $(document).ready(function(){
-        
+    
+    //checks for some validation on required fields. Will not allow form to be submitted if any of these conditions aren't met.
     $("#register-button").click(function(){
 
         var validForm = true;
@@ -23,10 +24,12 @@ $(document).ready(function(){
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
 
+        //TODO -- this is kind of janky :(
         var birthdayYear = parseInt(DOB.substring(0,4));
         var currentYear = new Date().getFullYear();
         
-        if (birthdayYear >= currentYear ){
+        if (birthdayYear >= currentYear && regularUser){
+            $('#DOBErrors').empty();
             $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
         }
         
@@ -79,6 +82,8 @@ $(document).ready(function(){
         }
     });
 
+
+    //alerts user in realtime to possible registration errors on signup form. Does not actually enforce requirements though. 
 
     $("#username-register-box").blur(function(){
 
