@@ -16,7 +16,6 @@ var Authentication = function() {
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
     that.isAuthenticated = function (req, res, next) {
-        console.log('in authenicated...');
         if (req.params.username == undefined && req.isAuthenticated() || 
                 req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
             // if the request is not user specific, give permission as long as the user is authenticated,
@@ -96,6 +95,7 @@ var Authentication = function() {
         var isStudent = utils.isStudent(role);
         var isAdminTutor = !utils.isRegularUser(role);
         var password = data.password.trim();
+
         that.encryptPassword(password, function (err, hash) {
             if (err) {
                 return err;
@@ -110,12 +110,16 @@ var Authentication = function() {
                             lastName: data.lastName.trim(),
                             phoneNumber: data.phoneNumber.trim()}
 
+            data.school ? data.tutorSchool = data.school : null;
+            data.school ? data.studentSchool = data.school : null;
+            data.interests ? data.interests.splice(-1,1): null;
+
             if (utils.isRegularUser(userJSON.role)) {
                 var additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
                                         skypeId: data.skypeId.trim(),
-                                        school: isTutor ? data.tutorSchool.trim() : data.studentSchool.trim(),   
+                                        school: isTutor ? data.tutorSchool : data.studentSchool,   
                                         educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
                                                             data.studentEducationLevel.trim(),
                                         enrolled: data.enrolled === 'Yes',
@@ -127,7 +131,7 @@ var Authentication = function() {
                 Object.assign(userJSON, additionalInfo);
             }   
             if (isTutor) {
-                userJSON['major'] = data.major.trim();
+                userJSON['major'] = utils.extractChosen(data.major);
             } else if (isStudent) {
                 userJSON['major'] = 'N/A';
             }
@@ -135,7 +139,11 @@ var Authentication = function() {
                 var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
                 scopes.forEach(function (scope) {
                     if (typeof data[scope] !== 'undefined') {
-                        userJSON[scope] = data[scope];
+                        if (scope === 'schoolInCharge') {
+                            userJSON[scope] = utils.extractChosen(data[scope]);
+                        } else {
+                            userJSON[scope] = data[scope];
+                        }   
                     }
                 });
             }

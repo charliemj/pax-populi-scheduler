@@ -28,13 +28,10 @@ $(document).ready(function () {
 
     $('.approve-button, .reject-button, .waitlist-button').click(function () {
         var id = $(this).attr('id').split('-').slice(-1)[0] 
-        console.log('id', id)
         var username = $('#username-' + id).val();
         var requestToken = $('#requestToken-' + id).val();
         var csrf = $('#csrf').val();
         var action = $(this).attr('id').split('-')[0];
-        console.log('username', username);
-        console.log('requestToken', requestToken)
 
         $.ajax({
             url: '/'+action+'/'+username+'/'+ requestToken,

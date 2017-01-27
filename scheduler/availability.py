@@ -36,7 +36,7 @@ class WeeklyTime:
         self.time = time(hour, minute)
 
     def __str__(self):
-        return self.day_of_week + ' ' + str(self.time)
+        return self.day_of_week + ' ' + self.time.strftime('%H:%M')
 
     def __eq__(self, other):
         return (self.day_of_week_index == other.day_of_week_index
@@ -152,14 +152,18 @@ class Availability:
 
         Args:
             time_str: A string of the form 'HH:MM' representing a time with
-                a specified hour and minute.
+                a specified hour and minute. Allows hour to be 24.
 
         Returns:
             An integer i such that cls.SLOT_START_TIMES[i] corresponds to
-                time_str.
+                Sunday at the time given by time_str.
         """
         hours = int(time_str.split(':')[0])
         minutes = int(time_str.split(':')[1])
+        if hours not in range(cls.HOURS_PER_DAY+1):
+            raise ValueError('The hour part of time_str must be in range(25)')
+        if minutes not in range(cls.MINUTES_PER_HOUR):
+            raise ValueError('The minute part of time_str must be in range(60)')
         return (cls.MINUTES_PER_HOUR * hours + minutes) / cls.MINUTES_PER_SLOT
 
     @classmethod
@@ -226,19 +230,18 @@ class Availability:
         return cls(free_slots)
 
     @classmethod
-    def UTC_offset_minutes(cls, localized_datetime):
+    def UTC_offset_minutes(cls, localized_dt):
         """Converts a localized datetime to the number of minutes offset from
         from UTC.
 
         Args:
-            localized_datetime: A localized datetime object containing a time
-                zone.
+            localized_dt: A localized datetime object containing a timezone.
 
         Returns:
             offset_minutes: An integer representing the signed number of
-                minutes that localized_datetime is offset from UTC.
+                minutes that localized_dt is offset from UTC.
         """
-        offset_string = localized_datetime.strftime('%z')
+        offset_string = localized_dt.strftime('%z')
         minutes = cls.MINUTES_PER_HOUR * int(offset_string[1:3]) + int(offset_string[3:5])
         if offset_string[0] == '+':
             offset_minutes = minutes
@@ -373,25 +376,3 @@ class Availability:
         forward_shift_minutes = (self.UTC_offset_minutes(datetime_new_tz)
                                  - self.UTC_offset_minutes(datetime_current_tz))
         return self.forward_shifted(forward_shift_minutes)
-
-if __name__ == '__main__':
-    availability_dict = {'0': [['5:00', '5:30'], ['8:00','11:00']],
-                     '1': [],
-                     '2': [],
-                     '3': [],
-                     '4': [],
-                     '5': [],
-                     '6': [['22:00','24:00']]}
-    availability_dict2 = {'0':[['5:30', '15:00']]}
-    dict3 ={'0': [['00:00', '02:30'], ['23:00', '24:00']],
-                     '4': [['17:30', '18:00']],
-                     '6': [['16:00', '17:45'], ['22:00', '22:15']]}
-    a = Availability.from_dict(availability_dict)
-    a2 = Availability.from_dict(availability_dict2)
-    wt = WeeklyTime(0, 12, 15)
-    current_tz = pytz.timezone('US/Eastern')
-    new_tz_string = 'UTC'
-    dt = datetime(2017, 7, 15)
-    localized_dt = current_tz.localize(dt)
-    #print a2
-

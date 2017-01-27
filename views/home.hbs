@@ -38,12 +38,12 @@
                 <button id='waitlist-button-{{user._id}}' class='btn btn-warning btn-hg waitlist-button'>Waitlist</button>
               </center>
             </div>
+          {{else if archived}}
           {{else if isValidAccount}}
-            <div class="login-warning">
-              {{message}}
-            </div>
             <form id='verification-form' action='/verify/{{username}}/resend' method='get'>
-              <input id='send-verification-button' class='btn btn-primary btn-hg' type='submit' value='Send Verification Email'></input>
+              <center>
+                <input id='send-verification-button' class='btn btn-primary btn-hg' type='submit' value='Send Verification Email'></input>
+              </center>
             </form>
           {{else}}
             {{>login_register}}

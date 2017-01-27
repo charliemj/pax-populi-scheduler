@@ -7,3 +7,6 @@ public/vendor
 .DS_Store
 .gitignore~
 *.pyc
+scheduler/.coverage
+scheduler/htmlcov/*
+.env/*

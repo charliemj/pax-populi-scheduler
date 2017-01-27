@@ -17,6 +17,7 @@
   ],
   "dependencies": {
     "angular-timezone-selector": "^1.6.0",
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "bootstrap-toggle": "^2.2.2"
   }
 }

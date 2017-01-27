@@ -8,9 +8,9 @@ var csrf = require('csurf');
 var User = require('../models/user');
 var authentication = require('../javascripts/authentication.js');
 var email = require('../javascripts/email.js');
-var enums = require('../javascripts/enums.js');
 var regexs = require("../javascripts/regexs.js");
 var utils = require('../javascripts/utils.js');
+var Schedule = require("../models/schedule.js");
 
 
 // setup csurf middlewares 
@@ -24,18 +24,18 @@ router.get('/', function(req, res, next) {
     } else {
         res.render('home', {title: 'Pax Populi Scheduler',
                             csrfToken: req.csrfToken(),
-                            userTypes: enums.userTypes(),
-                        	genders: enums.genders(),
-                        	confirmation: enums.confirmation(),
-                        	studentSchools: enums.studentSchools(),
-                        	tutorSchools: enums.tutorSchools(),
-                        	studentEducationLevels: enums.studentEducationLevels(),
-                        	tutorEducationLevels: enums.tutorEducationLevels(),
+                            userTypes: global.enums.userTypes,
+                        	genders: global.enums.genders,
+                        	confirmation: global.enums.confirmation,
+                        	studentSchools: global.enums.studentSchools,
+                        	tutorSchools: global.enums.tutorSchools,
+                        	studentEducationLevels: global.enums.studentEducationLevels,
+                        	tutorEducationLevels: global.enums.tutorEducationLevels,
                             passwordRegex: JSON.stringify(regexs.passwordPattern()),
                             emailRegex: JSON.stringify(regexs.emailPattern()),
                             notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
-                        	majors: enums.majors(),
-                        	interests: enums.interests()});
+                        	majors: global.enums.majors,
+                        	interests: global.enums.interests});
     }
 });
 
@@ -66,10 +66,15 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
         if (!user) {
             return res.redirect('/');
         }
-        console.log('user', user);
         if (!user.verified) {
             data.message = 'Your account has not been verified, please go to your mailbox to verify.';
             data.isValidAccount = true;
+            data.username = user.username;
+            return res.render('home', data);
+        } else if (user.archived) {
+            data.message = 'Your account has been archived by the adminstrators. '
+                            + 'You no longer have access to this account';
+            data.archived = true;
             data.username = user.username;
             return res.render('home', data);
         } else if (user.rejected) {
@@ -161,7 +166,6 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
     var user = req.session.passport.user;
     User.getUser(username, function (err, accountUser) {
         accountUser.password = undefined;
-        console.log(accountUser);
         var data = {title: 'Pax Populi Scheduler',
                     user: accountUser,
                     username: username,
@@ -171,7 +175,7 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
                     role: user.role,
                     requestToken: req.params.requestToken,
                     csrfToken: req.csrfToken()};
-        res.render('home', data); 
+        res.redirect('/'); 
     })
          
 });
@@ -180,17 +184,19 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
 router.put('/approve/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     User.respondToAccountRequest(req.params.username, req.params.requestToken, true, false, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
-                csrfToken: req.csrfToken()};
+                csrfToken: req.csrfToken(),
+                redirect: '/'};
         if (!user || (err && !user.approved))  {
             data.message = err.message;
-            return res.json({'success': false, message: err.message});
+            data.success = false;
+            return res.json(data);
         }
         User.sendApprovalEmail(user.username, req.devMode, function (err) {
 	        if (err) {
-	        	console.log('failed to send');
-	            return res.render('home', data);
+	            data.message = err.message;
+                data.success = false;
+                return res.json(data);
 	        }
-	        console.log('sent, redirecting');
 	        data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
 	        data.success = true;
 	        data.redirect = '/';
@@ -203,14 +209,18 @@ router.put('/approve/:username/:requestToken', [authentication.isAuthenticated, 
 router.put('/reject/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     User.respondToAccountRequest(req.params.username, req.params.requestToken, false, false, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
-                csrfToken: req.csrfToken()};
+                csrfToken: req.csrfToken(),
+                redirect: '/'};
         if (!user || (err && !user.rejected)) {
             data.message = err.message;
-            return res.json({'success': false, message: err.message});
+            data.success = false;
+            return res.json(data);
         }
         User.sendRejectionEmail(user.username, req.devMode, function (err) {
 	        if (err) {
-	            return res.render('home', data);
+	            data.message = err.message;
+                data.success = false;
+                return res.json(data);
 	        }
 	        data.message = '{} {}\'s account has been rejected. He/She has been notified.'.format(user.firstName, user.lastName);   
 	        data.success = true;
@@ -224,14 +234,18 @@ router.put('/reject/:username/:requestToken', [authentication.isAuthenticated, a
 router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     User.respondToAccountRequest(req.params.username, req.params.requestToken, true, true, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
-                csrfToken: req.csrfToken()};
+                csrfToken: req.csrfToken(),
+                redirect: '/'};
         if (!user || (err || !user.approved || !user.onHold)){
             data.message = err.message;
-            return res.json({'success': false, message: err.message});
+            data.success = false;
+            return res.json(data);
         }
         User.sendWaitlistEmail(user.username, req.devMode, function (err) {
 	        if (err) {
-	            return res.render('home', data);
+	            data.message = err.message;
+                data.success = false;
+                return res.json(data);
 	        }
 	        data.message = '{} {}\'s account has been moved to waitlist. He/She has been notified'.format(user.firstName, user.lastName);
 	        data.success = true;
@@ -241,30 +255,62 @@ router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated,
     });
 });
 
+// Archives the account
+router.put('/archive/:username', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    User.archiveUser(req.params.username, function (err, user) {
+        data = {title: 'Pax Populi Scheduler',
+                csrfToken: req.csrfToken(),
+                redirect: '/'};
+        if (!user || (err || !user.archived)) {
+            data.message = err.message;
+            data.success = false;
+            return res.json(data);
+        }
+        User.sendArchiveEmail(user.username, req.devMode, function (err) {
+            if (err) {
+                data.message = err.message;
+                data.success = false;
+                return res.json(data);
+            }
+            data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
+            data.success = true;
+            data.redirect = '/settings';
+            res.json(data);
+        });
+    });
+});
+
 // signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 	console.log('signing up...');
-    console.log(req.body);
+    var formDefaults = { userTypes: global.enums.userTypes,
+                            genders: global.enums.genders,
+                            confirmation: global.enums.confirmation,
+                            studentSchools: global.enums.studentSchools,
+                            tutorSchools: global.enums.tutorSchools,
+                            studentEducationLevels: global.enums.studentEducationLevels,
+                            tutorEducationLevels: global.enums.tutorEducationLevels,
+                            passwordRegex: JSON.stringify(regexs.passwordPattern()),
+                            emailRegex: JSON.stringify(regexs.emailPattern()),
+                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
+                            majors: global.enums.majors,
+                            interests: global.enums.interests};
+    var data = {title: 'Pax Populi Scheduler',
+                csrfToken: req.csrfToken()}
+    Object.assign(data, formDefaults);
     var userJSON = authentication.createUserJSON(req.body, function (err, userJSON) {
         if (err) {
-            res.render('home', {title: 'Pax Populi Scheduler',
-                                message: err.message,
-                                csrfToken: req.csrfToken()});
+            data.message = err.message;
+            res.render('home', data);
         } else {
-            console.log('userJSON', userJSON);
-            data = {title: 'Pax Populi Scheduler',
-                    csrfToken: req.csrfToken()};
             User.signUp(userJSON, req.devMode, function (err, user) {
                 if (err) {
-                    res.render('home', {title: 'Pax Populi Scheduler',
-                                        message: err.message,
-                                        csrfToken: req.csrfToken()});
+                    data.mesage = err.message;
                 } else {
-                    res.render('home', {title: 'Pax Populi Scheduler',
-                                        message: 'Sign up successful! We have sent you a verification email.'
-                                                  + 'Please check your email.',
-                                        csrfToken: req.csrfToken()});
+                    data.message = 'Sign up successful! We have sent you a verification email. '
+                                    + 'Please check your email.';
                 }
+                res.render('home', data)
             });
         }
     });
@@ -279,6 +325,62 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         inPool: user.inPool,
                         role: user.role,
                         csrfToken: req.csrfToken()});
+});
+
+router.get('/settings', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    var user = req.session.passport.user;
+    res.render('settings', {title: 'Settings',
+                            username: user.username,
+                            fullName: user.fullName,
+                            onHold: user.onHold,
+                            inPool: user.inPool,
+                            role: user.role,
+                            csrfToken: req.csrfToken(),
+                            studentSchools: global.enums.studentSchools,
+                            tutorSchools: global.enums.tutorSchools,
+                            majors: global.enums.majors,
+                            interests: global.enums.interests,
+                            courses: global.enums.courses,
+                            schedulerOn: global.schedulerJob.running});
+});
+
+router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    var keyword = req.body.keyword.trim();
+    var user = req.session.passport.user;
+    var data = {title: 'Settings',
+                username: user.username,
+                fullName: user.fullName,
+                onHold: user.onHold,
+                inPool: user.inPool,
+                role: user.role,
+                csrfToken: req.csrfToken(),
+                schedulerOn: global.schedulerJob.running}
+    User.searchUsers(keyword, function (err, users) {
+        if (err) {
+            data.message = 'An error has occured. Please try again.'
+        } else if (users.length === 0) {
+            data.message = 'No results.'
+        } else {
+            users.forEach(function (user) {
+                user.password = undefined;
+            })
+            data.users = users;
+        }
+        res.render('settings', data);
+    });
+});
+
+router.post('/editFormDefaults', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    global.global.enums.updateEnum(req.body, function (err, enums) {
+        if (err) {
+            console.log(err.message);
+            res.redirect('/settings');
+        } else {
+            console.log('Update successful');
+            global.enums = enums;
+            res.redirect('/settings');
+        }
+    })
 });
 
 module.exports = router;
