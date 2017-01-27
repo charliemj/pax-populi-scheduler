@@ -31,16 +31,15 @@ $(document).ready(function () {
 		    default:
 		        break;
 		}
+
+		$("#incharge").hide();
+	    
 	});
 
 	$('input:radio[name="in-charge"]').change(
 	    function () {
-	    	$('#in-charge-of').empty();
-	    	var countryHTML = $('.country').clone();
-	    	countryHTML.find('select').attr('name', 'countryInCharge');
-	    	var regionHTML = $('.region').clone();
-	    	regionHTML.find('select').attr('name', 'regionInCharge');
-	    	regionHTML = countryHTML.add(regionHTML);
+
+            
             var schoolHTML = $('#tutor-schools').clone();
             schoolHTML.find('select').attr('name', 'schoolInCharge');
 
@@ -48,13 +47,21 @@ $(document).ready(function () {
 	        	var inCharge = $(this).val();
 	        	switch (inCharge) {
 	        		case 'School':
+	        			$("#incharge").hide();
+	        			$("#regionHere2").hide();
 	        			$('#in-charge-of').html(schoolHTML);
 	        			break;
 	        		case 'Region':
-	        			$('#in-charge-of').html(regionHTML);
+	     				$('#in-charge-of').html(schoolHTML).empty();
+	        			$("#incharge").show();
+	        			$("#regionHere2").show();
 	        			break;
 	        		case 'Country':
-	        			$('#in-charge-of').html(countryHTML);
+	        			$('#in-charge-of').html(schoolHTML).empty();
+	        			$("#incharge").show();
+	        			$("#regionHere2").hide();
+	        			$("#regionLabel").hide();
+	        			$("#regionHere2").val("--"); //no region selected
 	        			break;
 	        	}  
 	        }

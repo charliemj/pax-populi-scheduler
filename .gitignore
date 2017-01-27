@@ -10,3 +10,4 @@ public/vendor
 scheduler/.coverage
 scheduler/htmlcov/*
 .env/*
+runthepython.sh

@@ -34,8 +34,8 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
           res.send({success: false, message: err.message});
         } else {
             data.registrations = registrations;
-            if (utils.isRegularUser(user.role)) {
-                res.render('dashboard', data)
+            if (utils.isRegularUser(user.role)) {  
+                res.render('dashboard', data) //shouldn't we also show the schedules of regular users?
             } else {
                 Schedule.getSchedules(user, function (err, schedules) {
                     if (err) {
@@ -62,6 +62,18 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
 });
 
 
+//route for a button so that the admin can get a CSV file of all the users
+router.get('/admin/userinfo', authentication.isAuthenticated, function(req, res, next){
+    var user = req.session.passport.user;
+    //https://www.npmjs.com/package/mongoose-to-csv
+    if (utils.isAdministrator(user.role)) {
+        User.getAllUsers();
+        console.log('in the route shoudve made file');
+    }
+
+});
+
+
 
 router.get('/:username/profile', authentication.isAuthenticated, function (req, res, next) {
 	var fullName = req.session.passport.user.fullName;
@@ -81,6 +93,7 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
                                 educationLevel: user.educationLevel, 
                                 major: user.major,
                                 enrolled: user.enrolled ? 'Yes': 'No',
+                                timezone: user.timezone,
                                 country: user.country,
                                 region: user.region,
                                 nationality: user.nationality,
