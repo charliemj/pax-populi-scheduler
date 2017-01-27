@@ -306,11 +306,12 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
             User.signUp(userJSON, req.devMode, function (err, user) {
                 if (err) {
                     data.mesage = err.message;
+                    res.render('home', data);
                 } else {
                     data.message = 'Sign up successful! We have sent you a verification email. '
                                     + 'Please check your email.';
+                    res.render('home', data);
                 }
-                res.render('home', data)
             });
         }
     });

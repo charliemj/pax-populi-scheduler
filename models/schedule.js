@@ -48,14 +48,13 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
                 callback(null, schedules);
             }
         });
-    } else {
+    } else if (utils.isCoordinator(user.role)) {
         // get schedules for that school/country/region
         User.getUser(user.username, function (err, user) {
             if (err) {
                 callback({success: false, message: err.message});
             } else {
-                //these need to be updated the the country/region/school that the coordinator is in charge of
-                Schedule.find( {$or: [{country: user.country}, {region: user.region}, {school: user.school}]}, function (err, schedules) {
+                Schedule.find( {$or: [{studentCoord: user._id}, {tutorCoord: user._id}]}, function (err, schedules) {
                     if (err) {
                         callback({success: false, message: err.message});
                     } else {
@@ -64,6 +63,15 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
                 });
             }
         })
+    } else {
+        // must be an admin
+        Schedule.find({}, function (err, schedules) {
+            if (err) {
+                callback({success: false, message: err.message});
+            } else {
+                callback(null, schedules);
+            }
+        });
     }
 }
 
@@ -84,13 +92,27 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                 scheduleJSON.studentPossibleSchedules = utils.formatDates(match.studentPossibleSchedules);
                 scheduleJSON.tutorPossibleSchedules = utils.formatDates(match.tutorPossibleSchedules);
                 scheduleJSON.UTCPossibleSchedules = utils.formatDates(match.UTCPossibleSchedules);
-
-                Schedule.create(scheduleJSON, function (err, match) {
+                User.findCoordinator(scheduleJSON.student, function (err, studentCoord) {
                     if (err) {
-                        console.log(err);
                         callback({success: false, message: err.message});
+                    } else {
+                        scheduleJSON.studentCoord = studentCoord;
+                        User.findCoordinator(scheduleJSON.tutor, function (err, tutorCoord) {
+                            if (err) {
+                                callback({success: false, message: err.message});
+                            } else {
+                                scheduleJSON.tutorCoord = tutorCoord;
+                                console.log('scheduleJSON', scheduleJSON)
+                                Schedule.create(scheduleJSON, function (err, match) {
+                                    if (err) {
+                                        console.log(err);
+                                        callback({success: false, message: err.message});
+                                    }
+                                });    
+                            }
+                        });
                     }
-                });
+                })    
             }
         });
     });

@@ -34,29 +34,25 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
           res.send({success: false, message: err.message});
         } else {
             data.registrations = registrations;
-            if (utils.isRegularUser(user.role)) {  
-                res.render('dashboard', data) //shouldn't we also show the schedules of regular users?
-            } else {
-                Schedule.getSchedules(user, function (err, schedules) {
-                    if (err) {
-                        res.send({success: false, message: err.message});
-                    } else {
-                        data.schedules = schedules;
-                        if (utils.isCoordinator(user.role)) {
-                            res.render('dashboard', data);
-                        } else if (utils.isAdministrator(user.role)) {
-                            User.getPendingUsers(function (err, users) {
-                                if (err) {
-                                    res.send({success: false, message: err.message});
-                                } else {
-                                    data.pendingUsers = users;
-                                    res.render('dashboard', data);
-                                }
-                            })
-                        }
+            Schedule.getSchedules(user, function (err, schedules) {
+                if (err) {
+                    res.send({success: false, message: err.message});
+                } else {
+                    data.schedules = schedules;
+                    if (utils.isCoordinator(user.role)) {
+                        res.render('dashboard', data);
+                    } else if (utils.isAdministrator(user.role)) {
+                        User.getPendingUsers(function (err, users) {
+                            if (err) {
+                                res.send({success: false, message: err.message});
+                            } else {
+                                data.pendingUsers = users;
+                                res.render('dashboard', data);
+                            }
+                        });
                     }
-                }); 
-            }
+                }
+            }); 
         }
   });
 });
