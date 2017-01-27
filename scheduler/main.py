@@ -11,7 +11,6 @@ from availability import Availability
 
 def run_scheduler(registrations):
     # Convert registrations dict to students, tutors
-    # print (registrations[:3])
     students = []
     tutors = []
     for registration in registrations:

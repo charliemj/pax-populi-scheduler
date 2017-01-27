@@ -78,9 +78,9 @@ class WeeklyTime:
         # is either 0 or 7 days after input datetime
         if input_day_of_week_index == self.day_of_week_index:
             if self.time >= dt.time():
-                first_datetime = datetime.combine(dt.date(), self.time)
+                first_dt = datetime.combine(dt.date(), self.time)
             else:
-                first_datetime = datetime.combine(dt.date() + timedelta(days=self.DAYS_PER_WEEK),
+                first_dt = datetime.combine(dt.date() + timedelta(days=self.DAYS_PER_WEEK),
                                                   self.time)
         # If input datetime is not the same day of week as self, then take the
         # difference between the day of the week index of self and day of week
@@ -88,9 +88,9 @@ class WeeklyTime:
         # to the input datetime 
         else:
             shift_days = (self.day_of_week_index - input_day_of_week_index) % self.DAYS_PER_WEEK
-            first_datetime = datetime.combine(dt.date() + timedelta(days=shift_days),
+            first_dt = datetime.combine(dt.date() + timedelta(days=shift_days),
                                               self.time)
-        return first_datetime
+        return first_dt
 
 """
 Represents a weekly availability.
@@ -205,9 +205,9 @@ class Availability:
             if day_index_str not in map(str, range(cls.DAYS_PER_WEEK)):
                 raise ValueError('Each key in availability_dict must be a string form of an integer in range(7)')
         free_slots_indices = set([])
-        for day_string in availability_dict:
-            intervals = availability_dict[day_string]
-            day_slot_index = int(day_string) * cls.SLOTS_PER_DAY
+        for day_str in availability_dict:
+            intervals = availability_dict[day_str]
+            day_slot_index = int(day_str) * cls.SLOTS_PER_DAY
             for interval in intervals:
                 if len(interval) != 2:
                     raise ValueError('time interval in availability_dict must have length 2')
@@ -249,52 +249,56 @@ class Availability:
         return cls(free_slots)
 
     @classmethod
-    def UTC_offset_minutes(cls, localized_dt):
-        """Converts a localized datetime to the number of minutes offset from
+    def UTC_offset_minutes(cls, aware_dt):
+        """Converts a timezone-aware datetime to the number of minutes offset
         from UTC.
 
         Args:
-            localized_dt: A localized datetime object containing a timezone.
+            aware_dt: A timezone-aware datetime.
 
         Returns:
             offset_minutes: An integer representing the signed number of
-                minutes that localized_dt is offset from UTC.
+                minutes that aware_dt is offset from UTC.
         """
-        offset_string = localized_dt.strftime('%z')
-        minutes = cls.MINUTES_PER_HOUR * int(offset_string[1:3]) + int(offset_string[3:5])
-        if offset_string[0] == '+':
+        if aware_dt.tzinfo is None or aware_dt.tzinfo.utcoffset(aware_dt) is None:
+            raise ValueError('aware_dt must be a timezone-aware datetime')
+        offset_str = aware_dt.strftime('%z')
+        minutes = cls.MINUTES_PER_HOUR * int(offset_str[1:3]) + int(offset_str[3:5])
+        if offset_str[0] == '+':
             offset_minutes = minutes
-        elif offset_string[0] == '-':
+        elif offset_str[0] == '-':
             offset_minutes = -minutes
         else:
-            raise ValueError('offset_string must start with "+" or "-"')
+            raise ValueError('offset_str must start with "+" or "-"')
         return offset_minutes
 
     @classmethod
-    def new_timezone_wt(cls, wt, localized_dt, new_tz_string):
+    def new_timezone_wt(cls, wt, aware_dt, new_tz_str):
         """
         Shifts a WeeklyTime to a new timezone.
 
         Args:
             wt: A WeeklyTime object in SLOT_START_TIMES.
-            localized_dt: A localized datetime whose timezone is the current 
-                timezone of wt. Also used as the reference datetime for the
-                timezone conversion.
-            new_tz_string: A string representing the new time zone to shift to.
+            aware_dt: A timezone-aware datetime whose timezone is the
+                current timezone of wt. Also used as the reference datetime for
+                the timezone conversion.
+            new_tz_str: A string representing the new time zone to shift to.
                 Must be in the pytz timezone database.
 
         Returns:
             new_wt: A WeeklyTime object that represents wt after shifting it to
-                the timezone new_tz_string.
+                the timezone new_tz_str.
         """
         if wt not in cls.SLOT_START_TIMES:
             raise ValueError('wt must be in SLOT_START_TIMES')
-        if new_tz_string not in set(pytz.all_timezones):
-            raise ValueError('new_tz must be in the pytz timezone databse')
-        new_tz = pytz.timezone(new_tz_string)
-        new_dt = localized_dt.astimezone(new_tz)
+        if aware_dt.tzinfo is None or aware_dt.tzinfo.utcoffset(aware_dt) is None:
+            raise ValueError('aware_dt must be a timezone-aware datetime')
+        if new_tz_str not in set(pytz.all_timezones):
+            raise ValueError('new_tz must be in the pytz timezone database')
+        new_tz = pytz.timezone(new_tz_str)
+        new_dt = aware_dt.astimezone(new_tz)
         forward_shift_minutes = (cls.UTC_offset_minutes(new_dt)
-                                 - cls.UTC_offset_minutes(localized_dt))
+                                 - cls.UTC_offset_minutes(aware_dt))
         if forward_shift_minutes % cls.MINUTES_PER_SLOT != 0:
             raise ValueError('MINUTES_PER_SLOT must be a divisor of forward_shift_minutes')
         n_slots = forward_shift_minutes / cls.MINUTES_PER_SLOT
@@ -371,27 +375,29 @@ class Availability:
         shifted_availability = Availability(shifted_free_slots)
         return shifted_availability
 
-    def new_timezone(self, current_tz_string, new_tz_string,
-                     naive_datetime_in_new_tz):
+    def new_timezone(self, current_tz_str, new_tz_str, naive_dt_in_new_tz):
         """Returns a copy of self after shifting to a new timezone.
 
         Args:
-            current_tz_string: A string representing the time zone of self.
+            current_tz_str: A string representing the time zone of self.
                 Must be in the pytz timezone database.
-            new_tz_string: A string representing the new time zone to shift to.
+            new_tz_str: A string representing the new time zone to shift to.
                 Must be in the pytz timezone database.
-            naive_datetime_in_new_tz: An naive datetime object that
-                provides the reference time in the timezone new_tz_string with
-                which to calculate UTC offsets. 
+            naive_dt_in_new_tz: An naive datetime object that provides the
+                reference time in the timezone new_tz_str with which to
+                calculate UTC offsets. 
         """
-        if current_tz_string not in set(pytz.all_timezones):
+        if current_tz_str not in set(pytz.all_timezones):
             raise ValueError('current_tz must be in the pytz timezone database')
-        if new_tz_string not in set(pytz.all_timezones):
-            raise ValueError('new_tz must be in the pytz timezone databse')
-        current_tz = pytz.timezone(current_tz_string)
-        new_tz = pytz.timezone(new_tz_string)
-        datetime_new_tz = new_tz.localize(naive_datetime_in_new_tz)
-        datetime_current_tz = datetime_new_tz.astimezone(current_tz)
-        forward_shift_minutes = (self.UTC_offset_minutes(datetime_new_tz)
-                                 - self.UTC_offset_minutes(datetime_current_tz))
+        if new_tz_str not in set(pytz.all_timezones):
+            raise ValueError('new_tz must be in the pytz timezone database')
+        if (naive_dt_in_new_tz.tzinfo is not None
+            and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
+            raise ValueError('naive_dt_in_new_tz must be a naive datetime')
+        current_tz = pytz.timezone(current_tz_str)
+        new_tz = pytz.timezone(new_tz_str)
+        dt_new_tz = new_tz.localize(naive_dt_in_new_tz)
+        dt_current_tz = dt_new_tz.astimezone(current_tz)
+        forward_shift_minutes = (self.UTC_offset_minutes(dt_new_tz)
+                                 - self.UTC_offset_minutes(dt_current_tz))
         return self.forward_shifted(forward_shift_minutes)

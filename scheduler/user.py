@@ -13,7 +13,7 @@ class User:
     EARLIEST_START_DATE_OFFSET_DAYS = 7
 
     def __init__(self, user_id, reg_id, user_type, gender, gender_preference,
-                 availability, tz_string, courses, earliest_start_date):
+                 availability, tz_str, courses, earliest_start_date):
         """
         Args:
             user_id: A string representing the user's ID. Must uniquely identify
@@ -26,12 +26,11 @@ class User:
                 'NONE'.
             availability: An Availability object representing the user's weekly
                 availability in his timezone.
-            tz_string: A string representing a timezone in the pytz database.
+            tz_str: A string representing a timezone in the pytz database.
             courses: A list of course names (strings) that the user can be in.
             earliest_start_date: A date object representing the earliest
                 possible start date for a course in the user's timezone
                 (earliest start datetime is 00:00 on earliest_start_date).
-
         """
         if user_type not in ['STUDENT', 'TUTOR']:
             raise ValueError('user_type must be "STUDENT" or "TUTOR"')
@@ -39,16 +38,16 @@ class User:
             raise ValueError('gender must be "MALE" or "FEMALE"')
         if gender_preference not in ['MALE', 'FEMALE', 'NONE']:
             raise ValueError('gender_preference must be "MALE", "FEMALE", or "NONE"')
-        if tz_string not in set(pytz.all_timezones):
-            raise ValueError('tz_string must be in the pytz timezone database')
+        if tz_str not in set(pytz.all_timezones):
+            raise ValueError('tz_str must be in the pytz timezone database')
         self.user_id = user_id
         self.reg_id = reg_id
         self.user_type = user_type
         self.gender = gender 
         self.gender_preference = gender_preference
         self.availability = availability
-        self.tz_string = tz_string
-        self.tz = pytz.timezone(tz_string)
+        self.tz_str = tz_str
+        self.tz = pytz.timezone(tz_str)
         self.courses = courses
         self.courses_set = set(self.courses)
         self.earliest_start_date = earliest_start_date
@@ -61,8 +60,8 @@ class User:
             in UTC for self to start a course.
         """
         earliest_start_dt = datetime.combine(self.earliest_start_date, datetime.min.time())
-        earliest_start_dt_localized = self.tz.localize(earliest_start_dt)
-        earliest_start_dt_UTC = earliest_start_dt_localized.astimezone(pytz.UTC).replace(tzinfo=None)
+        earliest_start_dt_aware = self.tz.localize(earliest_start_dt)
+        earliest_start_dt_UTC = earliest_start_dt_aware.astimezone(pytz.UTC).replace(tzinfo=None)
         return earliest_start_dt_UTC
 
     def get_shared_earliest_start_dt_UTC(self, other_user):
@@ -135,6 +134,16 @@ class User:
         return sorted(list(shared_courses_set))
 
     def gender_compatible(self, other_user):
+        """Determines whether or not two users are gender compatible.
+
+        Args:
+            other_user: A User object.
+
+        Returns:
+            A boolean whether or not self's gender satisfies other_user's
+                gender preference and other_user's gender satisfies self's
+                gender preference.
+        """
         self_satisfied = (self.gender_preference == 'NONE'
                           or self.gender_preference == other_user.gender)
         other_satisfied = (other_user.gender_preference == 'NONE'
@@ -172,6 +181,8 @@ class User:
             raise ValueError('self must have user_type of "STUDENT"');
         if tutor.user_type != 'TUTOR':
             raise ValueError('tutor must have user_type of "TUTOR"');
+        if weeks_per_course <= 0:
+            raise ValueError('weeks_per_course must be a positive integer')
         return len(self.get_availability_matches(tutor, weeks_per_course)) > 0
 
     def can_match(self, other_user, weeks_per_course):
@@ -189,30 +200,35 @@ class User:
                 Specifically, both users must share at least one course slot,
                 share at least one course, and be gender compatible.
         """
+        if weeks_per_course <= 0:
+            raise ValueError('weeks_per_course must be a positive integer')
         return (self.availability_matches(other_user, weeks_per_course)
                 and self.share_course(other_user)
                 and self.gender_compatible(other_user))
 
-    def new_timezone_availability(self, new_tz_string, naive_datetime_in_new_tz):
+    def new_timezone_availability(self, new_tz_str, naive_dt_in_new_tz):
         """Returns an availability in a new timezone.
 
         Args:
-            new_tz_string: A string representing the new time zone to shift to.
+            new_tz_str: A string representing the new time zone to shift to.
                 Must be in the pytz timezone database.
-            naive_datetime_in_new_tz: An naive datetime object that provides
-                the reference time in the timezone new_tz_string with which to
+            naive_dt_in_new_tz: An naive datetime object that provides the
+                reference time in the timezone new_tz_str with which to 
                 calculate UTC offsets.
 
         Returns:
             new_availability: An Availability object representing
-                self.availability in the timezone new_tz_string using
+                self.availability in the timezone new_tz_str using
                 naive_datetime_in_new_tz as a reference.
         """
-        if new_tz_string not in set(pytz.all_timezones):
+        if new_tz_str not in set(pytz.all_timezones):
             raise ValueError('new_tz must be in the pytz timezone database')
-        new_availability = self.availability.new_timezone(self.tz_string,
-                                                          new_tz_string,
-                                                          naive_datetime_in_new_tz)
+        if (naive_dt_in_new_tz.tzinfo is not None
+            and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
+            raise ValueError('naive_dt_in_new_tz must be a naive datetime')
+        new_availability = self.availability.new_timezone(self.tz_str,
+                                                          new_tz_str,
+                                                          naive_dt_in_new_tz)
         return new_availability
 
         

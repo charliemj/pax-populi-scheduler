@@ -24,6 +24,9 @@ class Match:
             raise ValueError('student must have the user_type "STUDENT"')
         if tutor.user_type != 'TUTOR':
             raise ValueError('tutor must have the user_type "TUTOR"')
+        if (earliest_course_start_UTC.tzinfo is not None
+            and earliest_course_start_UTC.tzinfo.utcoffset(earliest_course_start_UTC) is not None):
+            raise ValueError('earliest_course_start_UTC must be a naive datetime')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         self.student = student
@@ -47,11 +50,11 @@ class Match:
             UTC_course_schedule: A list of datetimes of course start times
                 localized to UTC.
         """
-        localized_UTC = pytz.utc.localize(self.earliest_course_start_UTC)
-        earliest_course_start_student = localized_UTC.astimezone(self.student.tz)
+        aware_UTC = pytz.utc.localize(self.earliest_course_start_UTC)
+        earliest_course_start_student = aware_UTC.astimezone(self.student.tz)
         student_wt = Availability.new_timezone_wt(self.course_start_wt_UTC,
-                                                  localized_UTC,
-                                                  self.student.tz_string)
+                                                  aware_UTC,
+                                                  self.student.tz_str)
         student_first_course_dt = student_wt.first_datetime_after(earliest_course_start_student)
         student_course_schedule_naive = [student_first_course_dt
                                               + timedelta(Availability.DAYS_PER_WEEK*i)
