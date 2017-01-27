@@ -18,6 +18,7 @@ var UserSchema = mongoose.Schema({
     requestToken: {type: String, default: null},
     inPool: {type: Boolean, default: false}, 
     onHold: {type: Boolean, default: false},
+    archived: {type: Boolean, default: false},
     role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
     alternativeEmail: {type: String, required: true},
@@ -135,6 +136,8 @@ UserSchema.methods.approve = function (callback) {
 */
 UserSchema.methods.reject = function (callback) {
     this.rejected = true;
+    this.approved = false;
+    this.onHold = false;
     this.save(callback);
 };
 
@@ -144,6 +147,15 @@ UserSchema.methods.reject = function (callback) {
 */
 UserSchema.methods.waitlist = function (callback) {
     this.onHold = true;
+    this.save(callback);
+};
+
+/**
+* Archives the user
+* @param {Function} callback - the function that gets called after
+*/
+UserSchema.methods.archive = function (callback) {
+    this.archived = true;
     this.save(callback);
 };
 
@@ -217,6 +229,18 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
     });
 };
 
+UserSchema.statics.archiveUser = function (username, callback) {
+    this.findOne({username: username}, function (err, user) {
+        if (err || (!err & !user)) {
+            callback({success:false, message: 'Invalid username'});
+        } else if (user.archieved) {
+            callback({success:false, message: 'The account is already approved'});
+        } else {
+            user.archive(callback);
+        }
+    });
+}
+
 /*
 * Checks if the provided username and password correspond to any user
 * @param {String} username - username of the account to grant authentication
@@ -237,6 +261,7 @@ UserSchema.statics.authenticate = function (username, password, callback) {
                                     verified: user.verified,
                                     approved: user.approved,
                                     rejected: user.rejected,
+                                    archived: user.archived,
                                     onHold: user.onHold,
                                     inPool: user.inPool,
                                     role: user.role,
@@ -395,28 +420,26 @@ UserSchema.statics.sendWaitlistEmail = function (username, devMode, callback) {
 };
 
 /*
- * Edits the profile of a query user. 
- * @param {String} username - The username of the query user. 
- * @param {Number} newPhoneNumber - The new phone number of the user. 
- * @param {String} newDorm - The new dorm of the user. 
- * @param {Function} callback - The function to execute after the profile is editted. Callback
- * function takes 1 parameter: an error when the request is not properly claimed
- */
-UserSchema.statics.editProfile = function(username, newPhoneNumber, newDorm, callback) {
-    this.findOne({'username': username}, function(err, user){
-        user.changePhoneNumber(newPhoneNumber, function(err){
-            if (err) {
-                callback(new Error("Invalid phone number."));
-            } else {
-                user.changeDorm(newDorm, function(err){
-                    if (err) {
-                        callback(new Error("Invalid dorm."));
-                    } else {
-                        callback(null);
-                    }
-                });
-            }
-        });
+* Sends an archive email to the user if there exists an account with such username.
+* @param {String} username - username of the user 
+* @param {Boolean} devMode - true if the app is in development mode, false otherwise
+* @param {Function} callback - the function that gets called after the user is created, err argument
+*                              is null if the given the registration succeed, otherwise, err.message
+*/
+UserSchema.statics.sendArchiveEmail = function (username, devMode, callback) {
+    that = this;
+    that.count({ username: username }, function (err, count) {
+        if (count === 0) {
+            callback({message: 'Invalid username'});
+        } else {
+            that.findOne({username: username}, function (err, user) {
+                if (err) {
+                    callback(err);
+                } else {
+                    email.sendArchiveEmail(user, devMode, callback);
+                }
+            });
+        }
     });
 };
 
@@ -463,12 +486,26 @@ UserSchema.statics.getUser = function(username, callback){
     });//end findOne
 };
 
+UserSchema.statics.searchUsers = function(name, callback){
+    this.find({$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
+                        {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}, 
+                    {$and: [{verified: true, approved: true}]}]},
+        function (err, users){
+        if (err) {
+            console.log("Invalid usernmae");
+            callback(new Error("Invalid username."));
+        } 
+        else {
+            callback(null, users);
+        }
+    });//end findOne
+};
+
 UserSchema.statics.getPendingUsers = function (callback) {
     // {$or: [{student: user._id}, {tutor: user._id}]}
     this.find({$and: [{verified: true}, 
                         {$or: [{$and: [{approved:false}, {rejected: false}, {onHold: false}]}, 
                                 {onHold: true, approved: true}]}]}, function (err, users) {
-        console.log('pending', users);
         if (err) {
             callback({success: false, message: err.message});
         } else {

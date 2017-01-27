@@ -56,15 +56,20 @@ $(document).ready(function () {
 	        		case 'Country':
 	        			$('#in-charge-of').html(countryHTML);
 	        			break;
-	        	}
-	            
+	        	}  
 	        }
     });
 
-	$('select').on('change', function () {
-		var choice = $(this).find(':selected').text().toLowerCase();
+	$(document).on('change', 'select', function () {
+		var choice = $(this).find(':selected').text().toLowerCase().trim();
+		var other = $(this).closest('.multiple-choice').find('.other');
+		if (other.length === 0) {
+			other = $('#in-charge-of-container').find('.other');
+		}
 		if (choice === 'other') {
-			$(this).closest('.multiple-choice').find('.other').show();
+			other.show();
+		} else {
+			other.hide();
 		}
 	});
 

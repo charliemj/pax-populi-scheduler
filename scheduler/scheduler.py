@@ -35,7 +35,7 @@ class Scheduler:
             raise ValueError('weeks_per_course must be a positive integer')
         self.students = students
         self.tutors = tutors
-        self.tutor_ID_to_tutor = {tutor.ID: tutor for tutor in tutors}
+        self.tutor_id_to_tutor = {tutor.user_id: tutor for tutor in tutors}
         self.weeks_per_course = weeks_per_course
         self.source = Vertex('SOURCE')
         self.sink = Vertex('SINK')
@@ -45,31 +45,31 @@ class Scheduler:
         network = nx.DiGraph()
         network.add_node(self.source)
         network.add_node(self.sink)
-        network.add_nodes_from([student.ID for student in self.students])
-        network.add_nodes_from([tutor.ID for tutor in self.tutors])
+        network.add_nodes_from([student.user_id for student in self.students])
+        network.add_nodes_from([tutor.user_id for tutor in self.tutors])
 
         # Add edges
         for student in self.students:
-            network.add_edge(self.source, student.ID, capacity=1)
+            network.add_edge(self.source, student.user_id, capacity=1)
         for student in self.students:
             for tutor in self.tutors:
                 if student.can_match(tutor, self.weeks_per_course):
-                    network.add_edge(student.ID, tutor.ID, capacity=1)
+                    network.add_edge(student.user_id, tutor.user_id, capacity=1)
         for tutor in self.tutors:
-            network.add_edge(tutor.ID, self.sink, capacity=1)
+            network.add_edge(tutor.user_id, self.sink, capacity=1)
         return network
 
     def match_max_flow(self):
         (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(), self.source, self.sink)
         student_tutor_to_matches = {}
         for student in self.students:
-            edge_dict = flow_dict[student.ID]
-            for tutor_ID in edge_dict:
-                flow = edge_dict[tutor_ID]
+            edge_dict = flow_dict[student.user_id]
+            for tutor_id in edge_dict:
+                flow = edge_dict[tutor_id]
                 if flow == 1:
-                    tutor = self.tutor_ID_to_tutor[tutor_ID]
+                    tutor = self.tutor_id_to_tutor[tutor_id]
                     matches = student.get_availability_matches(tutor, self.weeks_per_course)
-                    student_tutor_to_matches[(student.ID, tutor.ID)] = matches
+                    student_tutor_to_matches[(student.user_id, tutor.user_id)] = matches
         return student_tutor_to_matches
     
     def matches_to_schedule_dict(self, matches):
@@ -83,11 +83,19 @@ class Scheduler:
         if not all(match_dict['tutorID'] == first_match_dict['tutorID']
                    for match_dict in match_dicts):
             raise ValueError('Every match in matches must have the same tutor ID')
+        if not all(match_dict['studentRegID'] == first_match_dict['studentRegID']
+                   for match_dict in match_dicts):
+            raise ValueError('Every match in matches must have the same student registration ID')
+        if not all(match_dict['tutorRegID'] == first_match_dict['tutorRegID']
+                   for match_dict in match_dicts):
+            raise ValueError('Every match in matches must have the same tutor registration ID')
         if not all(match_dict['possibleCourses'] == first_match_dict['possibleCourses']
                    for match_dict in match_dicts):
             raise ValueError('Every match in matches must have the same possible courses')
-        student_ID = first_match_dict['studentID']
-        tutor_ID = first_match_dict['tutorID']
+        student_id = first_match_dict['studentID']
+        tutor_id = first_match_dict['tutorID']
+        student_reg_id = first_match_dict['studentRegID']
+        tutor_reg_id = first_match_dict['tutorRegID']
         possible_courses = first_match_dict['possibleCourses']
         student_possible_schedules = []
         tutor_possible_schedules = []
@@ -96,8 +104,10 @@ class Scheduler:
             student_possible_schedules.append(match_dict['studentClassSchedule'])
             tutor_possible_schedules.append(match_dict['tutorClassSchedule'])
             UTC_possible_schedules.append(match_dict['UTCClassSchedule'])
-        schedule_dict = {'studentID': student_ID,
-                         'tutorID': tutor_ID,
+        schedule_dict = {'studentID': student_id,
+                         'tutorID': tutor_id,
+                         'studentRegID': student_reg_id,
+                         'tutorRegID': tutor_reg_id,
                          'possibleCourses': possible_courses,
                          'studentPossibleSchedules': student_possible_schedules,
                          'tutorPossibleSchedules': tutor_possible_schedules,
@@ -116,14 +126,15 @@ if __name__ == '__main__':
     from datetime import date
     students = []
     tutors = []
+
     a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['00:00','02:30'], ['17:00', '17:15']]})
     a2 = Availability.from_dict({'4': [['00:00', '24:00']], '3': [['03:00','12:00']]})
     a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['00:00','12:00']]})
     a4 = Availability.from_dict({'4': [['00:00', '02:30']]})
-    students.append(User('s1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
-    students.append(User('s2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',['b'],date(2015,2,2)))
-    tutors.append(User('t1', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))
-    tutors.append(User('t2', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b', 'e'],date(2017,1,1)))
+    students.append(User('s1', 'reg1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
+    students.append(User('s2', 'reg2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',['b'],date(2015,2,2)))
+    tutors.append(User('t1', 'reg3', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))
+    tutors.append(User('t2', 'reg4', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b', 'e'],date(2017,1,1)))
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)

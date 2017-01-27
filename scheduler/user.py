@@ -12,12 +12,14 @@ class User:
     # tutor's earliest possible start date, and current datetime plus k days.
     EARLIEST_START_DATE_OFFSET_DAYS = 7
 
-    def __init__(self, ID, user_type, gender, gender_preference, availability,
-                 tz_string, courses, earliest_start_date):
+    def __init__(self, user_id, reg_id, user_type, gender, gender_preference,
+                 availability, tz_string, courses, earliest_start_date):
         """
         Args:
-            ID: A string representing the user's ID. Must uniquely identify a
-                user.
+            user_id: A string representing the user's ID. Must uniquely identify
+                a user.
+            reg_id: A string representing the user's registration's ID. Must
+                uniquely identify a registration.
             user_type: A string that must be one of 'STUDENT' or 'TUTOR'.
             gender: A string that must be one of 'MALE' or 'FEMALE'.
             gender_preference: A string that must be one of 'MALE', 'FEMALE',
@@ -39,7 +41,8 @@ class User:
             raise ValueError('gender_preference must be "MALE", "FEMALE", or "NONE"')
         if tz_string not in set(pytz.all_timezones):
             raise ValueError('tz_string must be in the pytz timezone database')
-        self.ID = ID
+        self.user_id = user_id
+        self.reg_id = reg_id
         self.user_type = user_type
         self.gender = gender 
         self.gender_preference = gender_preference

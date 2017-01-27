@@ -1,0 +1,113 @@
+<script src='/javascripts/settings.js'></script>
+<link href="/javascripts/vendor/bower_components/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="/javascripts/vendor/bower_components/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+<link rel="stylesheet" href="/stylesheets/settings.css"/>
+<div class='tab-content'>
+	<h1>{{title}}</h1>
+	<div class='content' id='dashboard-content'>
+	<div class='row' id="manage-users">
+		<span class='title-toggle' id='manage-users-toggle' data-toggle="collapse" data-target="#dashboard-manage-users"><h3>Manage Users<span class="badge hide notifs-count"></span>
+		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+		<form id='search-form' action='/search' method='post'>
+			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+			<input type="search" name='keyword' class="form-control search-bar col-xs-5 col-md-5" placeholder="first name or last name">
+			<input type="submit" id='search-button' class='btn btn-primary btn-lg' value="Search">
+		</form>
+  		<div id='dashboard-manage-users' class='collapse in'>
+			{{#if message}}
+			<div id='search-message'>
+				<center>{{message}}</center>
+			</div>
+			{{else}}
+				{{> users}}
+			{{/if}}
+		</div>
+	</div>
+	<div class='row' id="manage-forms">
+		<span class='title-toggle' id='manage-forms-toggle' data-toggle="collapse" data-target="#dashboard-manage-forms"><h3>Manage Forms<span class="badge hide notifs-count"></span>
+		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  		<div id='dashboard-manage-forms' class='collapse in'>
+  			<button id='student-schools-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#student-schools">Student Schools/Institutions</button>
+  			<button id='tutor-schools-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#tutor-schools">Tutor Schools/Institutions</button>
+  			<button id='majors-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#majors">Majors</button>
+  			<button id='interests-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#interests">Interests</button>
+  			<button id='courses-button' class='btn btn-hg default-button target' data-toggle="collapse" data-target="#courses">Courses</button>
+  			<div id='edit-container'>
+  				<form id='edit-defaults' method='post' action='/editFormDefaults'>
+  					<input type="hidden" name="_csrf" value="{{csrfToken}}">
+		  			<div id='student-schools' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each studentSchools}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="studentSchools" value="{{this}}"/>
+			  						<a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
+		  			</div>
+		  			<div id='tutor-schools' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each tutorSchools}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="tutorSchools" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
+		  			</div>
+		  			<div id='majors' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each majors}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="majors" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
+		  			</div>
+		  			<div id='interests' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each interests}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="interests" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
+		  			</div>
+		  			<div id='courses' class='collapse default-inputs'>
+		  				<div class="input-fields-wrap">
+			  				{{#each courses}}
+			  					<div class="form-group">
+			  						<input class='form-control' type="text" name="courses" value="{{this}}"/><a href="#" class="remove-field">Remove</a>
+			  					</div>
+			  				{{/each}}
+			  			</div>
+			  			<button class="add-field-button btn btn-info btn-hg">+</button>
+			  			<input type="submit" class="save-button btn btn-primary btn-hg" value="Save">
+		  			</div>
+		  		</form>
+	  		</div>
+		</div>
+	</div>
+	<div class='row' id="manage-scheduler">
+		<span class='title-toggle' id='manage-scheduler-toggle' data-toggle="collapse" data-target="#dashboard-manage-scheduler"><h3>Manage Scheduler<span class="badge hide notifs-count"></span>
+		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+  		<div id='dashboard-manage-scheduler' class='collapse in'>
+			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+			<button id='match-button' class='btn btn-info btn-hg match-button'>Run Once Now</button>
+			<button id='scheduler-switch' class='invisible-button'>
+				{{#if schedulerOn}}
+				<input type="checkbox" checked data-toggle="toggle">
+				{{else}}
+				<input type="checkbox" data-toggle="toggle">
+				{{/if}}
+			</button>
+		</div>
+	</div>
+</div>
