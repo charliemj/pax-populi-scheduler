@@ -27,7 +27,7 @@ var UserSchema = mongoose.Schema({
     middleName: {type: String, default:null},
     lastName: {type: String, required: true},
     nickname: {type: String, default:null},
-    gender: {type: String, enum: enums.genders(), default:null},
+    gender: {type: String, enum: enums.genders()},
     dateOfBirth: {type: Date, default:null},
     phoneNumber: {type: String, require: true},
     skypeId: {type: String, default:null},
@@ -40,9 +40,9 @@ var UserSchema = mongoose.Schema({
     timezone: {type: String, default:null},
     nationality: {type: String, default:null},
     interests: [{type: String, default:null}],
-    countryInCharge: {type: String, default:null},
-    regionInCharge: {type: String, default:null},
-    schoolInCharge: {type: String, default:null}
+    countryInCharge: {type: String},
+    regionInCharge: {type: String},
+    schoolInCharge: {type: String}
 
 });
 

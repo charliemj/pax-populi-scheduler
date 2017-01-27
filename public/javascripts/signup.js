@@ -47,14 +47,20 @@ $(document).ready(function () {
 	        	var inCharge = $(this).val();
 	        	switch (inCharge) {
 	        		case 'School':
+	        			$("#incharge").hide();
+	        			$("#regionHere2").hide();
 	        			$('#in-charge-of').html(schoolHTML);
 	        			break;
 	        		case 'Region':
+	     				$('#in-charge-of').html(schoolHTML).empty();
 	        			$("#incharge").show();
+	        			$("#regionHere2").show();
 	        			break;
 	        		case 'Country':
+	        			$('#in-charge-of').html(schoolHTML).empty();
 	        			$("#incharge").show();
 	        			$("#regionHere2").hide();
+	        			$("#regionLabel").hide();
 	        			$("#regionHere2").val("--"); //no region selected
 	        			break;
 	        	}  
