@@ -30,32 +30,27 @@ RegistrationSchema.methods.matched = function (callback) {
 
 /*
  * Creates a registration object for a user. 
- * @param {String} username - The username of the query user. 
+ * @param {User Object} user - The user object of the user. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
  * @param {Array} availability - An array of times the user is available to meet (in their local times).
  * @param {Array} courses - An array of courses that the user wants to sign up for
  * @param {Date} earliestStartTime - The earliest possible date a user can start a class. 
  * @param {Function} callback - The function to execute after the registration is created. 
  */
-RegistrationSchema.statics.createRegistration = function(username, genderPref, availability, courses, earliestStartTime, callback){
+RegistrationSchema.statics.createRegistration = function(user, genderPref, availability, courses, earliestStartTime, callback){
     
-    User.getUser(username, function(err,user){
-        if (err) {res.send(err + "Problem with getting user");}
-        
+    Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
+    function(err, registration){
+        if (err){
+            console.log("Problem creating registration");
+            callback(err); 
+        }//end if
         else{
-            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
-            function(err, registration){
-                if (err){
-                    console.log("Problem creating registration");
-                    callback(err); 
-                }//end if
-                else{
-                    callback(null, registration); //everything worked! 
-                }//end else
-            });//end create
-        }
-    });
-};
+            callback(null, registration); //everything worked! 
+        }//end else
+    });//end create
+}
+
 
 /*
  * Gets all unmatched registrations for a particular user
