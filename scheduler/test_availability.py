@@ -102,15 +102,20 @@ class TestAvailability(unittest.TestCase):
 
         # Timezone constants
         utc = pytz.timezone('UTC')
-        et = pytz.timezone('US/Eastern') # UTC-04:00 March to November, UTC-05:00 November to March
+        et = pytz.timezone('US/Eastern') # UTC-04:00 during daylight saving, UTC-05:00 without daylight saving
         kabul = pytz.timezone('Asia/Kabul') # UTC+04:30, no daylight saving
         kathmandu = pytz.timezone('Asia/Kathmandu') # UTC+05:45, no daylight saving
         
-        et_2017_ds_start = datetime(2017, 3, 12, 3, 1) # UTC-04:00
-        et_2017_ds_end = datetime(2017, 11, 12, 2, 0) # UTC-05:00
-        print et.localize(et_2017_ds_start).astimezone(utc)
+        # Naive datetimes
+        self.dt_2000_1_1 = datetime(2000, 1, 1)
+        self.dt_2017_end = datetime(2017, 12, 31, 23, 59)
 
-        #self.utc_dt = 
+        # Aware datetimes
+        self.utc_halloween = utc.localize(datetime(2001, 10, 31, 17, 3)) 
+        self.et_ds = et.localize(datetime(2017, 3, 13, 3, 0)) 
+        self.et_no_ds = et.localize(datetime(2017, 11, 5, 2, 0)) 
+        self.kabul_2000_1_1 = kabul.localize(self.dt_2000_1_1)
+        self.kathmandu_2017_end = kathmandu.localize(self.dt_2017_end)
 
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
@@ -121,35 +126,6 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0,0,0)], 0)
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)],
                          self.slots_per_week-1)
-
-    def test_time_str_to_index_0000(self):
-        self.assertEqual(Availability.time_str_to_index('00:00'), 0)
-
-    def test_time_str_to_index_0015(self):
-        self.assertEqual(Availability.time_str_to_index('00:15'), 1)
-
-    def test_time_str_to_index_0030(self):
-        self.assertEqual(Availability.time_str_to_index('00:30'), 2)
-
-    def test_time_str_to_index_2345(self):
-        self.assertEqual(Availability.time_str_to_index('23:45'), 95)
-
-    def test_time_str_to_index_2400(self):
-        self.assertEqual(Availability.time_str_to_index('24:00'), 96)
-
-    def test_time_str_to_index_value_error(self):
-        with self.assertRaises(ValueError):
-            Availability.time_str_to_index('0000')
-        with self.assertRaises(ValueError):
-            Availability.time_str_to_index('0:00')
-        with self.assertRaises(ValueError):
-            Availability.time_str_to_index('0:000')
-        with self.assertRaises(ValueError):
-            Availability.time_str_to_index('25:00')
-        with self.assertRaises(ValueError):
-            Availability.time_str_to_index('00:60')
-        with self.assertRaises(ValueError):
-            Availability.time_str_to_index('00:59')
 
     def test_initializer_value_error(self):
         with self.assertRaises(ValueError):
@@ -207,6 +183,35 @@ class TestAvailability(unittest.TestCase):
                      'Sunday 01:15 - Sunday 01:30\n'
                      'Monday 01:00 - Monday 01:15')
         self.assertEqual(str(self.nonconsecutive_free_avail), avail_str)
+
+    def test_time_str_to_index_0000(self):
+        self.assertEqual(Availability.time_str_to_index('00:00'), 0)
+
+    def test_time_str_to_index_0015(self):
+        self.assertEqual(Availability.time_str_to_index('00:15'), 1)
+
+    def test_time_str_to_index_0030(self):
+        self.assertEqual(Availability.time_str_to_index('00:30'), 2)
+
+    def test_time_str_to_index_2345(self):
+        self.assertEqual(Availability.time_str_to_index('23:45'), 95)
+
+    def test_time_str_to_index_2400(self):
+        self.assertEqual(Availability.time_str_to_index('24:00'), 96)
+
+    def test_time_str_to_index_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('0000')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('0:00')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('0:000')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('25:00')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('00:60')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('00:59')
 
     def test_parse_dict_value_error(self):
         with self.assertRaises(ValueError):
@@ -272,8 +277,22 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(Availability.from_dict(self.nonconsecutive_free_dict),
                          self.nonconsecutive_free_avail)
 
-    #def test_UTC_offset_minutes_
-    # test class time slots
+    def test_UTC_offset_minutes_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability.UTC_offset_minutes(self.dt_2000_1_1)
+        with self.assertRaises(ValueError):
+            Availability.UTC_offset_minutes(self.dt_2017_end)
+    
+    def test_UTC_offset_minutes_neg_offset(self):
+        self.assertEqual(Availability.UTC_offset_minutes(self.et_ds), -240)
+        self.assertEqual(Availability.UTC_offset_minutes(self.et_no_ds), -300)
+
+    def test_UTC_offset_minutes_no_offset(self):
+        self.assertEqual(Availability.UTC_offset_minutes(self.utc_halloween), 0)
+    
+    def test_UTC_offset_minutes_pos_offset(self):
+        self.assertEqual(Availability.UTC_offset_minutes(self.kabul_2000_1_1), 270)
+        self.assertEqual(Availability.UTC_offset_minutes(self.kathmandu_2017_end), 345)
 
 if __name__ == '__main__':
     unittest.main()
