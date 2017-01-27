@@ -96,7 +96,8 @@ class TestAvailability(unittest.TestCase):
         et = pytz.timezone('US/Eastern') # UTC-04:00 during daylight saving, UTC-05:00 without daylight saving
         kabul = pytz.timezone('Asia/Kabul') # UTC+04:30, no daylight saving
         kathmandu = pytz.timezone('Asia/Kathmandu') # UTC+05:45, no daylight saving
-        
+        chatham = pytz.timezone('Pacific/Chatham') # UTC+13:45 during daylight saving, UTC+12:45 without daylight saving
+
         # Naive datetimes
         self.dt_2000_1_1 = datetime(2000, 1, 1)
         self.dt_2017_end = datetime(2017, 12, 31, 23, 59)
@@ -107,11 +108,13 @@ class TestAvailability(unittest.TestCase):
         self.et_no_ds = et.localize(datetime(2017, 11, 5, 2, 0)) 
         self.kabul_2000_1_1 = kabul.localize(self.dt_2000_1_1)
         self.kathmandu_2017_end = kathmandu.localize(self.dt_2017_end)
+        self.chatham_ds = chatham.localize(datetime(2018, 1, 20))
 
         # WeeklyTime objects
         self.sunday_0000 = WeeklyTime(0, 0, 0)
-        self.tuesday_1717 = WeeklyTime(2, 17, 17)
-        self.saturday_2359 = WeeklyTime(6, 23, 59)
+        self.tuesday_1715 = WeeklyTime(2, 17, 15)
+        self.thursday_0630 = WeeklyTime(4, 6, 30)
+        self.saturday_2345 = WeeklyTime(6, 23, 45)
 
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
@@ -290,5 +293,41 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(Availability.UTC_offset_minutes(self.kabul_2000_1_1), 270)
         self.assertEqual(Availability.UTC_offset_minutes(self.kathmandu_2017_end), 345)
 
+    def test_new_timezone_wt_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability.new_timezone_wt(WeeklyTime(0,0,14), self.utc_halloween, 'UTC')
+        with self.assertRaises(ValueError):
+            Availability.new_timezone_wt(WeeklyTime(0,0,0), self.dt_2000_1_1, 'UTC')
+        with self.assertRaises(ValueError):
+            Availability.new_timezone_wt(WeeklyTime(0,0,0), self.utc_halloween, 'utc')
+
+    def test_new_timezone_wt_same_tz(self):
+        new_wt = Availability.new_timezone_wt(self.sunday_0000, self.utc_halloween, 'UTC')
+        self.assertEqual(new_wt, self.sunday_0000)
+
+    def test_new_timezone_wt_shift_forward(self):
+        new_wt = Availability.new_timezone_wt(self.sunday_0000, self.et_ds,
+                                              'UTC')
+        self.assertEqual(new_wt, WeeklyTime(0, 4, 0))
+        new_wt = Availability.new_timezone_wt(self.tuesday_1715, self.et_no_ds,
+                                              'Asia/Tokyo')
+        self.assertEqual(new_wt, WeeklyTime(3, 7, 15))
+        new_wt = Availability.new_timezone_wt(self.saturday_2345,
+                                              self.kathmandu_2017_end,
+                                              'Australia/West')
+        self.assertEqual(new_wt, WeeklyTime(0, 2, 0))
+
+    def test_new_timezone_wt_shift_backward(self):
+        new_wt = Availability.new_timezone_wt(self.sunday_0000, self.et_ds,
+                                              'US/Arizona')
+        self.assertEqual(new_wt, WeeklyTime(6, 21, 0))
+        new_wt = Availability.new_timezone_wt(self.tuesday_1715, self.kabul_2000_1_1,
+                                              'US/Samoa')
+        self.assertEqual(new_wt, WeeklyTime(2, 1, 45))
+        new_wt = Availability.new_timezone_wt(self.thursday_0630,
+                                              self.chatham_ds,
+                                              'Pacific/Midway')
+        self.assertEqual(new_wt, WeeklyTime(3, 5, 45))
+        
 if __name__ == '__main__':
     unittest.main()
