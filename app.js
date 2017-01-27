@@ -14,6 +14,8 @@ var users = require('./routes/users');
 var registrations = require('./routes/registrations.js');
 var schedules = require('./routes/schedules.js');
 var hbsHelpers = require('./javascripts/hbsHelpers.js');
+var Schedule = require('./models/schedule.js');
+var Enum = require('./models/enum.js');
 
 
 // database setup
@@ -85,6 +87,17 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+// lauch the job of running matching algorithm every week
+Schedule.automateMatch();
+// initialize enums
+Enum.initialize(function (err, enums) {
+    if (err) {
+        console.log(err.message);
+    } else {
+        global.enums = enums;
+    }
+})
 
 
 // error handlers

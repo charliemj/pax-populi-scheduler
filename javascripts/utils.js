@@ -56,6 +56,25 @@ var Utils = function() {
         return role.toLowerCase() === 'coordinator';
     }
 
+    that.containsOther = function (array) {
+        return array[0].toLowerCase().trim() === 'other';
+    }
+
+    that.extractChosen = function (array) {
+        if (that.containsOther(array)) {
+            return array[1].trim();
+        }
+        return array[0].trim();
+    }
+
+    that.formatDates = function (schedules) {
+        return schedules.map(function (schedule) {
+            return schedule.map(function (dateString) {
+                        return new Date(dateString);
+            });
+        });
+    }
+
     Object.freeze(that);
     return that;
 };

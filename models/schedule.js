@@ -5,32 +5,37 @@ var User = require("../models/user.js");
 var utils = require("../javascripts/utils.js");
 var Registration = require("../models/registration.js"); 
 var PythonShell = require('python-shell');
+var CronJob = require('cron').CronJob;
+var dateFormat = require('dateformat');
 
-
-var scheduleSchema = mongoose.Schema({
+var ScheduleSchema = mongoose.Schema({
     student: {type: ObjectId, ref:"User", required:true},
     tutor: {type: ObjectId, ref:"User", required:true},
     possibleCourses: {type:[String], required:true},
-    studentCoord :{type: ObjectId, ref:"User"},
-    tutorCoord :{type: ObjectId, ref:"User"},
-    studentClassSchedule: {type: [Date], required:true},
-    tutorClassSchedule: {type: [Date], required:true},
-    UTCClassSchedule: {type: [Date], required:true}, // for Admins
+    studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
+    tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
+    UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
+    studentReg: {type: ObjectId, ref:"Registration", required:true},
+    tutorReg: {type: ObjectId, ref:"Registration", required:true},
     adminApproved: {type: Boolean, required: true, default: false},
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
-    firstDateTime: {type: Date, required:true}, 
-    lastDateTime: {type: Date, required: true}, //so we know when to delete the schedule from the DB
-    studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-    tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
-    UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed},
     course: {type: String},
-    studentReg: {type: ObjectId, ref:"Registration", required:true},
-    tutorReg: {type: ObjectId, ref:"Registration", required:true}
+    studentClassSchedule: {type: [Date]},
+    tutorClassSchedule: {type: [Date]},
+    UTCClassSchedule: {type: [Date]}, // for Admins
+    firstDateTimeUTC: {type: Date}, 
+    lastDateTimeUTC: {type: Date}, //so we know when to delete the schedule from the DB
+    studentCoord :{type: ObjectId, ref:"User"},
+    tutorCoord :{type: ObjectId, ref:"User"}   
 });
 
+ScheduleSchema.path("course").validate(function(course) {
+    return course.trim().length > 0;
+}, "No empty course name.");
 
-scheduleSchema.statics.getSchedules = function (user, callback) {
+// more validation
+ScheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
         // get personal scheudles
         Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]}, function (err, schedules) {
@@ -59,39 +64,93 @@ scheduleSchema.statics.getSchedules = function (user, callback) {
     }
 }
 
+ScheduleSchema.statics.saveSchedules = function (matches, callback) {
+    matches.forEach(function (match) {
+        var scheduleJSON = {
+            student: match.studentID,
+            tutor: match.tutorID,
+            studentReg: match.studentRegID,
+            tutorReg: match.tutorRegID,
+            possibleCourses: match.possibleCourses
+        }
+        Registration.markAsMatched([scheduleJSON.tutorReg, scheduleJSON.studentReg], function (err, registration) {
+            if (err) {
+                console.log(err);
+                callback({success: false, message: err.message});
+            } else {
+                scheduleJSON.studentPossibleSchedules = utils.formatDates(match.studentPossibleSchedules);
+                scheduleJSON.tutorPossibleSchedules = utils.formatDates(match.tutorPossibleSchedules);
+                scheduleJSON.UTCPossibleSchedules = utils.formatDates(match.UTCPossibleSchedules);
 
-scheduleSchema.statics.getMatches = function (callback){
+                Schedule.create(scheduleJSON, function (err, match) {
+                    if (err) {
+                        console.log(err);
+                        callback({success: false, message: err.message});
+                    }
+                });
+            }
+        });
+    });
+    callback(null, matches);
+}
+
+
+ScheduleSchema.statics.getMatches = function (callback) {
 
     Registration.getUnmatchedRegistrations(function (err, registrations) {
-        // Inputs to Simon's script, hardcoding for now.
-        var registrations = [{'user': '1111', 'availability': {'0': ['11:00 - 13:00'], '3': ['2:00 - 5:00']},
-                            'genderPref': ['Male', 'Female'], 'course': 'Intermediate English',
-                            'isMatched': false},
-                          {'user': '1112', 'availability': {'1': ['10:00 - 12:00'], '5': ['1:00 - 5:00']},
-                            'genderPref': ['Female'], 'course': 'Intermediate English',
-                            'isMatched': false}
-                        ];
-
-        var city_capacity = {'Boston': 10, 'Cambridge': 5, 'Bangkok': 3};
+        console.log('unmatched registrations', registrations.length);
+        registrations = registrations.map(function (registration) {
+            registration = registration.toJSON();
+            registration['earliestStartTime'] = dateFormat(registration.earliestStartTime, "yyyy-mm-dd");
+            return registration;
+        });
 
         var options = {
             mode: 'json',
+            pythonPath: '.env/bin/python2.7',
             scriptPath: './scheduler/',
-            args: [JSON.stringify(registrations), JSON.stringify(city_capacity)]
+            args: [JSON.stringify(registrations)]
         };
 
-        PythonShell.run('match.py', options, function (err, matches) {
-          if (err) {
-            throw err;
-          }
-          // matches is an array consisting of messages collected during execution
-          console.log('matches:', typeof matches, matches);
-          // process the JSON objs and write to db
+        PythonShell.run('main.py', options, function (err, outputs) {
+            if (err) {
+                throw err;
+            }
+            console.log('matches:', JSON.stringify(outputs));
+            var matches = outputs[0];
+            Schedule.saveSchedules(matches, function (err, schedules) {
+                if (err) {
+                    callback({success: false, message: err.message});
+                } else {
+                    callback(null, schedules);
+                }
+            })
         });
     });
 };
 
+ScheduleSchema.statics.automateMatch = function () {
+
+    var schedulerJob = new CronJob({
+        cronTime: '00 00 17 * * 6',
+        onTick: function() {
+            // runs every Sunday at 5pm
+            Schedule.getMatches(function (err, matches) {
+                if (err) {
+                    console.log('An error has occured', err.message);
+                } else {
+                    console.log('Successfully ran weekly matches!');
+                }
+            });
+        },
+        start: false,
+        timeZone: 'America/New_York'
+    });
+    global.schedulerJob = schedulerJob;
+    global.schedulerJob.start();
+}
+
 
 //keep at bottom of file
-var Schedule = mongoose.model("Schedule", scheduleSchema);
+var Schedule = mongoose.model("Schedule", ScheduleSchema);
 module.exports = Schedule;
