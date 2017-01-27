@@ -156,7 +156,9 @@ class Availability:
                 a specified hour and minute. Hour must be between 0 and 24,
                 inclusive. (24 is allowed because of intervals like
                 ['20:00','24:00'] exist in availability dictionaries.) Minute
-                must be between 0 and 59, inclusive.
+                must be between 0 and 59, inclusive. Also the number of minutes
+                elapsed between 00:00 and the time must be a multiple of 
+                cls.MINUTES_PER_SLOT.
 
         Returns:
             An integer i such that cls.SLOT_START_TIMES[i] corresponds to
@@ -170,7 +172,10 @@ class Availability:
             raise ValueError('The hour part of time_str must be in range(25)')
         if minutes not in range(cls.MINUTES_PER_HOUR):
             raise ValueError('The minute part of time_str must be in range(60)')
-        return (cls.MINUTES_PER_HOUR * hours + minutes) / cls.MINUTES_PER_SLOT
+        total_minutes = cls.MINUTES_PER_HOUR * hours + minutes
+        if total_minutes % cls.MINUTES_PER_SLOT != 0:
+            raise ValueError('The number of minutes elapsed between 00:00 and time_str must be a multiple of MINUTES_PER_SLOT')
+        return total_minutes / cls.MINUTES_PER_SLOT
 
     @classmethod
     def parse_dict(cls, availability_dict):
@@ -182,7 +187,10 @@ class Availability:
                 as a string to a list of lists of length two. Each internal
                 list of length two is of the form [start_time, end_time], where
                 start_time and end_time are the start and end times in the form
-                'HH:MM' of when the user is available.
+                'HH:MM' of when the user is available, and start_time is not
+                equal to end_time. Also the number of minutes elapsed between
+                00:00 and each of start_time and end_time must be a multiple of
+                cls.MINUTES_PER_SLOT.
 
                 ex. {'0': [['00:00', '02:30'], ['23:00', '24:00']],
                      '4': [['17:30', '18:00']]}
@@ -203,6 +211,8 @@ class Availability:
             for interval in intervals:
                 if len(interval) != 2:
                     raise ValueError('time interval in availability_dict must have length 2')
+                if interval[0] == interval[1]:
+                    raise ValueError('time interval in availability_dict must have different start time and end time')
                 start_index = day_slot_index + cls.time_str_to_index(interval[0])
                 end_index = day_slot_index + cls.time_str_to_index(interval[1])
                 free_slots_indices.update(range(start_index, end_index))
@@ -217,7 +227,10 @@ class Availability:
                 as a string to a list of lists of length two. Each internal
                 list of length two is of the form [start_time, end_time], where
                 start_time and end_time are the start and end times in the form
-                'HH:MM' of when the user is available.
+                'HH:MM' of when the user is available, and start_time is not
+                equal to end_time. Also the number of minutes elapsed between
+                00:00 and each of start_time and end_time must be a multiple of
+                cls.MINUTES_PER_SLOT.
 
                 ex. {'0': [['00:00', '02:30'], ['23:00', '24:00']],
                      '4': [['17:30', '18:00']]}

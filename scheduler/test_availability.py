@@ -1,6 +1,7 @@
 import unittest
 from availability import WeeklyTime, Availability
 from datetime import datetime
+import pytz
 
 class TestWeeklyTime(unittest.TestCase):
     def setUp(self):
@@ -99,6 +100,18 @@ class TestAvailability(unittest.TestCase):
         self.free_sat_sun_six_avail = Availability(self.free_sat_sun_six_slots)
         self.nonconsecutive_free_avail = Availability(self.nonconsecutive_free_slots)
 
+        # Timezone constants
+        utc = pytz.timezone('UTC')
+        et = pytz.timezone('US/Eastern') # UTC-04:00 March to November, UTC-05:00 November to March
+        kabul = pytz.timezone('Asia/Kabul') # UTC+04:30, no daylight saving
+        kathmandu = pytz.timezone('Asia/Kathmandu') # UTC+05:45, no daylight saving
+        
+        et_2017_ds_start = datetime(2017, 3, 12, 3, 1) # UTC-04:00
+        et_2017_ds_end = datetime(2017, 11, 12, 2, 0) # UTC-05:00
+        print et.localize(et_2017_ds_start).astimezone(utc)
+
+        #self.utc_dt = 
+
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
         self.assertEqual(Availability.MINUTES_PER_COURSE, 90)
@@ -115,11 +128,28 @@ class TestAvailability(unittest.TestCase):
     def test_time_str_to_index_0015(self):
         self.assertEqual(Availability.time_str_to_index('00:15'), 1)
 
+    def test_time_str_to_index_0030(self):
+        self.assertEqual(Availability.time_str_to_index('00:30'), 2)
+
     def test_time_str_to_index_2345(self):
         self.assertEqual(Availability.time_str_to_index('23:45'), 95)
 
     def test_time_str_to_index_2400(self):
         self.assertEqual(Availability.time_str_to_index('24:00'), 96)
+
+    def test_time_str_to_index_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('0000')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('0:00')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('0:000')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('25:00')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('00:60')
+        with self.assertRaises(ValueError):
+            Availability.time_str_to_index('00:59')
 
     def test_initializer_value_error(self):
         with self.assertRaises(ValueError):
@@ -148,6 +178,8 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(self.nonconsecutive_free_avail.free_course_slots,
                          self.never_free_slots)
 
+    # test_str_always_free_avail
+
     def test_str_free_first_five_avail(self):
         avail_str = ('Sunday 00:00 - Sunday 00:15\n'
                      'Sunday 00:15 - Sunday 00:30\n'
@@ -175,7 +207,51 @@ class TestAvailability(unittest.TestCase):
                      'Sunday 01:15 - Sunday 01:30\n'
                      'Monday 01:00 - Monday 01:15')
         self.assertEqual(str(self.nonconsecutive_free_avail), avail_str)
-    
+
+    def test_parse_dict_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability.parse_dict({0: ['00:00', '01:00']})
+        with self.assertRaises(ValueError):
+            Availability.parse_dict({'0': ['00:00']})
+        with self.assertRaises(ValueError):
+            Availability.parse_dict({'0': ['00:00', '00:15', '00:30']})
+        with self.assertRaises(ValueError):
+            Availability.parse_dict({'0': ['00:00', '00:00']})
+        with self.assertRaises(ValueError):
+            Availability.parse_dict({'0': ['00:14', '01:00']})
+
+    def test_parse_dict_always_free_dict(self):
+        self.assertEqual(Availability.parse_dict(self.always_free_dict),
+                         set(range(self.slots_per_week)))
+
+    def test_parse_dict_free_first_five_dict(self):
+        self.assertEqual(Availability.parse_dict(self.free_first_five_dict),
+                         set(range(5)))    
+
+    def test_parse_dict_never_free_dict(self):
+        self.assertEqual(Availability.parse_dict(self.never_free_dict),
+                         set([]))
+
+    def test_parse_dict_free_sat_sun_six_dict(self):
+        self.assertEqual(Availability.parse_dict(self.free_sat_sun_six_dict),
+                         {0, 1, 2, 669, 670, 671})
+
+    def test_parse_dict_nonconsecutive_free_dict(self):
+        self.assertEqual(Availability.parse_dict(self.nonconsecutive_free_dict),
+                         {1, 3, 4, 5, 100})
+
+    def test_from_dict_value_error(self):
+        with self.assertRaises(ValueError):
+            Availability.from_dict({0: ['00:00', '01:00']})
+        with self.assertRaises(ValueError):
+            Availability.from_dict({'0': ['00:00']})
+        with self.assertRaises(ValueError):
+            Availability.from_dict({'0': ['00:00', '00:15', '00:30']})
+        with self.assertRaises(ValueError):
+            Availability.from_dict({'0': ['00:00', '00:00']})
+        with self.assertRaises(ValueError):
+            Availability.from_dict({'0': ['00:14', '01:00']})
+
     def test_from_dict_always_free_dict(self):
         self.assertEqual(Availability.from_dict(self.always_free_dict),
                          self.always_free_avail)
@@ -196,6 +272,7 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(Availability.from_dict(self.nonconsecutive_free_dict),
                          self.nonconsecutive_free_avail)
 
+    #def test_UTC_offset_minutes_
     # test class time slots
 
 if __name__ == '__main__':
