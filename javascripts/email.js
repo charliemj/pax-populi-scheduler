@@ -162,6 +162,20 @@ var Email = function() {
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
+    /**
+    * Sends an email to inform the user that his/her account has been archived
+    * @param {Object} user - the user object whose account just got archived
+    * @param {Object} developmentMode - true if the app is in development mode, false otherwise
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.sendArchiveEmail = function (user, developmentMode, callback) {
+        var subject = 'Updates on the status of your Pax Populi account';
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been archived by the administrators. You no longer have access to this account and will not receive any emails from us in the future.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        console.log('user', user);
+        return sendEmail(user.email, subject, emailContent, callback);
+    };
+
     that.makeApprovalRequestEmailContent = function (user, developmentMode) {
         var link;
             if (developmentMode) {
