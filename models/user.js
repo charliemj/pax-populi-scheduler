@@ -553,6 +553,23 @@ UserSchema.statics.getAllUsers = function(){
     console.log("made csv");
 };
 
+UserSchema.statics.findCoordinator = function (userId, callback) {
+    var that = this;
+    that.findOne({_id: userId}, function (err, user) {
+        if (err) {
+           callback({success: false, message: err.message});
+        } else {
+            that.findOne({$or: [{schoolInCharge: user.school}, {regionInCharge: user.region}, {countryInCharge: user.country}]}, function (err, coordinator) {
+                if (err) {
+                  callback({success: false, message: err.message});
+                } else {
+                  callback(null, coordinator);
+                }               
+            });
+        }
+    });
+}
+
 
 
 var UserModel = mongoose.model("User", UserSchema);
