@@ -28,6 +28,7 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
                                 csrfToken: req.csrfToken(),
                                 username: user.username,
                                 role: user.role,
+                                user: user,
                                 fullName: user.fullName,
                                 onHold: user.onHold,
                                 inPool: user.inPool,
@@ -37,6 +38,7 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
         else{
           res.render('registration', {title: 'Register',
                                 csrfToken: req.csrfToken(),
+                                user: user,
                                 username: user.username,
                                 role: user.role,
                                 fullName: user.fullName,
@@ -62,13 +64,13 @@ router.post('/:username', authentication.isAuthenticated, function (req, res, ne
     var username = user.username;
     var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.createRegistration(username, genderPref, availability, courses, earliestStartTime,
+    Registration.createRegistration(user, genderPref, availability, courses, earliestStartTime,
         function (err,registration){
-            console.log(err);
             if (err){
                 console.log("error submitting registration " + err);
                 res.send({ success: false, message: err.message });
             } else {
+                console.log("submission worked");
                 res.status(200).send( {success: true,
                                         message:"Registration has been submitted!", 
                                         redirect: "/"});
@@ -91,6 +93,7 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
             res.send({ success: false, message: err.message });
         } else {
             res.render('updateRegistration', {title: 'Update Registration',
+                                                user: user,
                                                 csrfToken: req.csrfToken(),
                                                 courses: enums.courses(),
                                                 username: user.username,
@@ -134,12 +137,10 @@ router.delete('/delete/:username/:registration_id', authentication.isAuthenticat
   Registration.deleteRegistration(regId, function(err){
 
     if (err){
-      console.log("breaks in route if");
       console.log("error deleting registration " + err);
       res.send({ success: false, message: err.message });
     }
     else {
-      console.log("breaks in route else");
       res.status(200).send({success: true,
                               message:"Registration has been deleted!", 
                               redirect: "/"});
