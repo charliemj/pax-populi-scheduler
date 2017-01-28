@@ -154,6 +154,39 @@ describe('Registration', function(){
     });
 
 
+    // describe('markAsMatched', function(){
+    //     it('should return no unmatched registrations', function (done){
+    //         Registration.createRegistration(TEST_USER, "NONE", availTest, "COURSES_THESE", earliestTime, function(err, reg1){
+    //             var regId1 = reg1._id;
+    //             Registration.createRegistration(TEST_USER_2, "NONE", availTest, "COURSES_THESE", earliestTime, function(err, reg2){
+    //                 var regId2 = reg2._id;
+    //                 Registration.markAsMatched([reg1, reg2], function(err, registration){
+    //                     Registration.getUnmatchedRegistrations(function(err, registrations){
+    //                         assert.equal(length.registrations, 0);
+    //                         //console.log(registrations);
+    //                         done();
+    //                     });
+    //                 });
+
+    //             });
+    //         }); 
+    //     });
+    // });
+
+    describe('getUnmatchedRegistrations', function(){
+        it('should return 2 unmatched registrations', function (done){
+            Registration.createRegistration(TEST_USER, "NONE", availTest, "COURSES_THESE", earliestTime, function(err, reg1){
+                var regId1 = reg1._id;
+                Registration.createRegistration(TEST_USER_2, "FEMALE", availTest, "COURSES_THESE", earliestTime, function(err, reg2){
+                    var regId2 = reg2._id;
+                    Registration.getUnmatchedRegistrations(function(err, registrations){
+                        assert.equal(registrations.length, 2);
+                        done();
+                    });
+                });
+            }); 
+        });
+    });
 
 });
 

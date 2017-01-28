@@ -515,7 +515,7 @@ UserSchema.statics.getUser = function(username, callback){
         else {
             callback(null, user);
         }
-    });//end findOne
+    });
 };
 
 UserSchema.statics.searchUsers = function(name, callback){
@@ -530,7 +530,7 @@ UserSchema.statics.searchUsers = function(name, callback){
         else {
             callback(null, users);
         }
-    });//end findOne
+    });
 };
 
 UserSchema.statics.getPendingUsers = function (callback) {

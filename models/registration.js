@@ -151,9 +151,11 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
     });
 };
 
+//TODO -- this documentation (type of registration)
+
 /*
  * Takes a series of registration IDs and marks them as matched
- * @param {Array} registrationIds - Array of ID numbers (assigned by MongoDB) for each registration object.
+ * @param {} registrationIds -  of ID numbers (assigned by MongoDB) for each registration object.
  * @param {Function} callback - The function to execute after the registrations are marked as matched.
  */
 RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
