@@ -41,7 +41,7 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 		if (err) {
 			res.send({success: false, message: err.message});
 		} else {
-			res.send({success: true, message: 'Successfully generated matches!'})
+			res.send({success: true, message: 'Successfully generated matches!'});
 		}
 	});
 });

@@ -2,8 +2,8 @@ $(document).ready(function () {
 	$('#navbar-settings').addClass('active');
 
 	$('.archive-button').click(function () {
-        var id = $(this).attr('id').split('-').slice(-1)[0] 
-        console.log('id', id)
+        var id = $(this).attr('id').split('-').slice(-1)[0] ;
+        console.log('id', id);
         var username = $('#username-' + id).val();
         var csrf = $('#csrf').val();
         var action = $(this).attr('id').split('-')[0];
@@ -77,7 +77,7 @@ $(document).ready(function () {
                 addMessage('A network error might have occurred. Please try again.', false);
             }
         });
-	})
+	});
 
     $('.default-button').click(function (e) {
     	var target = $($(this).attr('data-target'));

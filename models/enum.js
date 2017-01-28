@@ -104,12 +104,12 @@ EnumSchema.statics.initialize = function (callback) {
     } else if (!enums) {
         that.create({}, function (err, enums) {
             callback(null, enums);
-        })
+        });
     } else {
         callback(null, enums);
     }
-})
-}
+});
+};
 
 var EnumModel = mongoose.model("Enum", EnumSchema);
 

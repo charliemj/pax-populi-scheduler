@@ -60,9 +60,9 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
                     }
                 });
             }
-        })
+        });
     }
-}
+};
 
 ScheduleSchema.statics.saveSchedules = function (matches, callback) {
     matches.forEach(function (match) {
@@ -72,7 +72,7 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
             studentReg: match.studentRegID,
             tutorReg: match.tutorRegID,
             possibleCourses: match.possibleCourses
-        }
+        };
         Registration.markAsMatched([scheduleJSON.tutorReg, scheduleJSON.studentReg], function (err, registration) {
             if (err) {
                 console.log(err);
@@ -92,7 +92,7 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
         });
     });
     callback(null, matches);
-}
+};
 
 
 
@@ -125,7 +125,7 @@ ScheduleSchema.statics.getMatches = function (callback) {
                 } else {
                     callback(null, schedules);
                 }
-            })
+            });
         });
     });
 };
@@ -149,7 +149,7 @@ ScheduleSchema.statics.automateMatch = function () {
     });
     global.schedulerJob = schedulerJob;
     global.schedulerJob.start();
-}
+};
 
 
 
