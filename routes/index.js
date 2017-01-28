@@ -303,6 +303,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
             data.message = err.message;
             res.render('home', data);
         } else {
+            console.log('userJSON', userJSON);
             User.signUp(userJSON, req.devMode, function (err, user) {
                 if (err) {
                     data.mesage = err.message;
