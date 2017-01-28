@@ -61,6 +61,7 @@ var Utils = function() {
     }
 
     that.extractChosen = function (array) {
+        console.log('array', array);
         if (that.containsOther(array)) {
             return array[1].trim();
         }

@@ -15,14 +15,12 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
 
     Registration.getUnmatchedRegistrationsForUser(user, function(err, registration){
 
-      if (err){
+      if (err) {
         console.log("error getting registration " + err);
         res.send({ success: false, message: err.message });
       }
 
-      else{
-        console.log("here's the registration");
-        console.log(registration);
+      else {
         if (registration.length > 0){
           res.render('registrationError', {title: 'Register',
                                 csrfToken: req.csrfToken(),
@@ -34,7 +32,7 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
                                 courses: enums.courses()});
         }
 
-        else{
+        else {
           res.render('registration', {title: 'Register',
                                 csrfToken: req.csrfToken(),
                                 username: user.username,

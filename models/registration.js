@@ -143,7 +143,6 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
 RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
     registrationIds.forEach(function (regId) {
         Registration.findOne({_id: regId}).populate('user').exec(function (err, registration) {
-            console.log('registration', registration)
             if (err) {
                 console.log(err);
                 callback({success: false, message: err.message});

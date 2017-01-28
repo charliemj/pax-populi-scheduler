@@ -96,12 +96,12 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                     if (err) {
                         callback({success: false, message: err.message});
                     } else {
-                        scheduleJSON.studentCoord = studentCoord;
+                        scheduleJSON.studentCoord = studentCoord ? studentCoord._id: null;
                         User.findCoordinator(scheduleJSON.tutor, function (err, tutorCoord) {
                             if (err) {
                                 callback({success: false, message: err.message});
                             } else {
-                                scheduleJSON.tutorCoord = tutorCoord;
+                                scheduleJSON.tutorCoord = tutorCoord ? tutorCoord._id: null;
                                 console.log('scheduleJSON', scheduleJSON)
                                 Schedule.create(scheduleJSON, function (err, match) {
                                     if (err) {

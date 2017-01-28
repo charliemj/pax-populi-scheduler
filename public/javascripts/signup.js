@@ -38,10 +38,10 @@ $(document).ready(function () {
 	    	$('#in-charge-of').empty();
 	    	$('.other').hide();
 	    	var countryHTML = $('<div class="form-group country" ><label class="control-label">Country*</label><div><!--Source: https://github.com/benkeen/country-region-selector--><select name="countryInCharge" class="form-control signup-input crs-country" data-region-id="regionHere2" required></select></div></div>')
-	    	countryHTML.find('select').attr('name', 'countryInCharge');
 	    	var regionHTML = $('<div class="form-group region"><label class="control-label">Region*</label><div><select name="regionInCharge" class="form-control signup-input" id="regionHere2"></select></div></div>');
 	    	regionHTML = countryHTML.add(regionHTML);
             var schoolHTML = $('#tutor-schools').clone();
+            schoolHTML.find('select').attr('name', 'schoolInCharge');
 
 	        if ($(this).is(':checked')) {
 	        	var inCharge = $(this).val();
