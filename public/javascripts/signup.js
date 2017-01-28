@@ -56,6 +56,7 @@ $(document).ready(function () {
 	        			break;
 	        		case 'Country':
 	        			$('#in-charge-of').html(countryHTML);
+	        			window.crs.init();
 	        			break;
 	        	}  
 	        }

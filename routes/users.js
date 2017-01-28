@@ -39,6 +39,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                     res.send({success: false, message: err.message});
                 } else {
                     data.schedules = schedules;
+                    console.log('found schedules', schedules.length);
                     if (utils.isCoordinator(user.role)) {
                         res.render('dashboard', data);
                     } else if (utils.isAdministrator(user.role)) {

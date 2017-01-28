@@ -40,7 +40,7 @@ ScheduleSchema.path("course").validate(function(course) {
 // more validation
 ScheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
-        // get personal scheudles
+        // get personal schedules
         Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]}, function (err, schedules) {
             if (err) {
                 callback({success: false, message: err.message});
@@ -102,7 +102,6 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                                 callback({success: false, message: err.message});
                             } else {
                                 scheduleJSON.tutorCoord = tutorCoord ? tutorCoord._id: null;
-                                console.log('scheduleJSON', scheduleJSON)
                                 Schedule.create(scheduleJSON, function (err, match) {
                                     if (err) {
                                         console.log(err);
