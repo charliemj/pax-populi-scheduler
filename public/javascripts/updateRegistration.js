@@ -1,5 +1,5 @@
 //Angular.js code that populates the screen with the time selector interface and includes a function
-// to send the updated availabilties to the database when the "submit" button is clicked
+//to send the updated registrations to the database when the "update" button is clicked
 
 
 var updateRegistration = angular.module("updateRegistration",[]);
@@ -9,7 +9,7 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     
     $("#day-schedule").dayScheduleSelector({}); //function that makes the calendar UI
     
-    //LOGIC FOR POPULATING PAGE WITH SAVED DATA
+    //LOGIC FOR POPULATING PAGE WITH SAVED REGISTRATION DATA
     //populates calendar with previously submitted registration values
     var oldRegistration = JSON.parse($("#oldRegistration").val());
     var availability = oldRegistration.availability;
@@ -19,13 +19,14 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
     var regId = $("#regId").val();
     var username = $("#username").val();
 
-    //converts this back into a date object
+    //converts earliestStartTime back into a date object
     var earliestStartTimeDate = new Date(earliestStartTime);
     
     //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString
     //gets us the form we need to feed back into datepicker UI, substring(0,10) gives us yyyy-mm-dd
     var oldEarliestTime = earliestStartTimeDate.toISOString().substring(0, 10);
 
+    //set the fields on the UI with the data we have
     $('#genderPref').val(genderPref);
     $('#earliestStartTime').val(oldEarliestTime);
     $('#courses').val(courses);
@@ -139,6 +140,3 @@ updateRegistration.controller('mainController', ['$scope','$http', function($sco
 
 
 }]);//end controller
-
-
-

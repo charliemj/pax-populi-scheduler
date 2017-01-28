@@ -27,7 +27,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                 onHold: user.onHold,
                 inPool: user.inPool,
                 role: user.role,                                        
-                fullName: user.fullName}
+                fullName: user.fullName};
 
     Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
         if (err) {
@@ -35,7 +35,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
         } else {
             data.registrations = registrations;
             if (utils.isRegularUser(user.role)) {  
-                res.render('dashboard', data) //shouldn't we also show the schedules of regular users?
+                res.render('dashboard', data);  //shouldn't we also show the schedules of regular users?
             } else {
                 Schedule.getSchedules(user, function (err, schedules) {
                     if (err) {
@@ -52,7 +52,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                                     data.pendingUsers = users;
                                     res.render('dashboard', data);
                                 }
-                            })
+                            });
                         }
                     }
                 }); 

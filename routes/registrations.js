@@ -8,8 +8,8 @@ var enums = require('../javascripts/enums.js');
 var authentication = require('../javascripts/authentication.js');
 
 
-//GET request for displaying the availablities form
-
+//GET request for displaying the registration form
+//Users can have at most one active (unmatched) registration at once
 router.get('/', authentication.isAuthenticated, function (req, res, next) {
     var user = req.session.passport.user;
 
@@ -21,8 +21,6 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
       }
 
       else{
-        console.log("here's the registration");
-        console.log(registration);
         if (registration.length > 0){
           res.render('registrationError', {title: 'Register',
                                 csrfToken: req.csrfToken(),
@@ -53,10 +51,9 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
 });
 
 
-//POST request for submitting the availablities from submit button
-
+//POST request for submitting the registration form
 router.post('/:username', authentication.isAuthenticated, function (req, res, next) {
-    console.log('in submitting')
+    console.log('submitting registration');
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
@@ -79,8 +76,7 @@ router.post('/:username', authentication.isAuthenticated, function (req, res, ne
 });
 
 
-// GET request for seeing a submitted registration
-
+// GET request for seeing a particular submitted registration
 router.get('/update/:username/:registration_id', authentication.isAuthenticated, function (req, res, next){
   var regId = req.params.registration_id;
   var user = req.session.passport.user;
@@ -105,8 +101,7 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
   });
 });
 
-//PUT request for updating availablities
-
+//PUT request for updating registration forms
 router.put('/update/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
   
   var availability = req.body.availability;
@@ -130,7 +125,7 @@ router.put('/update/:username/:registration_id', authentication.isAuthenticated,
 });
 
 
-//DELETE request for deleting registration objects
+//DELETE request for deleting a registration
 router.delete('/delete/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
   var regId = req.params.registration_id;
 
@@ -146,7 +141,6 @@ router.delete('/delete/:username/:registration_id', authentication.isAuthenticat
                               redirect: "/"});
     }
   });
-
 });
 
 

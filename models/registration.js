@@ -23,6 +23,7 @@ var RegistrationSchema = mongoose.Schema({
     dateAdded:{type: Date, default: Date.now}
 });
 
+//sets a registration to "matched" so that it is taken out of the scheduling pool
 RegistrationSchema.methods.matched = function (callback) {
     this.isMatched = true;
     this.save(callback);
@@ -39,17 +40,31 @@ RegistrationSchema.methods.matched = function (callback) {
  */
 RegistrationSchema.statics.createRegistration = function(user, genderPref, availability, courses, earliestStartTime, callback){
     
-    Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
-    function(err, registration){
+    Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
+
         if (err){
-            console.log("Problem creating registration");
+            console.log("Problem getting user for registration");
             callback(err); 
-        }//end if
+        }
+        else if (registrations.length === 0){
+            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
+            function(err, registration){
+                if (err){
+                    console.log("Problem creating registration");
+                    callback(err); 
+                }
+                else{
+                    callback(null, registration); 
+                }
+            });
+        }
         else{
-            callback(null, registration); //everything worked! 
-        }//end else
-    });//end create
-}
+            console.log("You already have a registration submitted, and you may only have one. ");
+            callback(new Error("You already have a registration submitted, and you may only have one."));
+        }
+
+    });
+};
 
 
 /*
@@ -60,11 +75,9 @@ RegistrationSchema.statics.createRegistration = function(user, genderPref, avail
  */
 RegistrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
     Registration.find({isMatched: false, user: user }).populate('user').exec(function (err, registrations) {
-        // console.log(registrations[0]);
         if (err) {
             callback({success: false, message: err.message});
         } else {
-            // console.log('before', registrations[0])
             callback(err, registrations);
         }
     });
@@ -76,7 +89,6 @@ RegistrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, ca
  * @param {String} user - The user object of the logged in user 
  * @param {Function} callback - The function to execute after the registration found. 
  */
-
 RegistrationSchema.statics.findRegistration = function (regId, user, callback){
 
     Registration.findOne({user: user, _id: regId}, function (err, registration){
@@ -85,7 +97,6 @@ RegistrationSchema.statics.findRegistration = function (regId, user, callback){
             callback(new Error("This registration doesn't belong this logged in user."));
         }
         else{
-
             callback(null, registration);
         }
     });//end findOne
@@ -94,24 +105,25 @@ RegistrationSchema.statics.findRegistration = function (regId, user, callback){
 
 /*
  * Deletes a particular registration for a user. 
- * @param {String} regId - the registration id number of the particular registration
+ * @param {String} regId - the registration id number of the particular registration.
  * @param {Function} callback - The function to execute after the registration deleted. 
  */
 RegistrationSchema.statics.deleteRegistration = function(regId, callback){
     Registration.remove({_id:regId}, function(err){
         if (err){
-            console.log("err in schema method");
+            console.log("problem deleting registration");
             callback(err);
         }
-        else{console.log("deletedddd");
+        else{
+        console.log("sucessfully deleted registration");
         callback(null);}
-        //otherwise, sucessfully removed!
+        
     });
 };
 
 /*
  * Updates registration info for a user. 
- * @param {String} user - The user object of the logged in user 
+ * @param {String} user - The user object of the logged in user. 
  * @param {String} regId - ID number (assigned by MongoDB) for the registration object. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
  * @param {Array} availabilty - An array of times the user is available to meet.
@@ -119,24 +131,28 @@ RegistrationSchema.statics.deleteRegistration = function(regId, callback){
  * @param {Date} earliestStartTime - The earliest possible date a user can start a class. 
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
-
 RegistrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
     
     Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now(), courses: courses}, 
     function(err, updatedRegistration){
         if (err){
             callback(err);
-        }//end if
+        }
         else{
-           callback(null, updatedRegistration); //everything worked! 
-        }//end else
-    });//end update
-}
+            console.log("sucessfully updated registration");
+            callback(null, updatedRegistration); 
+        }
+    });
+};
 
+/*
+ * Takes a series of registration IDs and marks them as matched
+ * @param {Array} registrationIds - Array of ID numbers (assigned by MongoDB) for each registration object.
+ * @param {Function} callback - The function to execute after the registrations are marked as matched.
+ */
 RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
     registrationIds.forEach(function (regId) {
         Registration.findOne({_id: regId}, function (err, registration) {
-            console.log('registration', registration)
             if (err) {
                 console.log(err);
                 callback({success: false, message: err.message});
@@ -146,12 +162,12 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
                         console.log(err);
                         callback({success: false, message: err.message});
                     }
-                })
+                });
             }
         });
     });
     setTimeout(function(){callback(null, registrationIds);}, 2500);  
-}
+};
 
 
 /*

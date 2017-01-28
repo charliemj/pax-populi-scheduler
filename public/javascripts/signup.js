@@ -38,7 +38,6 @@ $(document).ready(function () {
 
 	$('input:radio[name="in-charge"]').change(
 	    function () {
-
             
             var schoolHTML = $('#tutor-schools').clone();
             schoolHTML.find('select').attr('name', 'schoolInCharge');
