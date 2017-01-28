@@ -157,16 +157,27 @@ class User:
         return self_availability_UTC.shared_course_start_times(other_availability_UTC)
 
     def get_availability_matches(self, tutor, weeks_per_course):
-        """Returns a list of potential matches between two users accounting for
-        their availabilities after taking into account timezones and daylight 
+        """Returns a list of potential matches between a student and a tutor
+        accounting for their availabilities, their timezones, and daylight
         saving.
 
-        Requires that self is a student
+        Args:
+            self: A student User object.
+            tutor: A tutor User object.
+            weeks_per_course: A positive integer representing the number of
+                occurrences of the course, assuming the course meets once per
+                week.
+
+        Returns:
+            matches: A list of Match objects that are valid given
+                availabilities, timezone differences, and daylight saving.
         """
         if self.user_type != 'STUDENT':
             raise ValueError('self must have user_type of "STUDENT"');
         if tutor.user_type != 'TUTOR':
             raise ValueError('tutor must have user_type of "TUTOR"');
+        if weeks_per_course <= 0:
+            raise ValueError('weeks_per_course must be a positive integer')
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(tutor)
         matches = []
         for wt_UTC in self.shared_course_slots_UTC(tutor):
@@ -177,6 +188,22 @@ class User:
         return matches
 
     def availability_matches(self, tutor, weeks_per_course):
+        """Determines whether or not a student and a tutor can be scheduled for
+        a course based on their availabilities, timezone differences, and
+        daylight saving.
+        
+        Args:
+            self: A student User object.
+            tutor: A tutor User object.
+            weeks_per_course: A positive integer representing the number of
+                occurrences of the course, assuming the course meets once per
+                week.
+
+        Returns:
+            A boolean whether or not self and tutor can be scheduled for a
+                course based on their availabilities, timezone differences, and
+                daylight saving.
+        """
         if self.user_type != 'STUDENT':
             raise ValueError('self must have user_type of "STUDENT"');
         if tutor.user_type != 'TUTOR':
@@ -207,7 +234,7 @@ class User:
                 and self.gender_compatible(other_user))
 
     def new_timezone_availability(self, new_tz_str, naive_dt_in_new_tz):
-        """Returns an availability in a new timezone.
+        """Converts self's availability to a new timezone.
 
         Args:
             new_tz_str: A string representing the new timezone to shift to.

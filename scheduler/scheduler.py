@@ -3,7 +3,7 @@ from match import Match
 
 """
 Immutable source or sink vertex for max flow. This class was created so that
-instances of it can be used as the source and sink vertex in max flow instead
+instances of it can be used as the source and sink vertices in max flow instead
 of the strings 'SOURCE' and 'SINK', one of which could be equal to a student ID
 or tutor ID.
 """
@@ -54,13 +54,15 @@ class Scheduler:
         for student in self.students:
             for tutor in self.tutors:
                 if student.can_match(tutor, self.weeks_per_course):
-                    network.add_edge(student.user_id, tutor.user_id, capacity=1)
+                    network.add_edge(student.user_id, tutor.user_id,
+                                     capacity=1)
         for tutor in self.tutors:
             network.add_edge(tutor.user_id, self.sink, capacity=1)
         return network
 
     def match_max_flow(self):
-        (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(), self.source, self.sink)
+        (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(),
+                                                self.source, self.sink)
         student_tutor_to_matches = {}
         for student in self.students:
             edge_dict = flow_dict[student.user_id]

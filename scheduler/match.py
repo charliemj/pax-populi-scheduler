@@ -37,10 +37,40 @@ class Match:
         self.weeks_per_course = weeks_per_course
         (self.student_course_schedule, self.tutor_course_schedule, self.UTC_course_schedule) = self.get_course_schedules()
 
+    @classmethod
+    def aware_dt_is_valid(cls, aware_dt, tz):
+        """Determines whether a timezone-aware datetime is a non-existent or
+        ambiguous time due to daylight saving.
+
+        For example, in 'US/Eastern', when daylight saving time begins, the
+        minute after 1:59am is 3am, and all times in [2am, 3am) are
+        non-existent. Conversely, when daylight saving ends, the minute after
+        2am is 1:01am, and all times in [1am, 2am) are ambiguous because they
+        occur twice.
+
+        Args:
+            aware_dt: A timezone-aware datetime.
+            tz: A pytz timezone equal to the timezone of aware_dt.
+
+        Returns:
+            A boolean whether or not aware_dt is a non-existent or ambiguous
+                datetime.
+        """
+        if aware_dt.tzinfo is None or aware_dt.tzinfo.utcoffset(aware_dt) is None:
+            raise ValueError('aware_dt must be a timezone-aware datetime')
+        naive_dt = aware_dt.replace(tzinfo=None)
+        if tz.localize(naive_dt) != aware_dt:
+            raise ValueError('aware_dt must have the timezone tz')
+        try:
+            aware_dt_copy = tz.localize(naive_dt, is_dst=None)
+        except pytz.InvalidTimeError:
+            return False
+        return True
+
     def get_course_schedules(self):
         """
-        Computes the datetimes of the student's course schedule and of the
-        tutor's course schedule.
+        Computes the datetimes of the course schedule in the student's timezone,
+        in the tutor's timezone, and in UTC.
 
         Returns:
             student_course_schedule: A list of datetimes of course start times
@@ -50,15 +80,15 @@ class Match:
             UTC_course_schedule: A list of datetimes of course start times
                 localized to UTC.
         """
-        aware_UTC = pytz.utc.localize(self.earliest_course_start_UTC)
-        earliest_course_start_student = aware_UTC.astimezone(self.student.tz)
+        aware_UTC_start = pytz.utc.localize(self.earliest_course_start_UTC)
+        earliest_course_start_student = aware_UTC_start.astimezone(self.student.tz)
         student_wt = Availability.new_timezone_wt(self.course_start_wt_UTC,
-                                                  aware_UTC,
+                                                  aware_UTC_start,
                                                   self.student.tz_str)
         student_first_course_dt = student_wt.first_datetime_after(earliest_course_start_student)
         student_course_schedule_naive = [student_first_course_dt
-                                              + timedelta(Availability.DAYS_PER_WEEK*i)
-                                              for i in range(self.weeks_per_course)]
+                                         + timedelta(Availability.DAYS_PER_WEEK*i)
+                                         for i in range(self.weeks_per_course)]
         student_course_schedule = map(lambda x: self.student.tz.localize(x),
                                      student_course_schedule_naive) 
         tutor_course_schedule = [student_dt.astimezone(self.tutor.tz)
@@ -107,3 +137,10 @@ class Match:
                       'tutorClassSchedule': tutor_schedule_strings,
                       'UTCClassSchedule': UTC_schedule_strings}
         return match_dict
+
+if __name__ == '__main__':
+    from datetime import datetime
+    tz = pytz.timezone('US/Eastern')
+    aware_dt = tz.localize(datetime(2017,3,12,2,59))
+    #aware_dt = tz.localize(datetime(2017,11,5,1,31))
+    print Match.aware_dt_is_valid(aware_dt, tz)
