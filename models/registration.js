@@ -13,6 +13,7 @@ var genderPrefs = ["MALE","FEMALE", "NONE"];
       // '5': [],
       // '6': [[ '06:00', '08:30' ] } //Saturday from 6 am to 8:30am
 
+
 var RegistrationSchema = mongoose.Schema({
     user: {type: ObjectId, ref:"User", required:true},
     availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
@@ -29,7 +30,7 @@ RegistrationSchema.methods.matched = function (callback) {
     this.save(callback);
 };
 
-/*
+/**
  * Creates a registration object for a user. 
  * @param {User Object} user - The user object of the user. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
