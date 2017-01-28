@@ -70,7 +70,7 @@ RegistrationSchema.statics.createRegistration = function(user, genderPref, avail
 /*
  * Gets all unmatched registrations for a particular user
  * Will be used to grab all of the standing registrations for a user and display them on the user's dashboard
- * @param {User} user - A user object of the current user
+ * @param {User Object} user - A user object of the current user
  * @param {Function} callback - The function to execute after the unmatched registrations for the user are found.  
  */
 RegistrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, callback) {
@@ -86,7 +86,7 @@ RegistrationSchema.statics.getUnmatchedRegistrationsForUser = function (user, ca
 /*
  * Gets registration info about a particular registration for a user. 
  * @param {String} regId - the registration id number of the particular registration
- * @param {String} user - The user object of the logged in user 
+ * @param {User Object} user - The user object of the logged in user 
  * @param {Function} callback - The function to execute after the registration found. 
  */
 RegistrationSchema.statics.findRegistration = function (regId, user, callback){
@@ -94,22 +94,28 @@ RegistrationSchema.statics.findRegistration = function (regId, user, callback){
     Registration.findOne({user: user, _id: regId}, function (err, registration){
 
         if(err){
-            callback(new Error("This registration doesn't belong this logged in user."));
+            callback(err);
         }
         else{
-            callback(null, registration);
+            if (registration === null){
+                callback(new Error("This registration doesn't belong this logged in user."));
+            }
+            else{
+                callback(null, registration);
+            }
         }
-    });//end findOne
-};//end findRegistration
+    });
+};
 
 
 /*
  * Deletes a particular registration for a user. 
  * @param {String} regId - the registration id number of the particular registration.
+ * @param {User Object} user - The user object of the logged in user 
  * @param {Function} callback - The function to execute after the registration deleted. 
  */
-RegistrationSchema.statics.deleteRegistration = function(regId, callback){
-    Registration.remove({_id:regId}, function(err){
+RegistrationSchema.statics.deleteRegistration = function(regId, user, callback){
+    Registration.remove({user: user, _id:regId}, function(err){
         if (err){
             console.log("problem deleting registration");
             callback(err);
@@ -123,7 +129,7 @@ RegistrationSchema.statics.deleteRegistration = function(regId, callback){
 
 /*
  * Updates registration info for a user. 
- * @param {String} user - The user object of the logged in user. 
+ * @param {User Object} user - The user object of the logged in user. 
  * @param {String} regId - ID number (assigned by MongoDB) for the registration object. 
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
  * @param {Array} availabilty - An array of times the user is available to meet.
@@ -132,7 +138,7 @@ RegistrationSchema.statics.deleteRegistration = function(regId, callback){
  * @param {Function} callback - The function to execute after the registration is updated. 
  */
 RegistrationSchema.statics.updateRegistration = function (user, regId, genderPref, availability, courses, earliestStartTime, callback){
-    
+
     Registration.findOneAndUpdate({user: user, _id: regId},{availability: availability, genderPref: genderPref, earliestStartTime: earliestStartTime, dateAdded:Date.now(), courses: courses}, 
     function(err, updatedRegistration){
         if (err){
