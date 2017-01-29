@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from match import Match
 
 """
@@ -38,8 +38,10 @@ class User:
             raise ValueError('gender must be "MALE" or "FEMALE"')
         if gender_preference not in ['MALE', 'FEMALE', 'NONE']:
             raise ValueError('gender_preference must be "MALE", "FEMALE", or "NONE"')
-        if tz_str not in set(pytz.all_timezones):
+        if tz_str not in pytz.all_timezones_set:
             raise ValueError('tz_str must be in the pytz timezone database')
+        if not isinstance(earliest_start_date, date):
+            raise TypeError('earliest_start_date must be a datetime.date object')
         self.user_id = user_id
         self.reg_id = reg_id
         self.user_type = user_type
@@ -248,7 +250,7 @@ class User:
                 self.availability in the timezone new_tz_str using
                 naive_datetime_in_new_tz as a reference.
         """
-        if new_tz_str not in set(pytz.all_timezones):
+        if new_tz_str not in pytz.all_timezones_set:
             raise ValueError('new_tz must be in the pytz timezone database')
         if (naive_dt_in_new_tz.tzinfo is not None
             and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):

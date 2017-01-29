@@ -1,6 +1,8 @@
+import constants
 import pytz
 from availability import Availability, WeeklyTime
 from datetime import timedelta
+from dateutil.rrule import rrule, MINUTELY
 
 """
 Represents a match between a student and a tutor.
@@ -38,9 +40,9 @@ class Match:
         (self.student_course_schedule, self.tutor_course_schedule, self.UTC_course_schedule) = self.get_course_schedules()
 
     @classmethod
-    def aware_dt_is_valid(cls, aware_dt, tz):
-        """Determines whether a timezone-aware datetime is a non-existent or
-        ambiguous time due to daylight saving.
+    def naive_dt_is_valid(cls, naive_dt, tz):
+        """Considers a naive datetime invalid if it is non-existent or
+        ambiguous due to daylight saving in a given timezone.
 
         For example, in 'US/Eastern', when daylight saving time begins, the
         minute after 1:59am is 3am, and all times in [2am, 3am) are
@@ -49,20 +51,21 @@ class Match:
         occur twice.
 
         Args:
-            aware_dt: A timezone-aware datetime.
-            tz: A pytz timezone equal to the timezone of aware_dt.
+            naive_dt: A naive datetime.
+            tz: A pytz timezone object.
 
         Returns:
-            A boolean whether or not aware_dt is a non-existent or ambiguous
-                datetime.
+            A boolean whether or not naive_dt is valid in the timezone tz. A
+                datetime is invalid if and only if it is non-existent or
+                ambiguous.
         """
-        if aware_dt.tzinfo is None or aware_dt.tzinfo.utcoffset(aware_dt) is None:
-            raise ValueError('aware_dt must be a timezone-aware datetime')
-        naive_dt = aware_dt.replace(tzinfo=None)
-        if tz.localize(naive_dt) != aware_dt:
-            raise ValueError('aware_dt must have the timezone tz')
+        if (naive_dt.tzinfo is not None
+            and naive_dt.tzinfo.utcoffset(naive_dt) is not None):
+            raise ValueError('naive_dt must be a timezone-naive datetime')
+        if tz not in constants.PYTZ_TIMEZONES:
+            raise TypeError('tz must be a pytz timezone object')
         try:
-            aware_dt_copy = tz.localize(naive_dt, is_dst=None)
+            aware_dt = tz.localize(naive_dt, is_dst=None)
         except pytz.InvalidTimeError:
             return False
         return True
@@ -102,32 +105,46 @@ class Match:
         schedule. Even though the match will definitely be valid on 
         earliest_course_start_UTC, it is possible that the student or tutor will
         no longer be able to make the course if daylight saving occurs for the
-        student or for the tutor as the course progresses.
+        student or for the tutor as the course progresses. Also, some of the
+        scheduled datetimes may be non-existent or ambiguous because of
+        daylight saving.
 
         Returns:
             A boolean whether or not both the student and the tutor can make
                 all courses in their respective schedules.
         """
+        # Check that the student schedule is valid
         for student_dt in self.student_course_schedule:
             student_wt = WeeklyTime.from_datetime(student_dt)
             index = Availability.SLOT_START_TIME_TO_INDEX[student_wt]
             if not self.student.availability.free_course_slots[index]:
                 return False
+            # Check that all minutes of the class are valid
+            naive_student_dt = student_dt.replace(tzinfo=None)
+            for i in range(Availability.MINUTES_PER_COURSE):
+                dt = naive_student_dt + timedelta(minutes=i)
+                if not self.naive_dt_is_valid(dt, self.student.tz):
+                    return False
+
+        # Check that the tutor schedule is valid
         for tutor_dt in self.tutor_course_schedule:
             tutor_wt = WeeklyTime.from_datetime(tutor_dt)
             index = Availability.SLOT_START_TIME_TO_INDEX[tutor_wt]
             if not self.tutor.availability.free_course_slots[index]:
                 return False
+            # Check that all minutes of the class are valid
+            naive_tutor_dt = tutor_dt.replace(tzinfo=None)
+            for i in range(Availability.MINUTES_PER_COURSE):
+                dt = naive_tutor_dt + timedelta(minutes=i)
+                if not self.naive_dt_is_valid(dt, self.tutor.tz):
+                    return False
         return True
 
     def to_dict(self):
-        dt_format = '%Y-%m-%d %H:%M'
-        student_schedule_strings = [dt.strftime(dt_format)
-                                    for dt in self.student_course_schedule]
-        tutor_schedule_strings = [dt.strftime(dt_format)
-                                  for dt in self.tutor_course_schedule]
-        UTC_schedule_strings = [dt.strftime(dt_format)
-                                for dt in self.UTC_course_schedule]
+        dt_to_str = lambda x: x.strftime('%Y-%m-%d %H:%M')
+        student_schedule_strings = map(dt_to_str, self.student_course_schedule)
+        tutor_schedule_strings = map(dt_to_str, self.tutor_course_schedule)
+        UTC_schedule_strings = map(dt_to_str, self.UTC_course_schedule)
         match_dict = {'studentID': self.student.user_id,
                       'tutorID': self.tutor.user_id,
                       'studentRegID': self.student.reg_id,
@@ -137,10 +154,3 @@ class Match:
                       'tutorClassSchedule': tutor_schedule_strings,
                       'UTCClassSchedule': UTC_schedule_strings}
         return match_dict
-
-if __name__ == '__main__':
-    from datetime import datetime
-    tz = pytz.timezone('US/Eastern')
-    aware_dt = tz.localize(datetime(2017,3,12,2,59))
-    #aware_dt = tz.localize(datetime(2017,11,5,1,31))
-    print Match.aware_dt_is_valid(aware_dt, tz)

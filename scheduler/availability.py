@@ -293,7 +293,7 @@ class Availability:
             raise ValueError('wt must be in SLOT_START_TIMES')
         if aware_dt.tzinfo is None or aware_dt.tzinfo.utcoffset(aware_dt) is None:
             raise ValueError('aware_dt must be a timezone-aware datetime')
-        if new_tz_str not in set(pytz.all_timezones):
+        if new_tz_str not in pytz.all_timezones_set:
             raise ValueError('new_tz must be in the pytz timezone database')
         new_tz = pytz.timezone(new_tz_str)
         new_dt = aware_dt.astimezone(new_tz)
@@ -387,9 +387,9 @@ class Availability:
                 reference time in the timezone new_tz_str with which to
                 calculate UTC offsets.
         """
-        if current_tz_str not in set(pytz.all_timezones):
+        if current_tz_str not in pytz.all_timezones_set:
             raise ValueError('current_tz must be in the pytz timezone database')
-        if new_tz_str not in set(pytz.all_timezones):
+        if new_tz_str not in pytz.all_timezones_set:
             raise ValueError('new_tz must be in the pytz timezone database')
         if (naive_dt_in_new_tz.tzinfo is not None
             and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
