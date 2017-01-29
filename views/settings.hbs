@@ -5,24 +5,6 @@
 <div class='tab-content'>
 	<h1>{{title}}</h1>
 	<div class='content' id='dashboard-content'>
-	<div class='row' id="manage-users">
-		<span class='title-toggle' id='manage-users-toggle' data-toggle="collapse" data-target="#dashboard-manage-users"><h3>Manage Users<span class="badge hide notifs-count"></span>
-		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
-		<form id='search-form' action='/search' method='post'>
-			<input type="hidden" name="_csrf" value="{{csrfToken}}">
-			<input type="search" name='keyword' class="form-control search-bar col-xs-5 col-md-5" placeholder="first name or last name">
-			<input type="submit" id='search-button' class='btn btn-primary btn-lg' value="Search">
-		</form>
-  		<div id='dashboard-manage-users' class='collapse in'>
-			{{#if message}}
-			<div id='search-message'>
-				<center>{{message}}</center>
-			</div>
-			{{else}}
-				{{> users}}
-			{{/if}}
-		</div>
-	</div>
 	<div class='row' id="manage-forms">
 		<span class='title-toggle' id='manage-forms-toggle' data-toggle="collapse" data-target="#dashboard-manage-forms"><h3>Manage Forms<span class="badge hide notifs-count"></span>
 		<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>

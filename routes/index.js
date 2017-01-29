@@ -344,10 +344,27 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             schedulerOn: global.schedulerJob.running});
 });
 
+router.get('/manageUsers', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    var user = req.session.passport.user;
+    res.render('userSearch', {title: 'Manage Users',
+                            username: user.username,
+                            fullName: user.fullName,
+                            onHold: user.onHold,
+                            inPool: user.inPool,
+                            role: user.role,
+                            csrfToken: req.csrfToken(),
+                            studentSchools: global.enums.studentSchools,
+                            tutorSchools: global.enums.tutorSchools,
+                            majors: global.enums.majors,
+                            interests: global.enums.interests,
+                            courses: global.enums.courses,
+                            schedulerOn: global.schedulerJob.running});
+});
+
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     var keyword = req.body.keyword.trim();
     var user = req.session.passport.user;
-    var data = {title: 'Settings',
+    var data = {title: 'Manage Users',
                 username: user.username,
                 fullName: user.fullName,
                 onHold: user.onHold,
@@ -366,7 +383,7 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
             });
             data.users = users;
         }
-        res.render('settings', data);
+        res.render('userSearch', data);
     });
 });
 
