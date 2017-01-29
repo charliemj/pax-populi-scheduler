@@ -316,6 +316,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     });
 });
 
+//Gets the FAQ page
 router.get('/faq', authentication.isAuthenticated, function (req, res) {
     var user = req.session.passport.user;
     res.render('faq', { title: 'FAQ',
@@ -327,6 +328,7 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         csrfToken: req.csrfToken()});
 });
 
+//Gets the settings page for admin (where they can turn off/on scheduler and update sign up form info)
 router.get('/settings', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     var user = req.session.passport.user;
     res.render('settings', {title: 'Settings',
@@ -344,6 +346,7 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             schedulerOn: global.schedulerJob.running});
 });
 
+//Gets the "manage users" page for admins
 router.get('/manageUsers', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     var user = req.session.passport.user;
     res.render('userSearch', {title: 'Manage Users',
@@ -361,6 +364,7 @@ router.get('/manageUsers', [authentication.isAuthenticated, authentication.isAdm
                             schedulerOn: global.schedulerJob.running});
 });
 
+//Performs the search request for admins looking up users
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     var keyword = req.body.keyword.trim();
     var user = req.session.passport.user;

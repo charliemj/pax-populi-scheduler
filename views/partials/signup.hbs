@@ -104,13 +104,14 @@
                 <div class="form-group tutor student">
                   <label class="control-label">Gender*</label>
                   <div>
-                    <select id= 'gender' name='gender' class='form-control signup-input' required>
-                      <option>Select your gender...</option>
+                    <select id='gender' name='gender' class='form-control signup-input' required>
+                      <option value="" disabled selected hidden>Select Your Gender...</option>
                       {{#each genders}}
-                        <option>{{this}}</option>
+                        <option value="{{this}}">{{this}}</option>
                       {{/each}}
                     </select>
                   </div>
+                  <div class="formErr" id="genderErrors"></div>
                 </div>
                 <div class="form-group tutor student">
                   <label class="control-label">Date of Birth*</label>
@@ -138,9 +139,9 @@
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id='studentSchool' name='studentSchool' class='form-control signup-input choices' required>
-                      <option>Select your school...</option>
+                      <option value="" disabled selected hidden>Select Your School...</option>
                       {{#each studentSchools}}
-                        <option> {{this}} </option>
+                        <option value="{{this}}"> {{this}} </option>
                       {{/each}}
                     </select>
                     </div>
@@ -149,9 +150,9 @@
                     <label class="control-label">School/Institution*</label>
                     <div>
                       <select id="tutorSchool" name='tutorSchool' class='form-control signup-input' required>
-                      <option>Select your school...</option>
+                      <option value="" disabled selected hidden>Select Your School...</option>
                       {{#each tutorSchools}}
-                        <option>{{this}}</option>
+                        <option value="{{this}}">{{this}}</option>
                       {{/each}}
                     </select>
                     </div>
@@ -167,9 +168,9 @@
                   <label class="control-label">Education Level (Current or Highest Completed)*</label>
                   <div>
                     <select name='studentEducationLevel' class='form-control signup-input' required>
-                    <option>Select Your Education Level..</option>
+                    <option value="" disabled selected hidden>Select Your Education Level...</option>
                     {{#each studentEducationLevels}}
-                      <option>{{this}}</option>
+                      <option value="{{this}}">{{this}}</option>
                     {{/each}}
                   </select>
                   </div>
@@ -178,9 +179,9 @@
                   <label class="control-label">Educational Class or Grade (Current or Highest Completed)*</label>
                   <div>
                     <select name='tutorEducationLevel' class='form-control signup-input' required>
-                    <option>Select Your Education Level..</option>
+                    <option value="" disabled selected hidden>Select Your Education Level...</option>
                     {{#each tutorEducationLevels}}
-                      <option>{{this}}</option>
+                      <option value="{{this}}">{{this}}</option>
                     {{/each}}
                   </select>
                   </div>
@@ -200,10 +201,9 @@
                     <label class="control-label">Major*</label>
                     <div>
                       <select id='major-register-box' name='major' class='form-control signup-input' required>
-                      <option>Select Your Major...</option>  
-                        <!--try-->
+                      <option value="" disabled selected hidden>Select Your Major...</option>
                         {{#each majors}}
-                          <option>{{this}}</option>
+                          <option value="{{this}}">{{this}}</option>
                         {{/each}}
                       </select>
                     </div>
@@ -251,7 +251,6 @@
                     <label class="control-label">Interests*</label>
                     <div>
                       <select multiple name='interests' class='form-control signup-input choices' required>
-                        <option>Please Select Your Interests...</option>
                         {{#each interests}}
                         <option>{{this}}</option>
                       {{/each}}
