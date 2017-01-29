@@ -25,7 +25,128 @@ $(document).ready(function(){
         var emailRegEx = new RegExp(JSON.parse($("#emailRegex").val()));
         var altEmail = $("#alternative-email-register-box").val();
         var gender = $("#gender").val();
+        var userType = $("#userType").val();
+        var studentSchool = $("#studentSchool").val();
+        var tutorSchool = $("#tutorSchool");
+        var studentEd = $("#student-education-level");
+        var tutorEd = $("#tutor-education-level");
+        var tutorMajor = $("#major-register-box");
+        var country = $("input[name=country]");
+        var region = $("input[name=region]");
+        var interests = $("input[name=interests]");
+        var inCharge = $("input[name=in-charge]");
 
+        validForm.userType = true;
+        if (!userType){
+            validForm.userType = false;
+            $('#userTypeErrors').empty();
+            $('#userTypeErrors').append('<p>Please select a user type.</p>');
+        }
+
+        else{
+            $('#userTypeErrors').empty();
+        }
+
+
+        validForm.country = true;
+        validForm.region = true;
+        validForm.interests = true;
+
+        if (regularUser){
+            if(!country){
+                validForm.country = false;
+                $('#countryErrors').empty();
+                $('#countryErrors').append('<p>Please select your country.</p>');
+            }
+            else{
+                $('#countryErrors').empty();
+            }
+            if(!region){
+                validForm.region = false;
+                $('#regionErrors').empty();
+                $('#regionErrors').append('<p>Please select your region.</p>');
+            }
+            else{
+                $('#regionErrors').empty();
+            }
+
+            if(!interests){
+                validForm.interests = false;
+                $('#interestsErrors').empty();
+                $('#interestsErrors').append('<p>Please select some of your interests.</p>');
+
+            }
+
+            else{
+                $('#interestsErrors').empty();
+            }
+        }
+
+
+        validForm.studentSchoool = true;
+        validForm.studentEd = true;
+        if (role==="student"){
+
+            if(!studentEd){
+                validForm.studentEd = false;
+                $('#studentEdErrors').empty();
+                $('#studentEdErrors').append('<p>Please select your education level.</p>');
+
+            }
+             else{
+                $('#studentEdErrors').empty();
+            }
+
+
+            if(!studentSchool){
+                validForm.studentSchool = false;
+                $('#studentSchoolErrors').empty();
+                $('#studentSchoolErrors').append('<p>Please select your school.</p>');
+
+            }
+             else{
+                $('#studentSchoolErrors').empty();
+            }
+
+        }
+
+        validForm.tutorEd = true;
+        validForm.tutorSchoool = true;
+        validForm.tutorMajor = true;
+        if (role==="tutor"){
+
+            if (!tutorMajor){
+                validForm.tutorMajor = false;
+                $('#majorErrors').empty();
+                $('#majorErrors').append('<p>Please select your education level.</p>');
+
+            }
+
+            else{
+                $('#majorErrors').empty();
+            }
+
+            if (!tutorEd){
+                validForm.tutorEd = false;
+                $('#tutorEdErrors').empty();
+                $('#tutorEdErrors').append('<p>Please select your education level.</p>');
+
+            }
+             else{
+                $('#tutorEdErrors').empty();
+            }
+
+            if(!tutorSchool){
+                validForm.tutorSchool = false;
+                $('#tutorSchoolErrors').empty();
+                $('#tutorSchoolErrors').append('<p>Please select your school.</p>');
+
+            }
+             else{
+                $('#tutorSchoolErrors').empty();
+            }
+
+        }
 
 
         validForm.username = true;
@@ -158,6 +279,67 @@ $(document).ready(function(){
             $("#nationalityErrors").append("<p>Nationality contains disallowed special characters</p>");
         }
         else{$("#nationalityErrors").empty();}
+
+
+        validForm.inCharge = true;
+        if (role === "coordinator"){
+
+            if (!inCharge){
+                validForm.inCharge = false;
+                $('#inChargeErrors').empty();
+                $('#inChargeErrors').append('<p>Please select what you are in charge of.</p>');
+            }
+
+            else{
+                $('#inChargeErrors').empty();
+            }
+
+            if (inCharge === "School"){
+
+                if (!$("input[name=schoolInCharge]")){
+                    $('#inChargeSchoolErrors').append('<p>Please select what school are in charge of.</p>');
+                }
+                else{
+                    $('#inChargeSchoolErrors').empty();
+                }
+
+
+            }
+
+            if (inCharge === "Region"){
+                if (!$("input[name=countryInCharge]")){
+                    $('#inChargeCountryErrors').append('<p>Please select what country are in charge of.</p>');
+                }
+
+                else{
+                    $('#inChargeCountryErrors').empty();
+                }
+
+                if (!$("input[name=regionInCharge]")){
+                    $('#inChargeRegionErrors').append('<p>Please select what region are in charge of.</p>');
+                }
+
+                else{
+                    $('#inChargeRegionErrors').empty();
+                }
+
+            }
+
+            if (inCharge === "Country"){
+
+                if (!$("input[name=countryInCharge]")){
+                    $('#inChargeCountryErrors').append('<p>Please select what country are in charge of.</p>');
+                }
+
+                else{
+                    $('#inChargeCountryErrors').empty();
+                }
+
+            }
+
+
+        }
+
 
 
         var allValid = true;

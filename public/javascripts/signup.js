@@ -32,34 +32,56 @@ $(document).ready(function () {
 		        break;
 		}
 
-		$("#incharge").hide();
+		$("#countryDiv").hide();
+		$("#regionDiv").hide();
+		$("#schoolDiv").hide();
 	    
 	});
 
 	$('input:radio[name="in-charge"]').change(
 	    function () {
             
-            var schoolHTML = $('#tutor-schools').clone();
-            schoolHTML.find('select').attr('name', 'schoolInCharge');
+            //var schoolHTML = $('#tutor-schools').clone(); //a coordinator might be in charge of a school for students (not just tutors)
+            
+            
+
+            //schoolHTML.find('select').attr('name', 'schoolInCharge');
 
 	        if ($(this).is(':checked')) {
 	        	var inCharge = $(this).val();
 	        	switch (inCharge) {
 	        		case 'School':
-	        			$("#incharge").hide();
-	        			$("#regionHere2").hide();
-	        			$('#in-charge-of').html(schoolHTML);
+	        			
+	        			//$("#incharge").hide();
+	        			//$("#regionHere2").hide();
+	        			
+	        			$("#countryDiv").hide();
+						$("#regionDiv").hide();
+						$("#schoolDiv").show();
+						console.log("fuck");
+	        			//$('#in-charge-of').html(schoolHTML);
 	        			break;
 	        		case 'Region':
-	     				$('#in-charge-of').html(schoolHTML).empty();
-	        			$("#incharge").show();
-	        			$("#regionHere2").show();
+	        			
+	     				//$('#in-charge-of').html(schoolHTML).empty();
+	        			//$("#incharge").show();
+	        			//$("#regionHere2").show();
+
+	        			$("#countryDiv").show();
+						$("#regionDiv").show();
+						$("#schoolDiv").hide();
 	        			break;
 	        		case 'Country':
-	        			$('#in-charge-of').html(schoolHTML).empty();
-	        			$("#incharge").show();
-	        			$("#regionHere2").hide();
-	        			$("#regionLabel").hide();
+	        		    
+	        			//$('#in-charge-of').html(schoolHTML).empty();
+	        			// $("#incharge").show();
+	        			// $("#regionHere2").hide();
+	        			// $("#regionLabel").hide();
+
+	        			$("#countryDiv").show();
+						$("#regionDiv").hide();
+						$("#schoolDiv").hide();
+
 	        			$("#regionHere2").val("--"); //no region selected
 	        			break;
 	        	}  

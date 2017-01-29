@@ -23,13 +23,14 @@
                   <label class="control-label">Register as*</label>
                   <div>
                     <select id= "userType" name='userType' class='form-control signup-input role' required>
-                    <option>Sign up as...</option>
+                    <option value="" disabled selected hidden>Sign Up As...</option>
                     {{#each userTypes}}
-                        <option>{{this}}</option>
+                        <option value="{{this}}">{{this}}</option>
                       {{/each}}
                   </select>
                   </div>
                 </div>
+                 <div class="formErr" id="userTypeErrors"></div>
               </div>
             </div>
             <br>
@@ -145,6 +146,7 @@
                       {{/each}}
                     </select>
                     </div>
+                    <div class="formErr" id="studentSchoolErrors"></div>
                   </div>
                   <div id='tutor-schools' class="form-group tutor admin coordinator">
                     <label class="control-label">School/Institution*</label>
@@ -156,6 +158,7 @@
                       {{/each}}
                     </select>
                     </div>
+                    <div class="formErr" id="tutorSchoolErrors"></div>
                   </div>
                   <div class="other form-group">
                     <label class="control-label">Please specify</label>
@@ -174,6 +177,7 @@
                     {{/each}}
                   </select>
                   </div>
+                  <div class="formErr" id="studentEdErrors"></div>
                 </div>
                 <div id='tutor-education-level' class="form-group tutor">
                   <label class="control-label">Educational Class or Grade (Current or Highest Completed)*</label>
@@ -185,6 +189,7 @@
                     {{/each}}
                   </select>
                   </div>
+                  <div class="formErr" id="tutorEdErrors"></div>
                 </div>
                 <div class="form-group tutor student">
                   <label class="control-label">Are you currently enrolled in school?*</label>
@@ -207,6 +212,7 @@
                         {{/each}}
                       </select>
                     </div>
+                    <div class="formErr" id="majorErrors"></div>
                   </div>
                   <div class="other form-group">
                     <label class="control-label">Please specify</label>
@@ -230,12 +236,14 @@
                       <!--Source: https://github.com/benkeen/country-region-selector-->
                       <select name="country" class="form-control signup-input crs-country" data-region-id="regionHere" required></select>
                     </div>
+                    <div class="formErr" id="countryErrors"></div>
                   </div>
                   <div class="form-group region">
                     <label class="control-label">Region*</label>
                     <div>
                       <select name="region" class='form-control signup-input ' id="regionHere" required></select>
                     </div>
+                    <div class="formErr" id="regionErrors"></div>
                   </div>
                 </div>
 
@@ -256,6 +264,7 @@
                       {{/each}}
                       </select>
                     </div>
+                    <div class="formErr" id="interestsErrors"></div>
                   </div>
                   <div class="other form-group">
                     <label class="control-label">If you listed "Other" for Interests, please specify</label>
@@ -277,30 +286,49 @@
                       <label><input type="radio" name="in-charge" value='Country'>Country</label>
                     </div>
                   </div>
+                  <div class="formErr" id="inChargeErrors"></div>
                 </div>
 
                 <div id='in-charge-of'></div>
 
                 <div class='form-group in-charge coordinator' id="incharge">
-                  <div class="form-group country" >
+                  <div class="form-group country" id="countryDiv">
                     <label class="control-label">Country*</label>
                     <div>
                       <!--Source: https://github.com/benkeen/country-region-selector-->
                       <select name="countryInCharge" class="form-control signup-input crs-country" data-region-id="regionHere2" required></select>
                     </div>
+                    <div class="formErr" id="inChargeCountryErrors"></div>
                   </div>
-                  <div class="form-group region">
+                  <div class="form-group region" id="regionDiv">
                     <label class="control-label" id="regionLabel">Region*</label>
                     <div>
                       <select name="regionInCharge" class='form-control signup-input ' id="regionHere2"></select>
                     </div>
+                    <div class="formErr" id="inChargeRegionErrors"></div>
+                  </div>
+                  <div id='schoolDiv' class="form-group in-charge coordinator">
+                    <label class="control-label">School/Institution*</label>
+                    <div>
+                      <select id="inChargeSchool" name='inChargeSchool' class='form-control signup-input' required>
+                      <option value="" disabled selected hidden>Select The School You're In Charge Of...</option>
+                      {{#each tutorSchools}}
+                        <option value="{{this}}">{{this}}</option>
+                      {{/each}}
+                      {{#each studentSchools}}
+                        <option value="{{this}}"> {{this}} </option>
+                      {{/each}}
+                    </select>
+                    </div>
+                    <div class="formErr" id="inChargeSchoolErrors"></div>
+                  </div>
 
                     <!-- <div class="other form-group">
                     <label class="control-label">Please specify</label>
                     <div>
                       <input id='other-school-in-charge-register-box' class='form-control signup-input' type='text' name='schoolInCharge' placeholder='school'></input>
                     </div> -->
-                  </div>
+                  
                 </div>
               </div>
             </div>
