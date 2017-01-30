@@ -317,8 +317,8 @@ class Availability:
             A boolean whether or not self and other_availability are both free
                 for at least one course slot.    
         """
-        return any(self.free_course_slots[i] and other_availability.free_course_slots[i]
-    
+        return any(self.free_course_slots[i] and other_availability.free_course_slots[i])
+
     def shared_course_start_times(self, other_availability):
         """Computes weekly times during which both Availability objects are
         free to start a course.
