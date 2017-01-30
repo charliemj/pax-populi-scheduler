@@ -58,7 +58,7 @@ $(document).ready(function () {
 	        			$("#countryDiv").hide();
 						$("#regionDiv").hide();
 						$("#schoolDiv").show();
-						console.log("fuck");
+						
 	        			//$('#in-charge-of').html(schoolHTML);
 	        			break;
 	        		case 'Region':
