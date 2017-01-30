@@ -33,19 +33,23 @@ nonconsecutive_free_slots = [True if i == 1 or (i >= 3 and i <= 5) or i == 100
 
 # Availability dicts
 always_free_dict = {str(i): [['00:00', '24:00']] for i in range(7)}
-free_first_five_dict = {'0': [['00:00', '01:15']]}
 never_free_dict = {}
 free_sat_sun_six_dict = {'0': [['00:00', '00:45']],
                               '6': [['23:15', '24:00']]}
 nonconsecutive_free_dict = {'0': [['00:15', '00:30'], ['00:45', '01:30']],
                                  '1': [['01:00', '01:15']]}
+free_first_five_dict = {'0': [['00:00', '01:15']]}
+free_first_six_dict = {'0': [['00:00', '01:30']]}
+free_first_seven_dict = {'0': [['00:00', '01:45']]}
 
 # Availability objects
 always_free_avail = Availability(always_free_slots)
-free_first_five_avail = Availability(free_first_five_slots)
 never_free_avail = Availability(never_free_slots)
 free_sat_sun_six_avail = Availability(free_sat_sun_six_slots)
 nonconsecutive_free_avail = Availability(nonconsecutive_free_slots)
+free_first_five_avail = Availability(free_first_five_slots)
+free_first_six_avail = Availability.from_dict(free_first_six_dict)
+free_first_seven_avail = Availability.from_dict(free_first_seven_dict)
 
 # Timezone constants
 utc = pytz.timezone('UTC')

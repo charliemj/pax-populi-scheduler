@@ -318,22 +318,7 @@ class Availability:
                 for at least one course slot.    
         """
         return any(self.free_course_slots[i] and other_availability.free_course_slots[i]
-                   for i in range(self.SLOTS_PER_WEEK))
-
-    def shared_course_start_indices(self, other_availability):
-        """Computes indices of self.SLOT_START_TIMES during which both
-        Availability objects are free to start a course.
-
-        Args:
-            other_availability: An Availability object.
-
-        Returns:
-            A list of indices into self.SLOT_START_TIMES for which self and
-                other_availability are both free to start a course.
-        """
-        return [i for i in range(self.SLOTS_PER_WEEK)
-                if self.free_course_slots[i] and other_availability.free_course_slots[i]]
-
+    
     def shared_course_start_times(self, other_availability):
         """Computes weekly times during which both Availability objects are
         free to start a course.

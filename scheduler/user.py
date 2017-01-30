@@ -84,21 +84,8 @@ class User:
                    self.get_earliest_start_dt_UTC(),
                    other_user.get_earliest_start_dt_UTC())
 
-    def shared_course_start_indices(self, other_user):
-        """Computes indices of Availability.SLOT_START_TIMES during which both
-        users are free to start course.
-
-        Args:
-            other_user: A User object.
-
-        Returns:
-            A list of indices into Availability.SLOT_START_TIMES for which self
-                and other_user are both free to start course.
-        """
-        return self.availability.shared_course_start_indices(other_user.availability)
-
     def shared_course_start_times(self, other_user):
-        """Computes weekly times during which both users are free to start
+        """Computes weekly times during which both users are free to start a
         course.
 
         Args:
@@ -106,7 +93,7 @@ class User:
 
         Returns:
             A list of WeeklyTime objects during which self and other_user are
-                both free to start course.
+                both free to start a course.
         """
         return self.availability.shared_course_start_times(other_user.availability)
 
