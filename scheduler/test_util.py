@@ -1,7 +1,9 @@
 import unittest
-import unit_test_constants as c
 from datetime import datetime, timedelta
+
 import pytz
+
+import unit_test_constants as c
 import util
 
 class TestUtil(unittest.TestCase):
@@ -10,12 +12,10 @@ class TestUtil(unittest.TestCase):
             util.naive_dt_is_valid(c.utc_halloween, 'UTC')
         with self.assertRaises(ValueError):
             util.naive_dt_is_valid(c.utc_halloween, 'utc')
-    
-    '''
+
     def test_naive_dt_is_valid_arizona(self):
             for i in range(366*c.MINUTES_PER_DAY):
                 self.assertTrue(util.naive_dt_is_valid(c.dt_2000_1_1 + timedelta(minutes=i), 'US/Arizona'))
-    '''
 
     def test_naive_dt_is_valid_eastern_time_daylight_saving_start(self):
         for i in range(c.MINUTES_PER_HOUR):

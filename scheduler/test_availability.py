@@ -1,63 +1,21 @@
 import unittest
-import unit_test_constants as c
-from availability import WeeklyTime, Availability
 from datetime import datetime
+
 import pytz
 
-class TestWeeklyTime(unittest.TestCase):
-    def test_str_saturday_0000(self):
-        self.assertEqual(str(c.saturday_0000), 'Saturday 00:00')
-
-    def test_str_sunday_0000(self):
-        self.assertEqual(str(c.sunday_0000), 'Sunday 00:00')
-
-    def test_sunday_0000_equals_sunday_0000(self):
-        self.assertEqual(c.sunday_0000, WeeklyTime(0, 0, 0))
-
-    def test_sunday_0000_does_not_equal_monday_0000(self):
-        self.assertNotEqual(c.sunday_0000, c.monday_0000)
-
-    def test_sunday_0000_does_not_equal_sunday_2300(self):
-        self.assertNotEqual(c.sunday_0000, c.sunday_2300)
-
-    def test_sunday_0000_does_not_equal_sunday_0059(self):
-        self.assertNotEqual(c.sunday_0000, c.sunday_0059)
-
-    def test_from_datetime_2017_01_29(self):
-        self.assertEqual(WeeklyTime.from_datetime(c.dt_2017_01_29),
-                         c.sunday_0000)
-
-    def test_from_datetime_2017_01_29_0059(self):
-        self.assertEqual(WeeklyTime.from_datetime(c.dt_2017_01_29_0059),
-                         c.sunday_0059)
-
-    def test_from_datetime_2001_09_10(self):
-        self.assertEqual(WeeklyTime.from_datetime(c.dt_2001_09_10),
-                         c.monday_0000)
-
-    def test_first_datetime_after_same_time(self):
-        self.assertEqual(c.sunday_0000.first_datetime_after(c.dt_2017_01_29),
-                         c.dt_2017_01_29)
-
-    def test_first_datetime_after_same_day_different_time(self):
-        self.assertEqual(c.sunday_0059.first_datetime_after(datetime(2017, 1, 29, 0, 58)),
-                         datetime(2017, 1, 29, 0, 59))
-        self.assertEqual(c.sunday_0059.first_datetime_after(datetime(2017, 1, 29, 1, 0)),
-                         datetime(2017, 2, 5, 0, 59))
-
-    def test_first_datetime_after_different_days(self):
-        self.assertEqual(c.saturday_0000.first_datetime_after(datetime(2017, 1, 31, 17, 44)),
-                         datetime(2017, 2, 4, 0, 0))
+import unit_test_constants as c
+from weekly_time import WeeklyTime
+from availability import Availability
 
 class TestAvailability(unittest.TestCase):
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
         self.assertEqual(Availability.MINUTES_PER_COURSE, 90)
         self.assertEqual(Availability.SLOTS_PER_WEEK, c.SLOTS_PER_WEEK)
-        self.assertEqual(Availability.SLOT_START_TIMES[0], WeeklyTime(0,0,0))
-        self.assertEqual(Availability.SLOT_START_TIMES[-1], WeeklyTime(6,23,45))
-        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0,0,0)], 0)
-        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)],
+        self.assertEqual(Availability.SLOT_START_TIMES[0], WeeklyTime(0, 0, 0))
+        self.assertEqual(Availability.SLOT_START_TIMES[-1], WeeklyTime(6, 23, 45))
+        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0, 0, 0)], 0)
+        self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6, 23, 45)],
                          c.SLOTS_PER_WEEK-1)
 
     def test_initializer_value_error(self):

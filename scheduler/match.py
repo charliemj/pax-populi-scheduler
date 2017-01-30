@@ -1,7 +1,10 @@
-import pytz
 from datetime import timedelta
-from availability import Availability, WeeklyTime
+
+import pytz
+
 import util
+from weekly_time import WeeklyTime
+from availability import Availability
 
 """
 Represents a match between a student and a tutor.

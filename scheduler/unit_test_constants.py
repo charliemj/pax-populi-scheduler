@@ -1,6 +1,9 @@
-import pytz
 from datetime import datetime, timedelta
-from availability import WeeklyTime, Availability
+
+import pytz
+
+from weekly_time import WeeklyTime
+from availability import Availability
 
 # Numerical constants
 SLOTS_PER_WEEK = 672
