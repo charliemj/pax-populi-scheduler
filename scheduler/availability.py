@@ -306,19 +306,6 @@ class Availability:
         new_wt = cls.SLOT_START_TIMES[(index+n_slots)%cls.SLOTS_PER_WEEK]
         return new_wt
 
-    def share_course_start(self, other_availability):
-        """Returns whether or not two Availability objects are both free for
-        least one course slot.
-
-        Args:
-            other_availability: An Availability object.
-
-        Returns:
-            A boolean whether or not self and other_availability are both free
-                for at least one course slot.    
-        """
-        return any(self.free_course_slots[i] and other_availability.free_course_slots[i])
-
     def shared_course_start_times(self, other_availability):
         """Computes weekly times during which both Availability objects are
         free to start a course.

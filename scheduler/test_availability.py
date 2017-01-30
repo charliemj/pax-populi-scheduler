@@ -263,26 +263,19 @@ class TestAvailability(unittest.TestCase):
                                               'Pacific/Midway')
         self.assertEqual(new_wt, WeeklyTime(3, 5, 45))
 
-    def test_share_course_start_no_overlap(self):
-        self.assertFalse(c.never_free_avail.share_course_start(c.always_free_avail))
-        self.assertFalse(c.free_sat_sun_six_avail.share_course_start(c.free_first_six_avail))
+    def test_shared_course_start_times_no_overlap(self):
+        times = c.never_free_avail.shared_course_start_times(c.always_free_avail)
+        self.assertEqual(times, [])
+        times = c.free_sat_sun_six_avail.shared_course_start_times(c.free_first_six_avail)
+        self.assertEqual(times, [])
     
-    def test_share_course_start_overlap_one(self):
-        self.assertTrue(c.always_free_avail.share_course_start(c.free_sat_sun_six_avail))
+    def test_shared_course_start_times_overlap_one(self):
+        times = c.always_free_avail.shared_course_start_times(c.free_sat_sun_six_avail)
+        self.assertEqual(times, [WeeklyTime(6, 23, 15)])
 
-    def test_share_course_start_overlap_greater_than_one(self):
-        self.assertTrue(c.always_free_avail.share_course_start(c.free_first_seven_avail))
-
-    def test_shared_course_start_indices_no_overlap(self):
-        indices = c.never_free_avail.shared_course_start_indices(c.always_free_avail)
-        self.assertEqual(indices, )
-        self.assertFalse(c.free_sat_sun_six_avail.shared_course_start_indices(c.free_first_six_avail))
-    
-    def test_shared_course_start_indices_overlap_one(self):
-        self.assertTrue(c.always_free_avail.shared_course_start_indices(c.free_sat_sun_six_avail))
-
-    def test_shared_course_start_indices_overlap_greater_than_one(self):
-        self.assertTrue(c.always_free_avail.shared_course_start_indices(c.free_first_seven_avail))
+    def test_shared_course_start_times_overlap_greater_than_one(self):
+        times = c.always_free_avail.shared_course_start_times(c.free_first_seven_avail)
+        self.assertEqual(times, [WeeklyTime(0, 0, 0), WeeklyTime(0, 0, 15)])
 
 if __name__ == '__main__':
     unittest.main()
