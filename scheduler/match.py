@@ -1,7 +1,7 @@
-import constants
 import pytz
-from availability import Availability, WeeklyTime
 from datetime import timedelta
+from availability import Availability, WeeklyTime
+import util
 
 """
 Represents a match between a student and a tutor.
@@ -38,8 +38,9 @@ class Match:
         self.weeks_per_course = weeks_per_course
         (self.student_course_schedule, self.tutor_course_schedule, self.UTC_course_schedule) = self.get_course_schedules()
 
+    '''
     @classmethod
-    def naive_dt_is_valid(cls, naive_dt, tz):
+    def naive_dt_is_valid(cls, naive_dt, tz_str):
         """Considers a naive datetime invalid if it is non-existent or
         ambiguous due to daylight saving in a given timezone.
 
@@ -51,23 +52,25 @@ class Match:
 
         Args:
             naive_dt: A naive datetime.
-            tz: A pytz timezone object.
+            tz: A string representing a pytz timezone.
 
         Returns:
-            A boolean whether or not naive_dt is valid in the timezone tz. A
-                datetime is invalid if and only if it is non-existent or
+            A boolean whether or not naive_dt is valid in the timezone tz_str.
+                A datetime is invalid if and only if it is non-existent or
                 ambiguous.
         """
         if (naive_dt.tzinfo is not None
             and naive_dt.tzinfo.utcoffset(naive_dt) is not None):
             raise ValueError('naive_dt must be a timezone-naive datetime')
-        if tz not in constants.PYTZ_TIMEZONES:
-            raise TypeError('tz must be a pytz timezone object')
+        if tz_str not in pytz.all_timezones_set:
+            raise ValueError('tz_str must be in the pytz timezone database')
+        tz = pytz.timezone(tz_str)
         try:
             aware_dt = tz.localize(naive_dt, is_dst=None)
         except pytz.InvalidTimeError:
             return False
         return True
+    '''
 
     def get_course_schedules(self):
         """
@@ -89,7 +92,7 @@ class Match:
                                                   self.student.tz_str)
         student_first_course_dt = student_wt.first_datetime_after(earliest_course_start_student)
         student_course_schedule_naive = [student_first_course_dt
-                                         + timedelta(Availability.DAYS_PER_WEEK*i)
+                                         + timedelta(days=Availability.DAYS_PER_WEEK*i)
                                          for i in range(self.weeks_per_course)]
         student_course_schedule = map(lambda x: self.student.tz.localize(x),
                                      student_course_schedule_naive) 
@@ -122,7 +125,7 @@ class Match:
             naive_student_dt = student_dt.replace(tzinfo=None)
             for i in range(Availability.MINUTES_PER_COURSE):
                 dt = naive_student_dt + timedelta(minutes=i)
-                if not self.naive_dt_is_valid(dt, self.student.tz):
+                if not util.naive_dt_is_valid(dt, self.student.tz_str):
                     return False
 
         # Check that the tutor schedule is valid
@@ -135,7 +138,7 @@ class Match:
             naive_tutor_dt = tutor_dt.replace(tzinfo=None)
             for i in range(Availability.MINUTES_PER_COURSE):
                 dt = naive_tutor_dt + timedelta(minutes=i)
-                if not self.naive_dt_is_valid(dt, self.tutor.tz):
+                if not util.naive_dt_is_valid(dt, self.tutor.tz_str):
                     return False
         return True
 

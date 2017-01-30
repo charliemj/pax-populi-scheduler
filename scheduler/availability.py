@@ -2,6 +2,7 @@ import math
 import re
 from datetime import time, datetime, timedelta
 import pytz
+import util
 
 """
 Represents an immutable (day of week, time) pair.
@@ -42,6 +43,10 @@ class WeeklyTime:
     def __eq__(self, other):
         return (self.day_of_week_index == other.day_of_week_index
                 and self.hour == other.hour and self.minute == other.minute)
+
+    def __ne__(self, other):
+        return (self.day_of_week_index != other.day_of_week_index
+                or self.hour != other.hour or self.minute != other.minute)
 
     def __hash__(self):
         return hash((self.day_of_week_index, self.hour, self.minute))
@@ -145,6 +150,9 @@ class Availability:
 
     def __eq__(self, other):
         return self.free_slots == other.free_slots
+
+    def __ne__(self, other):
+        return self.free_slots != other.free_slots
 
     @classmethod
     def time_str_to_index(cls, time_str):
@@ -294,7 +302,7 @@ class Availability:
         if aware_dt.tzinfo is None or aware_dt.tzinfo.utcoffset(aware_dt) is None:
             raise ValueError('aware_dt must be a timezone-aware datetime')
         if new_tz_str not in pytz.all_timezones_set:
-            raise ValueError('new_tz must be in the pytz timezone database')
+            raise ValueError('new_tz_str must be in the pytz timezone database')
         new_tz = pytz.timezone(new_tz_str)
         new_dt = aware_dt.astimezone(new_tz)
         forward_shift_minutes = (cls.UTC_offset_minutes(new_dt)
@@ -357,15 +365,23 @@ class Availability:
                 Must be in the pytz timezone database.
             naive_dt_in_new_tz: An naive datetime object that provides the
                 reference time in the timezone new_tz_str with which to
-                calculate UTC offsets.
+                calculate UTC offsets. Must be a valid (neither non-existent
+                nor ambiguous) in the timezone new_tz_str.
+
+        Returns:
+            An Availability object that represents self after shifting from the
+                timezone current_tz_str to the timezone new_tz_str on the
+                datetime naive_dt_in_new_tz in new_tz_str.
         """
         if current_tz_str not in pytz.all_timezones_set:
-            raise ValueError('current_tz must be in the pytz timezone database')
+            raise ValueError('current_tz_str must be in the pytz timezone database')
         if new_tz_str not in pytz.all_timezones_set:
-            raise ValueError('new_tz must be in the pytz timezone database')
+            raise ValueError('new_tz_str must be in the pytz timezone database')
         if (naive_dt_in_new_tz.tzinfo is not None
             and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
             raise ValueError('naive_dt_in_new_tz must be a naive datetime')
+        if not util.naive_dt_is_valid(naive_dt_in_new_tz, new_tz_str):
+            raise ValueError('naive_dt_in_new_tz must be a valid datetime in the timezone new_tz_str')
         current_tz = pytz.timezone(current_tz_str)
         new_tz = pytz.timezone(new_tz_str)
         dt_new_tz = new_tz.localize(naive_dt_in_new_tz)

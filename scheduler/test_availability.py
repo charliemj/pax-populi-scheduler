@@ -277,5 +277,112 @@ class TestAvailability(unittest.TestCase):
         times = c.always_free_avail.shared_course_start_times(c.free_first_seven_avail)
         self.assertEqual(times, [WeeklyTime(0, 0, 0), WeeklyTime(0, 0, 15)])
 
+    def test_forward_shifted_value_error(self):
+        with self.assertRaises(ValueError):
+            c.always_free_avail.forward_shifted(14)
+
+    def test_forward_shifted_always_free_avail(self):
+        for i in range(-c.SLOTS_PER_WEEK-1, c.SLOTS_PER_WEEK+2):
+            self.assertEqual(c.always_free_avail.forward_shifted(15*i), c.always_free_avail)
+
+    def test_forward_shifted_never_free_avail(self):
+        for i in range(-c.SLOTS_PER_WEEK-1, c.SLOTS_PER_WEEK+2):
+            self.assertEqual(c.never_free_avail.forward_shifted(15*i), c.never_free_avail)
+
+    def test_forward_shifted_free_first_six_avail_no_shift(self):
+        for i in range(-1,2):
+            shifted_avail = c.free_first_six_avail.forward_shifted(c.MINUTES_PER_WEEK*i)
+            self.assertEqual(shifted_avail, c.free_first_six_avail)
+
+    def test_forward_shifted_free_first_six_avail_forward(self):
+        correct_shifted_avail = Availability.from_dict({'0': [['00:15', '01:45']]})
+        for i in range(-1,2):
+            shifted_avail = c.free_first_six_avail.forward_shifted(c.MINUTES_PER_WEEK*i + 15)
+            self.assertEqual(shifted_avail, correct_shifted_avail)
+
+    def test_forward_shifted_free_first_six_avail_backward(self):
+        for i in range(-1,2):
+            shifted_avail = c.free_first_six_avail.forward_shifted(c.MINUTES_PER_WEEK*i - 45)
+            self.assertEqual(shifted_avail, c.free_sat_sun_six_avail)
+
+    def test_new_timezone_value_error(self):
+        with self.assertRaises(ValueError):
+            c.always_free_avail.new_timezone('utc', 'UTC', c.dt_2000_1_1)
+        with self.assertRaises(ValueError):
+            c.always_free_avail.new_timezone('UTC', 'utc', c.dt_2000_1_1)
+        with self.assertRaises(ValueError):
+            c.always_free_avail.new_timezone('UTC', 'UTC', c.utc_halloween)
+
+    def test_new_timezone_invalid_datetime(self):
+        with self.assertRaises(ValueError):
+            c.always_free_avail.new_timezone('UTC', 'US/Central', c.dt_us_nonexistent)
+        with self.assertRaises(ValueError):
+            c.always_free_avail.new_timezone('UTC', 'US/Central', c.dt_us_ambiguous)
+
+    def test_new_timezone_same_timezone(self):
+        for tz_str in pytz.all_timezones:
+            for avail in [c.always_free_avail, c.never_free_avail, c.free_first_five_avail]:
+                # Relies on the fact that datetime(2000,1,1,0,0) is valid in all timezones
+                new_avail = avail.new_timezone(tz_str, tz_str, c.dt_2000_1_1)
+                self.assertEqual(new_avail, avail)
+   
+    def test_new_timezone_midway_chatham_no_daylight_saving(self):
+        # Shift forward
+        new_avail = c.free_first_six_avail.new_timezone('Pacific/Midway', 
+                                                        'Pacific/Chatham',
+                                                        c.dt_chatham_no_ds)
+        correct_avail = Availability.from_dict({'0': [['23:45', '24:00']],
+                                                '1': [['00:00', '01:15']]})
+        self.assertEqual(new_avail, correct_avail)
+
+        # Shift backward
+        new_avail = c.free_first_six_avail.new_timezone('Pacific/Chatham',
+                                                        'Pacific/Midway', 
+                                                        c.dt_chatham_no_ds)
+        correct_avail = Availability.from_dict({'6': [['00:15', '01:45']]})
+        self.assertEqual(new_avail, correct_avail)
+
+    def test_new_timezone_midway_chatham_daylight_saving(self):
+        # Shift forward
+        new_avail = c.free_first_six_avail.new_timezone('Pacific/Midway', 
+                                                        'Pacific/Chatham',
+                                                        c.dt_chatham_ds)
+        correct_avail = Availability.from_dict({'1': [['00:45', '02:15']]})
+        self.assertEqual(new_avail, correct_avail)
+
+        # Shift backward
+        new_avail = c.free_first_six_avail.new_timezone('Pacific/Chatham',
+                                                        'Pacific/Midway', 
+                                                        c.dt_chatham_ds)
+        correct_avail = Availability.from_dict({'5': [['23:15', '24:00']],
+                                                '6': [['00:00', '00:45']]})
+        self.assertEqual(new_avail, correct_avail)
+
+    def test_new_timezone_utc_et_no_daylight_saving(self):
+        # Shift forward
+        new_avail = c.free_first_five_avail.new_timezone('US/Eastern', 'UTC',
+                                                         c.dt_us_no_ds)
+        correct_avail = Availability.from_dict({'0': [['05:00', '06:15']]})
+        self.assertEqual(new_avail, correct_avail)
+
+        # Shift backward
+        new_avail = c.free_first_five_avail.new_timezone('UTC', 'US/Eastern',
+                                                         c.dt_us_no_ds)
+        correct_avail = Availability.from_dict({'6': [['19:00', '20:15']]})
+        self.assertEqual(new_avail, correct_avail)
+    
+    def test_new_timezone_utc_et_daylight_saving(self):
+        # Shift forward
+        new_avail = c.free_first_five_avail.new_timezone('US/Eastern', 'UTC',
+                                                         c.dt_us_ds)
+        correct_avail = Availability.from_dict({'0': [['04:00', '05:15']]})
+        self.assertEqual(new_avail, correct_avail)
+
+        # Shift backward
+        new_avail = c.free_first_five_avail.new_timezone('UTC', 'US/Eastern',
+                                                         c.dt_us_ds)
+        correct_avail = Availability.from_dict({'6': [['20:00', '21:15']]})
+        self.assertEqual(new_avail, correct_avail)
+
 if __name__ == '__main__':
     unittest.main()

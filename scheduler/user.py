@@ -223,7 +223,7 @@ class User:
                 and self.gender_compatible(other_user))
 
     def new_timezone_availability(self, new_tz_str, naive_dt_in_new_tz):
-        """Converts self's availability to a new timezone.
+        """Returns a copy of self's availability in a new timezone.
 
         Args:
             new_tz_str: A string representing the new timezone to shift to.
@@ -238,7 +238,7 @@ class User:
                 naive_datetime_in_new_tz as a reference.
         """
         if new_tz_str not in pytz.all_timezones_set:
-            raise ValueError('new_tz must be in the pytz timezone database')
+            raise ValueError('new_tz_str must be in the pytz timezone database')
         if (naive_dt_in_new_tz.tzinfo is not None
             and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
             raise ValueError('naive_dt_in_new_tz must be a naive datetime')
