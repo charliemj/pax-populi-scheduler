@@ -27,7 +27,7 @@ $(document).ready(function () {
     });
 
     $('.approve-button, .reject-button, .waitlist-button').click(function () {
-        var id = $(this).attr('id').split('-').slice(-1)[0] 
+        var id = $(this).attr('id').split('-').slice(-1)[0];
         var username = $('#username-' + id).val();
         var requestToken = $('#requestToken-' + id).val();
         var csrf = $('#csrf').val();

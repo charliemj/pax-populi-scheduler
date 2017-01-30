@@ -24,15 +24,19 @@ $(document).ready(function(){
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
         }
 
-        //TODO -- this is kind of janky :(
+        //An invalid birthday is one that occured within the past year. This could be better. 
         var birthdayYear = parseInt(DOB.substring(0,4));
         var currentYear = new Date().getFullYear();
         
         if (birthdayYear >= currentYear && regularUser){
             $('#DOBErrors').empty();
             $('#DOBErrors').append('<p>Please enter a valid birthday.</p>');
+            validForm = false;
         }
-        
+
+        else if (regularUser){
+            $('#DOBErrors').empty();
+        }
 
         if(notAllowedPattern.test(firstName)){
             validForm = false;
@@ -88,7 +92,6 @@ $(document).ready(function(){
     $("#username-register-box").blur(function(){
 
         //usernames can only contain numbers and letters and the following special chars: _ - .
-
         var username = $("#username-register-box").val();
         var notAllowedPattern = new RegExp (JSON.parse($("#notAllowedRegex").val()));
         console.log(notAllowedPattern);
@@ -226,6 +229,4 @@ $(document).ready(function(){
         }
 
     });
-
-
 });

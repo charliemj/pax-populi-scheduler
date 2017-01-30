@@ -176,7 +176,7 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
                     requestToken: req.params.requestToken,
                     csrfToken: req.csrfToken()};
         res.redirect('/'); 
-    })
+    });
          
 });
 
@@ -296,7 +296,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                             majors: global.enums.majors,
                             interests: global.enums.interests};
     var data = {title: 'Pax Populi Scheduler',
-                csrfToken: req.csrfToken()}
+                csrfToken: req.csrfToken()};
     Object.assign(data, formDefaults);
     var userJSON = authentication.createUserJSON(req.body, function (err, userJSON) {
         if (err) {
@@ -310,7 +310,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
                     data.message = 'Sign up successful! We have sent you a verification email. '
                                     + 'Please check your email.';
                 }
-                res.render('home', data)
+                res.render('home', data);
             });
         }
     });
@@ -354,16 +354,16 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
                 inPool: user.inPool,
                 role: user.role,
                 csrfToken: req.csrfToken(),
-                schedulerOn: global.schedulerJob.running}
+                schedulerOn: global.schedulerJob.running};
     User.searchUsers(keyword, function (err, users) {
         if (err) {
-            data.message = 'An error has occured. Please try again.'
+            data.message = 'An error has occured. Please try again.';
         } else if (users.length === 0) {
-            data.message = 'No results.'
+            data.message = 'No results.';
         } else {
             users.forEach(function (user) {
                 user.password = undefined;
-            })
+            });
             data.users = users;
         }
         res.render('settings', data);
@@ -380,7 +380,7 @@ router.post('/editFormDefaults', [authentication.isAuthenticated, authentication
             global.enums = enums;
             res.redirect('/settings');
         }
-    })
+    });
 });
 
 module.exports = router;
