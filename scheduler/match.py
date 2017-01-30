@@ -2,7 +2,6 @@ import constants
 import pytz
 from availability import Availability, WeeklyTime
 from datetime import timedelta
-from dateutil.rrule import rrule, MINUTELY
 
 """
 Represents a match between a student and a tutor.

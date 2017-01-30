@@ -1,130 +1,64 @@
 import unittest
+import unit_test_constants as c
 from availability import WeeklyTime, Availability
 from datetime import datetime
 import pytz
 
 class TestWeeklyTime(unittest.TestCase):
-    def setUp(self):
-        self.sunday_0000 = WeeklyTime(0, 0, 0)
-        self.monday_0000 = WeeklyTime(1, 0, 0)
-        self.sunday_2300 = WeeklyTime(0, 23, 0)
-        self.sunday_0059 = WeeklyTime(0, 0, 59)
-        self.saturday_0000 = WeeklyTime(6, 0, 0)
-        self.dt_2017_01_29 = datetime(2017, 1, 29)
-        self.dt_2017_01_29_0059 = datetime(2017, 1, 29, 00, 59)
-        self.dt_2001_09_10 = datetime(2001, 9, 10)
-
     def test_str_saturday_0000(self):
-        self.assertEqual(str(self.saturday_0000), 'Saturday 00:00')
+        self.assertEqual(str(c.saturday_0000), 'Saturday 00:00')
 
     def test_str_sunday_0000(self):
-        self.assertEqual(str(self.sunday_0000), 'Sunday 00:00')
+        self.assertEqual(str(c.sunday_0000), 'Sunday 00:00')
 
     def test_sunday_0000_equals_sunday_0000(self):
-        self.assertEqual(self.sunday_0000, WeeklyTime(0, 0, 0))
+        self.assertEqual(c.sunday_0000, WeeklyTime(0, 0, 0))
 
     def test_sunday_0000_does_not_equal_monday_0000(self):
-        self.assertNotEqual(self.sunday_0000, self.monday_0000)
+        self.assertNotEqual(c.sunday_0000, c.monday_0000)
 
     def test_sunday_0000_does_not_equal_sunday_2300(self):
-        self.assertNotEqual(self.sunday_0000, self.sunday_2300)
+        self.assertNotEqual(c.sunday_0000, c.sunday_2300)
 
     def test_sunday_0000_does_not_equal_sunday_0059(self):
-        self.assertNotEqual(self.sunday_0000, self.sunday_0059)
+        self.assertNotEqual(c.sunday_0000, c.sunday_0059)
 
     def test_from_datetime_2017_01_29(self):
-        self.assertEqual(WeeklyTime.from_datetime(self.dt_2017_01_29),
-                         self.sunday_0000)
+        self.assertEqual(WeeklyTime.from_datetime(c.dt_2017_01_29),
+                         c.sunday_0000)
 
     def test_from_datetime_2017_01_29_0059(self):
-        self.assertEqual(WeeklyTime.from_datetime(self.dt_2017_01_29_0059),
-                         self.sunday_0059)
+        self.assertEqual(WeeklyTime.from_datetime(c.dt_2017_01_29_0059),
+                         c.sunday_0059)
 
     def test_from_datetime_2001_09_10(self):
-        self.assertEqual(WeeklyTime.from_datetime(self.dt_2001_09_10),
-                         self.monday_0000)
+        self.assertEqual(WeeklyTime.from_datetime(c.dt_2001_09_10),
+                         c.monday_0000)
 
     def test_first_datetime_after_same_time(self):
-        self.assertEqual(self.sunday_0000.first_datetime_after(self.dt_2017_01_29),
-                         self.dt_2017_01_29)
+        self.assertEqual(c.sunday_0000.first_datetime_after(c.dt_2017_01_29),
+                         c.dt_2017_01_29)
 
     def test_first_datetime_after_same_day_different_time(self):
-        self.assertEqual(self.sunday_0059.first_datetime_after(datetime(2017, 1, 29, 0, 58)),
+        self.assertEqual(c.sunday_0059.first_datetime_after(datetime(2017, 1, 29, 0, 58)),
                          datetime(2017, 1, 29, 0, 59))
-        self.assertEqual(self.sunday_0059.first_datetime_after(datetime(2017, 1, 29, 1, 0)),
+        self.assertEqual(c.sunday_0059.first_datetime_after(datetime(2017, 1, 29, 1, 0)),
                          datetime(2017, 2, 5, 0, 59))
 
     def test_first_datetime_after_different_days(self):
-        self.assertEqual(self.saturday_0000.first_datetime_after(datetime(2017, 1, 31, 17, 44)),
+        self.assertEqual(c.saturday_0000.first_datetime_after(datetime(2017, 1, 31, 17, 44)),
                          datetime(2017, 2, 4, 0, 0))
 
 class TestAvailability(unittest.TestCase):
-    def setUp(self):
-        self.slots_per_week = 672
-
-        # Free slot boolean arrays
-        self.always_free_slots = [True for i in range(self.slots_per_week)]
-        self.free_first_five_slots = [True if i < 5         
-                                      else False
-                                      for i in range(self.slots_per_week)]
-        self.never_free_slots = [False for i in range(self.slots_per_week)]
-        self.free_sat_sun_six_slots = [True if i < 3 or i >= self.slots_per_week - 3
-                                       else False
-                                       for i in range(self.slots_per_week)]
-        self.nonconsecutive_free_slots = [True if i == 1 or (i >= 3 and i <= 5) or i == 100
-                                          else False
-                                          for i in range(self.slots_per_week)]
-        
-        # Availability dicts
-        self.always_free_dict = {str(i): [['00:00', '24:00']] for i in range(7)}
-        self.free_first_five_dict = {'0': [['00:00', '01:15']]}
-        self.never_free_dict = {}
-        self.free_sat_sun_six_dict = {'0': [['00:00', '00:45']],
-                                      '6': [['23:15', '24:00']]}
-        self.nonconsecutive_free_dict = {'0': [['00:15', '00:30'], ['00:45', '01:30']],
-                                         '1': [['01:00', '01:15']]}
-        
-        # Availability objects
-        self.always_free_avail = Availability(self.always_free_slots)
-        self.free_first_five_avail = Availability(self.free_first_five_slots)
-        self.never_free_avail = Availability(self.never_free_slots)
-        self.free_sat_sun_six_avail = Availability(self.free_sat_sun_six_slots)
-        self.nonconsecutive_free_avail = Availability(self.nonconsecutive_free_slots)
-
-        # Timezone constants
-        utc = pytz.timezone('UTC')
-        et = pytz.timezone('US/Eastern') # UTC-04:00 during daylight saving, UTC-05:00 without daylight saving
-        kabul = pytz.timezone('Asia/Kabul') # UTC+04:30, no daylight saving
-        kathmandu = pytz.timezone('Asia/Kathmandu') # UTC+05:45, no daylight saving
-        chatham = pytz.timezone('Pacific/Chatham') # UTC+13:45 during daylight saving, UTC+12:45 without daylight saving
-
-        # Naive datetimes
-        self.dt_2000_1_1 = datetime(2000, 1, 1)
-        self.dt_2017_end = datetime(2017, 12, 31, 23, 59)
-
-        # Aware datetimes
-        self.utc_halloween = utc.localize(datetime(2001, 10, 31, 17, 3)) 
-        self.et_ds = et.localize(datetime(2017, 3, 13, 3, 0)) 
-        self.et_no_ds = et.localize(datetime(2017, 11, 5, 2, 0)) 
-        self.kabul_2000_1_1 = kabul.localize(self.dt_2000_1_1)
-        self.kathmandu_2017_end = kathmandu.localize(self.dt_2017_end)
-        self.chatham_ds = chatham.localize(datetime(2018, 1, 20))
-
-        # WeeklyTime objects
-        self.sunday_0000 = WeeklyTime(0, 0, 0)
-        self.tuesday_1715 = WeeklyTime(2, 17, 15)
-        self.thursday_0630 = WeeklyTime(4, 6, 30)
-        self.saturday_2345 = WeeklyTime(6, 23, 45)
-
     def test_constants(self):
         self.assertEqual(Availability.MINUTES_PER_SLOT, 15)
         self.assertEqual(Availability.MINUTES_PER_COURSE, 90)
-        self.assertEqual(Availability.SLOTS_PER_WEEK, self.slots_per_week)
+        self.assertEqual(Availability.SLOTS_PER_WEEK, c.SLOTS_PER_WEEK)
         self.assertEqual(Availability.SLOT_START_TIMES[0], WeeklyTime(0,0,0))
         self.assertEqual(Availability.SLOT_START_TIMES[-1], WeeklyTime(6,23,45))
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(0,0,0)], 0)
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6,23,45)],
-                         self.slots_per_week-1)
+                         c.SLOTS_PER_WEEK-1)
 
     def test_initializer_value_error(self):
         with self.assertRaises(ValueError):
@@ -135,23 +69,23 @@ class TestAvailability(unittest.TestCase):
             Availability([True for i in range(673)])
 
     def test_free_course_slots_always_free_avail(self):
-        self.assertEqual(self.always_free_avail.free_course_slots,
-                         self.always_free_slots)
+        self.assertEqual(c.always_free_avail.free_course_slots,
+                         c.always_free_slots)
 
     def test_free_course_slots_free_first_five_avail(self):
-        self.assertEqual(self.free_first_five_avail.free_course_slots,
-                         self.never_free_slots)
+        self.assertEqual(c.free_first_five_avail.free_course_slots,
+                         c.never_free_slots)
 
     def test_free_course_slots_free_sat_sun_six_avail(self):
-        free_course_slots = [True if i == self.slots_per_week - 3
+        free_course_slots = [True if i == c.SLOTS_PER_WEEK - 3
                              else False
-                             for i in range(self.slots_per_week)]
-        self.assertEqual(self.free_sat_sun_six_avail.free_course_slots,
+                             for i in range(c.SLOTS_PER_WEEK)]
+        self.assertEqual(c.free_sat_sun_six_avail.free_course_slots,
                          free_course_slots)
 
     def test_free_course_slots_nonconsecutive_free_avail(self):
-        self.assertEqual(self.nonconsecutive_free_avail.free_course_slots,
-                         self.never_free_slots)
+        self.assertEqual(c.nonconsecutive_free_avail.free_course_slots,
+                         c.never_free_slots)
 
     # test_str_always_free_avail
 
@@ -161,10 +95,10 @@ class TestAvailability(unittest.TestCase):
                      'Sunday 00:30 - Sunday 00:45\n'
                      'Sunday 00:45 - Sunday 01:00\n'
                      'Sunday 01:00 - Sunday 01:15')
-        self.assertEqual(str(self.free_first_five_avail), avail_str)
+        self.assertEqual(str(c.free_first_five_avail), avail_str)
 
     def test_str_never_free_avail(self):
-        self.assertEqual(str(self.never_free_avail), '')
+        self.assertEqual(str(c.never_free_avail), '')
 
     def test_str_free_sat_sun_six_avail(self):
         avail_str = ('Sunday 00:00 - Sunday 00:15\n'
@@ -173,7 +107,7 @@ class TestAvailability(unittest.TestCase):
                      'Saturday 23:15 - Saturday 23:30\n'
                      'Saturday 23:30 - Saturday 23:45\n'
                      'Saturday 23:45 - Sunday 00:00')
-        self.assertEqual(str(self.free_sat_sun_six_avail), avail_str)
+        self.assertEqual(str(c.free_sat_sun_six_avail), avail_str)
 
     def test_str_nonconsecutive_free_avail(self):
         avail_str = ('Sunday 00:15 - Sunday 00:30\n'
@@ -181,7 +115,7 @@ class TestAvailability(unittest.TestCase):
                      'Sunday 01:00 - Sunday 01:15\n'
                      'Sunday 01:15 - Sunday 01:30\n'
                      'Monday 01:00 - Monday 01:15')
-        self.assertEqual(str(self.nonconsecutive_free_avail), avail_str)
+        self.assertEqual(str(c.nonconsecutive_free_avail), avail_str)
 
     def test_time_str_to_index_0000(self):
         self.assertEqual(Availability.time_str_to_index('00:00'), 0)
@@ -225,23 +159,23 @@ class TestAvailability(unittest.TestCase):
             Availability.parse_dict({'0': ['00:14', '01:00']})
 
     def test_parse_dict_always_free_dict(self):
-        self.assertEqual(Availability.parse_dict(self.always_free_dict),
-                         set(range(self.slots_per_week)))
+        self.assertEqual(Availability.parse_dict(c.always_free_dict),
+                         set(range(c.SLOTS_PER_WEEK)))
 
     def test_parse_dict_free_first_five_dict(self):
-        self.assertEqual(Availability.parse_dict(self.free_first_five_dict),
+        self.assertEqual(Availability.parse_dict(c.free_first_five_dict),
                          set(range(5)))    
 
     def test_parse_dict_never_free_dict(self):
-        self.assertEqual(Availability.parse_dict(self.never_free_dict),
+        self.assertEqual(Availability.parse_dict(c.never_free_dict),
                          set([]))
 
     def test_parse_dict_free_sat_sun_six_dict(self):
-        self.assertEqual(Availability.parse_dict(self.free_sat_sun_six_dict),
+        self.assertEqual(Availability.parse_dict(c.free_sat_sun_six_dict),
                          {0, 1, 2, 669, 670, 671})
 
     def test_parse_dict_nonconsecutive_free_dict(self):
-        self.assertEqual(Availability.parse_dict(self.nonconsecutive_free_dict),
+        self.assertEqual(Availability.parse_dict(c.nonconsecutive_free_dict),
                          {1, 3, 4, 5, 100})
 
     def test_from_dict_value_error(self):
@@ -257,75 +191,75 @@ class TestAvailability(unittest.TestCase):
             Availability.from_dict({'0': ['00:14', '01:00']})
 
     def test_from_dict_always_free_dict(self):
-        self.assertEqual(Availability.from_dict(self.always_free_dict),
-                         self.always_free_avail)
+        self.assertEqual(Availability.from_dict(c.always_free_dict),
+                         c.always_free_avail)
 
     def test_from_dict_free_first_five_dict(self):
-        self.assertEqual(Availability.from_dict(self.free_first_five_dict),
-                         self.free_first_five_avail)    
+        self.assertEqual(Availability.from_dict(c.free_first_five_dict),
+                         c.free_first_five_avail)    
 
     def test_from_dict_never_free_dict(self):
-        self.assertEqual(Availability.from_dict(self.never_free_dict),
-                         self.never_free_avail)
+        self.assertEqual(Availability.from_dict(c.never_free_dict),
+                         c.never_free_avail)
 
     def test_from_dict_free_sat_sun_six_dict(self):
-        self.assertEqual(Availability.from_dict(self.free_sat_sun_six_dict),
-                         self.free_sat_sun_six_avail)
+        self.assertEqual(Availability.from_dict(c.free_sat_sun_six_dict),
+                         c.free_sat_sun_six_avail)
 
     def test_from_dict_nonconsecutive_free_dict(self):
-        self.assertEqual(Availability.from_dict(self.nonconsecutive_free_dict),
-                         self.nonconsecutive_free_avail)
+        self.assertEqual(Availability.from_dict(c.nonconsecutive_free_dict),
+                         c.nonconsecutive_free_avail)
 
     def test_UTC_offset_minutes_value_error(self):
         with self.assertRaises(ValueError):
-            Availability.UTC_offset_minutes(self.dt_2000_1_1)
+            Availability.UTC_offset_minutes(c.dt_2000_1_1)
         with self.assertRaises(ValueError):
-            Availability.UTC_offset_minutes(self.dt_2017_end)
+            Availability.UTC_offset_minutes(c.dt_2017_end)
     
     def test_UTC_offset_minutes_neg_offset(self):
-        self.assertEqual(Availability.UTC_offset_minutes(self.et_ds), -240)
-        self.assertEqual(Availability.UTC_offset_minutes(self.et_no_ds), -300)
+        self.assertEqual(Availability.UTC_offset_minutes(c.et_ds), -240)
+        self.assertEqual(Availability.UTC_offset_minutes(c.et_no_ds), -300)
 
     def test_UTC_offset_minutes_no_offset(self):
-        self.assertEqual(Availability.UTC_offset_minutes(self.utc_halloween), 0)
+        self.assertEqual(Availability.UTC_offset_minutes(c.utc_halloween), 0)
     
     def test_UTC_offset_minutes_pos_offset(self):
-        self.assertEqual(Availability.UTC_offset_minutes(self.kabul_2000_1_1), 270)
-        self.assertEqual(Availability.UTC_offset_minutes(self.kathmandu_2017_end), 345)
+        self.assertEqual(Availability.UTC_offset_minutes(c.kabul_2000_1_1), 270)
+        self.assertEqual(Availability.UTC_offset_minutes(c.kathmandu_2017_end), 345)
 
     def test_new_timezone_wt_value_error(self):
         with self.assertRaises(ValueError):
-            Availability.new_timezone_wt(WeeklyTime(0,0,14), self.utc_halloween, 'UTC')
+            Availability.new_timezone_wt(WeeklyTime(0,0,14), c.utc_halloween, 'UTC')
         with self.assertRaises(ValueError):
-            Availability.new_timezone_wt(WeeklyTime(0,0,0), self.dt_2000_1_1, 'UTC')
+            Availability.new_timezone_wt(WeeklyTime(0,0,0), c.dt_2000_1_1, 'UTC')
         with self.assertRaises(ValueError):
-            Availability.new_timezone_wt(WeeklyTime(0,0,0), self.utc_halloween, 'utc')
+            Availability.new_timezone_wt(WeeklyTime(0,0,0), c.utc_halloween, 'utc')
 
     def test_new_timezone_wt_same_tz(self):
-        new_wt = Availability.new_timezone_wt(self.sunday_0000, self.utc_halloween, 'UTC')
-        self.assertEqual(new_wt, self.sunday_0000)
+        new_wt = Availability.new_timezone_wt(c.sunday_0000, c.utc_halloween, 'UTC')
+        self.assertEqual(new_wt, c.sunday_0000)
 
     def test_new_timezone_wt_shift_forward(self):
-        new_wt = Availability.new_timezone_wt(self.sunday_0000, self.et_ds,
+        new_wt = Availability.new_timezone_wt(c.sunday_0000, c.et_ds,
                                               'UTC')
         self.assertEqual(new_wt, WeeklyTime(0, 4, 0))
-        new_wt = Availability.new_timezone_wt(self.tuesday_1715, self.et_no_ds,
+        new_wt = Availability.new_timezone_wt(c.tuesday_1715, c.et_no_ds,
                                               'Asia/Tokyo')
         self.assertEqual(new_wt, WeeklyTime(3, 7, 15))
-        new_wt = Availability.new_timezone_wt(self.saturday_2345,
-                                              self.kathmandu_2017_end,
+        new_wt = Availability.new_timezone_wt(c.saturday_2345,
+                                              c.kathmandu_2017_end,
                                               'Australia/West')
         self.assertEqual(new_wt, WeeklyTime(0, 2, 0))
 
     def test_new_timezone_wt_shift_backward(self):
-        new_wt = Availability.new_timezone_wt(self.sunday_0000, self.et_ds,
+        new_wt = Availability.new_timezone_wt(c.sunday_0000, c.et_ds,
                                               'US/Arizona')
         self.assertEqual(new_wt, WeeklyTime(6, 21, 0))
-        new_wt = Availability.new_timezone_wt(self.tuesday_1715, self.kabul_2000_1_1,
+        new_wt = Availability.new_timezone_wt(c.tuesday_1715, c.kabul_2000_1_1,
                                               'US/Samoa')
         self.assertEqual(new_wt, WeeklyTime(2, 1, 45))
-        new_wt = Availability.new_timezone_wt(self.thursday_0630,
-                                              self.chatham_ds,
+        new_wt = Availability.new_timezone_wt(c.thursday_0630,
+                                              c.chatham_ds,
                                               'Pacific/Midway')
         self.assertEqual(new_wt, WeeklyTime(3, 5, 45))
         
