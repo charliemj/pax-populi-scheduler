@@ -42,7 +42,8 @@ class User:
             raise ValueError('gender_preference must be "MALE", "FEMALE", or "NONE"')
         if tz_str not in pytz.all_timezones_set:
             raise ValueError('tz_str must be in the pytz timezone database')
-        if not isinstance(earliest_start_date, date):
+        if (not isinstance(earliest_start_date, date)
+            or isinstance(earliest_start_date, datetime)):
             raise TypeError('earliest_start_date must be a datetime.date object')
         self.user_id = user_id
         self.reg_id = reg_id
@@ -140,6 +141,7 @@ class User:
         other_satisfied = (other_user.gender_preference == 'NONE'
                           or other_user.gender_preference == self.gender)
         return self_satisfied and other_satisfied
+
 
     def shared_course_slots_UTC(self, other_user):
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(other_user)

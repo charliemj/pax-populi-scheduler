@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+import inspect
 
 import pytz
 
@@ -96,7 +97,35 @@ genders = ['MALE', 'FEMALE']
 gender_preferences = ['MALE', 'FEMALE', 'NONE']
 
 # User objects
-student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', always_free_avail,
+student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', free_first_six_avail,
                'UTC', ['Math'], date(2018, 1, 1))
 tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', always_free_avail,
              'UTC', ['Math'], date(2018, 1, 1))
+
+
+# User __init__ arguments
+user_args = set(inspect.getargspec(User.__init__)[0]) - set(['self'])
+
+def new_user(user, arg_to_value):
+    """Returns a copy of a User object after modifying some of its __init__
+    arguments.
+
+    Args:
+        user: A User object.
+        arg_to_value: A dict mapping an __init__ argument as a string to its
+            new value. The keys of this dict must be a subset of user_args.
+    
+    Returns:
+        A User object that is equal to user after initializing with
+            new args supplied in arg_to_value and with the same arguments as
+            before for the other arguments.
+    """
+    if not set(arg_to_value.keys()).issubset(user_args):
+        raise ValueError('arg_to_value keys must be a subset of user_args')
+    user_input_dict = {}
+    for arg in user_args:
+        if arg in arg_to_value:
+            user_input_dict[arg] = arg_to_value[arg]
+        else:
+            user_input_dict[arg] = user.__dict__[arg]
+    return User(**user_input_dict)
