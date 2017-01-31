@@ -41,6 +41,8 @@ $(document).ready(function () {
 	    	var regionHTML = $('<div class="form-group region"><label class="control-label">Region*</label><div><select name="regionInCharge" class="form-control signup-input" id="regionHere2"></select></div></div>');
 	    	regionHTML = countryHTML.add(regionHTML);
             var schoolHTML = $('#tutor-schools').clone();
+            console.log($('#student-schools').html());
+            $('#student-schools option').slice(1).slice(0, -1).clone().appendTo(schoolHTML.find('select'))
             schoolHTML.find('select').attr('name', 'schoolInCharge');
 
 	        if ($(this).is(':checked')) {
