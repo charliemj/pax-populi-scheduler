@@ -40,7 +40,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                 } else {
                     data.schedules = schedules;
                     console.log('found schedules', schedules.length);
-                    if (utils.isCoordinator(user.role)) {
+                    if (utils.isCoordinator(user.role) || utils.isRegularUser(user.role)) {
                         res.render('dashboard', data);
                     } else if (utils.isAdministrator(user.role)) {
                         User.getPendingUsers(function (err, users) {

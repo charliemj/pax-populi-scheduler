@@ -24,11 +24,11 @@ var ScheduleSchema = mongoose.Schema({
     tutorApproved: {type: Boolean, required: true, default: false},
     studentApproved: {type: Boolean, required: true, default: false},
     course: {type: String},
-    studentClassSchedule: {type: [Date]},
-    tutorClassSchedule: {type: [Date]},
-    UTCClassSchedule: {type: [Date]}, // for Admins
-    firstDateTimeUTC: {type: Date}, 
-    lastDateTimeUTC: {type: Date}, //so we know when to delete the schedule from the DB
+    studentClassSchedule: {type: [[String]]},
+    tutorClassSchedule: {type: [[String]]},
+    UTCClassSchedule: {type: [[String]]}, // for Admins
+    firstDateTimeUTC: {type: [[String]]}, 
+    lastDateTimeUTC: {type: [[String]]}, //so we know when to delete the schedule from the DB
     studentCoord :{type: ObjectId, ref:"User"},
     tutorCoord :{type: ObjectId, ref:"User"}   
 });
@@ -41,7 +41,7 @@ ScheduleSchema.path("course").validate(function(course) {
 ScheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
         // get personal schedules
-        Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]}, function (err, schedules) {
+        Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]} ).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
             if (err) {
                 callback({success: false, message: err.message});
             } else {
@@ -54,7 +54,7 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
             if (err) {
                 callback({success: false, message: err.message});
             } else {
-                Schedule.find( {$or: [{studentCoord: user._id}, {tutorCoord: user._id}]}, function (err, schedules) {
+                Schedule.find( {$or: [{studentCoord: user._id}, {tutorCoord: user._id}]}).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
                     if (err) {
                         callback({success: false, message: err.message});
                     } else {
@@ -65,7 +65,7 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
         })
     } else {
         // must be an admin
-        Schedule.find({}, function (err, schedules) {
+        Schedule.find({}).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
             if (err) {
                 callback({success: false, message: err.message});
             } else {

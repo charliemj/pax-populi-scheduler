@@ -1,3 +1,49 @@
 {{#each schedules}}
-{{possibleCourses}}
+<div class='col-xs-12 col-ms-6 col-sm-6 col-md-6 col-lg-8 schedule-container tile-container' id='schedule-container-{{_id}}'>
+  <div class='tile schedule-tile' name="schedule-{{_id}}" data-id='{{_id}}'>
+  	<div class='tile-icon' style='float: left'><img class='icon' src="/images/schedule.gif" style="margin-left: 10px;"></img></div>
+  	<div class='schedule-header tile-header'>
+    	<table class="table table-hover" id='{{_id}}-profile'>
+		  <tbody>
+		    <tr><th>Possible Courses</th><td>{{possibleCourses}}</td>
+		    <tr><th>Student</th><td>{{#isStudent ../role}}You{{else}}{{student.firstName}} {{student.lastName}}{{/isStudent}}</td>
+		    <tr><th>Tutor</th><td>{{#isTutor ../role}}You{{else}}{{tutor.firstName}} {{tutor.lastName}}{{/isTutor}}</td>
+		    <tr><th>Student Coordinator</th><td>
+		    	{{#if studentCoord}}
+		    		{{#isCoordinator ../role}}
+		    			{{#equalStrings ../username studentCoord.username}}You{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}{{/equalStrings}}
+		    		{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}
+		    		{{/isCoordinator}}
+		    	{{else}}
+		    		N/A
+		    	{{/if}}
+		    </td>
+		    <tr><th>Tutor Coordinator</th><td>
+		    	{{#if tutorCoord}}
+		    		{{#isCoordinator ../role}}
+		    			{{#equalStrings ../username tutorCoord.username}}You{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}{{/equalStrings}}
+		    		{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}
+		    		{{/isCoordinator}}</td>
+		    	{{else}}
+		    		N/A
+		    	{{/if}}
+		    <tr><th>Options</th><td>
+		    	{{#eachFormatedSchedule studentPossibleSchedules tutorPossibleSchedules}}
+  					<div class="radio">
+  						<label><input type="radio" name="schedule">Student Schedule: <ul class='no-bullets'>{{#each studentSchedule}}<li>{{this}}</li>{{/each}}</ul>
+  						Tutor Schedule: <ul class='no-bullets'>{{#each tutorSchedule}}<li>{{this}}</li>{{/each}}</ul></label>
+					</div>
+				{{/eachFormatedSchedule}}
+		    </td>
+		  </tbody>
+		  </table>
+    </div>
+    </div>
+    <div>
+		<input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
+		<input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+		<a href='/schedules/accept/{{../username}}/{{_id}}'><button id='accept-button-{{_id}}' class='btn btn-info btn-hg accept-button'>Accept</button></a>
+		<a href='/schedules/reject/{{../username}}/{{_id}}'><button id='reject-button-{{_id}}' class='btn btn-danger btn-hg reject-button'>Reject</button></a>
+    </div>
+</div>
 {{/each}}

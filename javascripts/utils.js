@@ -71,7 +71,7 @@ var Utils = function() {
     that.formatDates = function (schedules) {
         return schedules.map(function (schedule) {
             return schedule.map(function (dateString) {
-                        return new Date(dateString);
+                        return dateString.split(' ');
             });
         });
     }

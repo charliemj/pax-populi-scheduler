@@ -38,8 +38,14 @@ app.engine('.hbs', exphbs({extname: '.hbs',
                                      isRegularUser: hbsHelpers.isRegularUser,
                                       isAdministrator: hbsHelpers.isAdministrator,
                                       isCoordinator: hbsHelpers.isCoordinator,
+                                      isStudent: hbsHelpers.isStudent,
+                                      isTutor: hbsHelpers.isTutor,
                                       ifNot: hbsHelpers.ifNot,
-                                      formatDate: hbsHelpers.formatDate}
+                                      formatDate: hbsHelpers.formatDate,
+                                      equalStrings: hbsHelpers.equalStrings,
+                                      summarizeSchedule: hbsHelpers.summarizeSchedule,
+                                      formatSchedules: hbsHelpers.formatSchedules,
+                                      eachFormatedSchedule: hbsHelpers.eachFormatedSchedule}
                           }));
 app.set('view engine', 'hbs');
 

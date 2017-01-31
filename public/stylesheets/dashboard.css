@@ -1,3 +1,7 @@
 .edit-button {
 	width: 60px;
 }
+
+.no-bullets {
+    list-style-type: none;
+}
