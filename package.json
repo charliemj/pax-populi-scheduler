@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "scheduler": "virtualenv-scheduler"
+    "scheduler": "virtualenv-scheduler",
+    "test": "mocha"
   },
   "dependencies": {
     "async": "^2.1.4",

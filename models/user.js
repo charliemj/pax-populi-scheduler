@@ -191,7 +191,7 @@ UserSchema.methods.archive = function (callback) {
 };
 
 /**
-* Puts the user to the poll
+* Puts the user to the pool
 * @param {Function} callback - the function that gets called after
 */
 UserSchema.methods.joinPool = function (callback) {
@@ -270,7 +270,7 @@ UserSchema.statics.archiveUser = function (username, callback) {
             user.archive(callback);
         }
     });
-}
+};
 
 /*
 * Checks if the provided username and password correspond to any user
@@ -514,7 +514,7 @@ UserSchema.statics.getUser = function(username, callback){
         else {
             callback(null, user);
         }
-    });//end findOne
+    });
 };
 
 UserSchema.statics.searchUsers = function(name, callback) {
@@ -529,7 +529,7 @@ UserSchema.statics.searchUsers = function(name, callback) {
         else {
             callback(null, users);
         }
-    });//end findOne
+    });
 };
 
 UserSchema.statics.getPendingUsers = function (callback) {
@@ -543,7 +543,7 @@ UserSchema.statics.getPendingUsers = function (callback) {
             callback(null, users);
         }
     });
-}
+};
 
 
 UserSchema.statics.getAllUsers = function(){

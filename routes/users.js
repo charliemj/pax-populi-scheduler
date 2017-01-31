@@ -27,7 +27,7 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                 onHold: user.onHold,
                 inPool: user.inPool,
                 role: user.role,                                        
-                fullName: user.fullName}
+                fullName: user.fullName};
 
     Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
         if (err) {
@@ -90,6 +90,7 @@ router.get('/:username/profile', authentication.isAuthenticated, function (req, 
                                 educationLevel: user.educationLevel, 
                                 major: user.major,
                                 enrolled: user.enrolled ? 'Yes': 'No',
+                                timezone: user.timezone,
                                 country: user.country,
                                 region: user.region,
                                 nationality: user.nationality,

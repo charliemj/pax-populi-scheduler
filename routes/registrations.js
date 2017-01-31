@@ -8,8 +8,8 @@ var enums = require('../javascripts/enums.js');
 var authentication = require('../javascripts/authentication.js');
 
 
-//GET request for displaying the availablities form
-
+//GET request for displaying the registration form
+//Users can have at most one active (unmatched) registration at once
 router.get('/', authentication.isAuthenticated, function (req, res, next) {
     var user = req.session.passport.user;
 
@@ -19,13 +19,13 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
         console.log("error getting registration " + err);
         res.send({ success: false, message: err.message });
       }
-
       else {
         if (registration.length > 0){
           res.render('registrationError', {title: 'Register',
                                 csrfToken: req.csrfToken(),
                                 username: user.username,
                                 role: user.role,
+                                user: user,
                                 fullName: user.fullName,
                                 onHold: user.onHold,
                                 inPool: user.inPool,
@@ -35,6 +35,7 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
         else {
           res.render('registration', {title: 'Register',
                                 csrfToken: req.csrfToken(),
+                                user: user,
                                 username: user.username,
                                 role: user.role,
                                 fullName: user.fullName,
@@ -49,10 +50,9 @@ router.get('/', authentication.isAuthenticated, function (req, res, next) {
 });
 
 
-//POST request for submitting the availablities from submit button
-
+//POST request for submitting the registration form
 router.post('/:username', authentication.isAuthenticated, function (req, res, next) {
-    console.log('in submitting')
+    console.log('submitting registration');
     var availability = req.body.availability;
     var user = req.session.passport.user; 
     var genderPref = req.body.genderPref;
@@ -60,13 +60,13 @@ router.post('/:username', authentication.isAuthenticated, function (req, res, ne
     var username = user.username;
     var earliestStartTime = req.body.earliestStartTime;
 
-    Registration.createRegistration(username, genderPref, availability, courses, earliestStartTime,
+    Registration.createRegistration(user, genderPref, availability, courses, earliestStartTime,
         function (err,registration){
-            console.log(err);
             if (err){
                 console.log("error submitting registration " + err);
                 res.send({ success: false, message: err.message });
             } else {
+                console.log("submission worked");
                 res.status(200).send( {success: true,
                                         message:"Registration has been submitted!", 
                                         redirect: "/"});
@@ -75,8 +75,7 @@ router.post('/:username', authentication.isAuthenticated, function (req, res, ne
 });
 
 
-// GET request for seeing a submitted registration
-
+// GET request for seeing a particular submitted registration
 router.get('/update/:username/:registration_id', authentication.isAuthenticated, function (req, res, next){
   var regId = req.params.registration_id;
   var user = req.session.passport.user;
@@ -89,6 +88,7 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
             res.send({ success: false, message: err.message });
         } else {
             res.render('updateRegistration', {title: 'Update Registration',
+                                                user: user,
                                                 csrfToken: req.csrfToken(),
                                                 courses: enums.courses(),
                                                 username: user.username,
@@ -100,8 +100,7 @@ router.get('/update/:username/:registration_id', authentication.isAuthenticated,
   });
 });
 
-//PUT request for updating availablities
-
+//PUT request for updating registration forms
 router.put('/update/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
   
   var availability = req.body.availability;
@@ -125,25 +124,23 @@ router.put('/update/:username/:registration_id', authentication.isAuthenticated,
 });
 
 
-//DELETE request for deleting registration objects
+//DELETE request for deleting a registration
 router.delete('/delete/:username/:registration_id', authentication.isAuthenticated, function(req, res, next){
   var regId = req.params.registration_id;
+  var user = req.session.passport.user; 
 
-  Registration.deleteRegistration(regId, function(err){
+  Registration.deleteRegistration(regId, user, function (err){
 
     if (err){
-      console.log("breaks in route if");
       console.log("error deleting registration " + err);
       res.send({ success: false, message: err.message });
     }
     else {
-      console.log("breaks in route else");
       res.status(200).send({success: true,
                               message:"Registration has been deleted!", 
                               redirect: "/"});
     }
   });
-
 });
 
 

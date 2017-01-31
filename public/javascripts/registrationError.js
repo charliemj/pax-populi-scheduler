@@ -1,3 +1,3 @@
 $(document).ready(function () {
-    $('#navbar-faq').addClass('active');
+   $('#navbar-register').addClass('active');
 });
