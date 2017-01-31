@@ -21,14 +21,14 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 			var numMatches = matches.length;
 			var message = 'Successfully generated ' +  numMatches + ' new ';
 			message += numMatches > 1 ? 'matches!': 'match!';
-			res.send({success: true, message: message});
+			res.send({success: true, message: message, redirect: '/settings'});
 		}
 	});
 });
 
 router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	global.schedulerJob.running = !global.schedulerJob.running;
-	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off'});
+	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off', redirect: '/settings'});
 });
 
 router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
@@ -41,19 +41,20 @@ router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, au
 			console.log(err);
 			res.send({success: false, message :err.message});
 		} else {
-			res.send({success: true, message: 'Successfully approved the schedule!'});
+			res.send({success: true, message: 'Successfully approved the schedule!', redirect: '/'});
 		}
 	});
 });
 
 router.put('/reject/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	console.log('in reject');
-	Schedule.rejectSchedule(id, function (err, updatedSchedule) {
+	var scheduleId = req.body.scheduleId;
+	Schedule.rejectSchedule(scheduleId, function (err, updatedSchedule) {
 		if (err) {
 			res.send({success: false, message :err.message});
 		} else {
 			console.log('removeSchedule', updatedSchedule);
-			res.send({success: true, message: 'Successfully rejected the schedule'});
+			res.send({success: true, message: 'Successfully rejected the schedule', redirect: '/'});
 		}
 	});
 });

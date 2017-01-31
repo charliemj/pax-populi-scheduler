@@ -198,11 +198,11 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
             schedule.lastDateTimeUTC = schedule.UTCClassSchedule.slice(-1)[0];
             schedule.save(function (err, updatedSchedule) {
                 // inform the student and tutor
-                email.sendScheduleEmails(schedule.student.email, function (err) {
+                email.sendScheduleEmails(schedule.student, function (err) {
                     if (err) {
                         callback({sucess: false, message: err.message});
                     } else {
-                        email.sendScheduleEmails(schedule.tutor.email, function (err) {
+                        email.sendScheduleEmails(schedule.tutor, function (err) {
                             if (err) {
                                 callback({sucess: false, message: err.message});
                             } else {

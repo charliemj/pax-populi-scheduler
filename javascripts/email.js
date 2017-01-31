@@ -196,7 +196,7 @@ var Email = function() {
     */
     that.notifyAdmins = function (numMatches, callback) {
         var subject = 'New matches generated in Pax Populi Scheduler';
-        var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You may find the details of these new matches under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start dates of the class for each match. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, config.adminFirstName(), numMatches, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You may find the details of these new matches under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, config.adminFirstName(), numMatches, that.signature);
         sendEmail(config.adminEmailAddress(), subject, emailContent, callback);
     };
 

@@ -162,7 +162,7 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
 
 RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback) {
     registrationIds.forEach(function (regId) {
-        Registration.findOneUpdate({_id: regId}, {isMatched: false}, function(err, updateRegistration) {
+        Registration.findOneAndUpdate({_id: regId}, {isMatched: false}, function(err, updateRegistration) {
             if (err) {
                 console.log(err);
             } else {

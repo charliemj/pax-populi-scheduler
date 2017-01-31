@@ -226,3 +226,8 @@ input {
   padding-left: 10px;
   padding-bottom: 15px;
 }
+
+.user-container {
+  min-height: 160px;
+  width: 30%;
+}

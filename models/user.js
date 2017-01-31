@@ -517,11 +517,11 @@ UserSchema.statics.getUser = function(username, callback){
     });//end findOne
 };
 
-UserSchema.statics.searchUsers = function(name, callback){
-    this.find({$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
+UserSchema.statics.searchUsers = function(name, callback) {
+    var query = name.length === 0 ? {} : {$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
                         {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}, 
-                    {$and: [{verified: true, approved: true}]}]},
-        function (err, users){
+                    {$and: [{verified: true, approved: true}]}]};
+    this.find(query, function (err, users){
         if (err) {
             console.log("Invalid usernmae");
             callback(new Error("Invalid username."));
