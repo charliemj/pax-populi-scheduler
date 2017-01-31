@@ -185,7 +185,7 @@ ScheduleSchema.statics.automateMatch = function () {
 
 ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, course, callback) {
     console.log('in approveSchedule')
-    Schedule.findOne({ _id: scheduleId}, function (err, schedule) {
+    Schedule.findOne({ _id: scheduleId}).populate('student').populate('tutor').exec(function (err, schedule) {
         if (err) {
             callback({success: false, message: err.message});
         } else {
@@ -197,11 +197,22 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
             schedule.firstDateTimeUTC = schedule.UTCClassSchedule[0];
             schedule.lastDateTimeUTC = schedule.UTCClassSchedule.slice(-1)[0];
             schedule.save(function (err, updatedSchedule) {
-                console.log('updatedSchedule', updatedSchedule);
-                callback(null, updatedSchedule);
-                // inform student/tutor
-            })
-
+                // inform the student and tutor
+                email.sendScheduleEmails(schedule.student.email, function (err) {
+                    if (err) {
+                        callback({sucess: false, message: err.message});
+                    } else {
+                        email.sendScheduleEmails(schedule.tutor.email, function (err) {
+                            if (err) {
+                                callback({sucess: false, message: err.message});
+                            } else {
+                                callback(null, updatedSchedule);
+                            }
+                        });
+                    }
+                    
+                });
+            });
         }
     });
 }

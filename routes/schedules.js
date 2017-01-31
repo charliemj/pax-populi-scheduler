@@ -32,7 +32,6 @@ router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAd
 });
 
 router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
-	console.log('in approve', req.body);
 	var scheduleIndex = parseInt(req.body.scheduleIndex);
 	var course = req.body.course.trim();
 	var scheduleId = req.body.scheduleId;
@@ -42,7 +41,6 @@ router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, au
 			console.log(err);
 			res.send({success: false, message :err.message});
 		} else {
-			console.log('updatedSchedule', updatedSchedule);
 			res.send({success: true, message: 'Successfully approved the schedule!'});
 		}
 	});
@@ -60,4 +58,4 @@ router.put('/reject/:username/:scheduleId', [authentication.isAuthenticated, aut
 	});
 });
 
-module.exports = router; //keep at the bottom of the file
+module.exports = router;

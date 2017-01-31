@@ -151,8 +151,7 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
                     if (err) {
                         console.log(err);
                     } else {
-                        // inform the student and tutor
-                        email.sendScheduleEmails(registration.user, function () {});
+                        console.log('Marked as matched');
                     }
                 })
             }
