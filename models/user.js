@@ -7,7 +7,6 @@ var enums = require("../javascripts/enums.js");
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
 var regexs = require("../javascripts/regexs.js");
-var mongooseToCsv = require("mongoose-to-csv");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true},
@@ -46,35 +45,6 @@ var UserSchema = mongoose.Schema({
 
 });
 
-UserSchema.plugin(mongooseToCsv, 
-{
-  headers: 'FirstName LastName UserName Email AltEmail Phone Gender DOB Country Region TimeZone Major educationLevel School Nationality Role SkypeID Interests InChargeOfRegion InChargeOfCountry InChargeOfSchool',
-  constraints: {
-    'Username': 'username',
-    'Email': 'email',
-    'DOB': 'dateofBirth',
-    'FirstName': 'firstName',
-    'LastName': 'lastName',
-    'AltEmail': 'alternativeEmail',
-    'Phone': 'phoneNumber',
-    'SkypeID':'skypeId',
-    'TimeZone': 'timezone',
-    'Country': 'country',
-    'Region': 'region',
-    'Nationality': 'nationality',
-    'Role': 'role',
-    'Gender': 'gender',
-    'School': 'school',
-    'Major': 'major',
-    'Interests': 'interests',
-    'InChargeOfSchool': 'schoolInCharge',
-    'InChargeOfRegion': 'regionInCharge',
-    'InChargeOfCountry': 'countryInCharge',
-    'educationLevel': 'educationLevel'
-
-}
-
-  });
 
 
 UserSchema.path("role").validate(function(role) {
