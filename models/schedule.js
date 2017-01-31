@@ -240,7 +240,7 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
                             } else {
                                 // send weekly emails three days ahead of meeting day
                                 var dayOfWeek = new Date(schedule.firstDateTimeUTC[0]).getDay() - 3;
-                                dayOfWeek = dayOfWeek < 0 : dayOfWeek + 7: dayOfWeek;
+                                dayOfWeek = dayOfWeek < 0 ? dayOfWeek + 7: dayOfWeek;
                                 var emailJob = new CronJob({
                                     cronTime: '00 00 17 * * ' + dayOfWeek,
                                     onTick: function() {

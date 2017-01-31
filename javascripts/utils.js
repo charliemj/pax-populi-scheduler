@@ -101,8 +101,6 @@ var Utils = function() {
         throw new Error('Could not find nearest meeting time');
  
     }
- 
-    }
 
     Object.freeze(that);
     return that;
