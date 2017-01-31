@@ -112,7 +112,7 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                                                         callback({success: false, message: err.message});
                                                     } else {
                                                         if (!schedule.adminApproved) {
-                                                            schedule.remove(function (err) {
+                                                            Schedule.rejectSchedule(schedule._id, function (err) {
                                                                 if (err) {
                                                                     callback({success: false, message: err.message});
                                                                 } else {
