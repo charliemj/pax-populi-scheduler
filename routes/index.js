@@ -147,16 +147,23 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
         		return res.json(data);
         	}
         }
-        email.sendApprovalRequestEmail(user, req.devMode, function (err, user) {
-        	if (err) {
-        		data.message = err.message;
-            	return res.json({'success': false, message: err.message});
-        	}
-        	data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
-        	data.success = true;
-        	data.redirect = '/';
-        	res.json(data);
-        }); 
+        User.find({role: 'Administrator'}, function (err, admins) {
+                if (err) {
+                    callback({success: false, message: err.message});
+                } else {
+                    console.log('admins', admins);
+                    email.sendApprovalRequestEmail(user, req.devMode, admins, function (err, user) {
+                        if (err) {
+                            data.message = err.message;
+                            return res.json({'success': false, message: err.message});
+                        }
+                        data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
+                        data.success = true;
+                        data.redirect = '/';
+                        res.json(data);
+                    }); 
+                }
+        });
     });
 });
 
@@ -356,6 +363,12 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
                 inPool: user.inPool,
                 role: user.role,
                 csrfToken: req.csrfToken(),
+                schedulerOn: global.schedulerJob.running,
+                studentSchools: global.enums.studentSchools,
+                tutorSchools: global.enums.tutorSchools,
+                majors: global.enums.majors,
+                interests: global.enums.interests,
+                courses: global.enums.courses,
                 schedulerOn: global.schedulerJob.running}
     User.searchUsers(keyword, function (err, users) {
         if (err) {

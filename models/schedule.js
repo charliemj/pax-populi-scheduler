@@ -115,9 +115,20 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
         });
     });
     if (matches.length > 0) {
-        email.notifyAdmins(matches.length, function (err) {
-            callback(null, matches);
-        });  
+        User.find({role: 'Administrator'}, function (err, admins) {
+            console.log('admins', admins);
+            if (err) {
+                callback({success: false, message: err.message});
+            } else {
+                email.notifyAdmins(matches.length, admins, function (err) {
+                    if (err){
+                        callback({success: false, message: err.message});
+                    }
+                }); 
+            }
+        });
+        callback(null, matches);
+         
     } else {
         callback(null, matches);
     }

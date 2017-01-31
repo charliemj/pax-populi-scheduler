@@ -2,6 +2,8 @@ var nodemailer = require('nodemailer');
 var config = require('./config.js');
 var utils = require('./utils.js');
 var enums = require('./enums.js');
+var User = require('../models/user.js');
+
 
 var Email = function() {
 
@@ -106,17 +108,18 @@ var Email = function() {
     * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
     * @param {Function} callback - the function to call after the email has been sent
     */
-    that.sendApprovalRequestEmail = function (user, developmentMode, callback) {
+    that.sendApprovalRequestEmail = function (user, developmentMode, admins, callback) {
         that.createToken(user, false, function (err, user) {
             if (err) {
                 return callback({success: false, message: err.message});
             }
-            var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
-            var content = that.makeApprovalRequestEmailContent(user, developmentMode);
-            console.log(content);
-            console.log('about to send an approval request email to', user.email);
-            sendEmail(config.adminEmailAddress(), subject, content, callback); // for now send it back to the user
-
+            admins.forEach(function (admin) {
+                var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
+                var content = that.makeApprovalRequestEmailContent(user, developmentMode, admin);
+                console.log(content);
+                console.log('about to send an approval request email to', user.email);
+                sendEmail(admin.email, subject, content, callback); // for now send it back to the user
+            });
         });
     };
 
@@ -194,31 +197,33 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.notifyAdmins = function (numMatches, callback) {
-        var subject = 'New matches generated in Pax Populi Scheduler';
-        var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You may find the details of these new matches under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, config.adminFirstName(), numMatches, that.signature);
-        sendEmail(config.adminEmailAddress(), subject, emailContent, callback);
+    that.notifyAdmins = function (numMatches, admins, callback) {
+        admins.forEach(function (admin) {
+            var subject = 'New matches generated in Pax Populi Scheduler';
+            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You may find the details of these new matches under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, that.signature);
+            sendEmail(admin.email, subject, emailContent, callback);
+        });  
     };
 
-    that.makeApprovalRequestEmailContent = function (user, developmentMode) {
+    that.makeApprovalRequestEmailContent = function (user, developmentMode, admin) {
         var link;
             if (developmentMode) {
                 link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
             } else {
                 link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
             }
-        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, config.adminFirstName(), config.adminLastName())
+        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, admin.firstName, admin.lastName)
                             + '{} {} has just requested to join Pax Populi as a/an {}. '.format(user.firstName, user.lastName, user.role.toLowerCase())
                             + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
                             + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
                             + '<li>Email Address: {}'.format(user.email);
             if (utils.isCoordinator(user.role)) {
-                if (user.schoolInCharge) {
+                if (user.schoolInCharge !== 'N/A') {
                     content += '<li>School in Charge: {}</li>'.format(user.schoolInCharge);
-                } else if (user.regionInCharge) {
+                } else if (user.regionInCharge !== 'N/A') {
                     content += '<li>Region in Charge: {}</li>'.format(user.regionInCharge);
                 }
-                if (user.countryInCharge) {
+                if (user.countryInCharge !== 'N/A') {
                     content += '<li>Country in Charge: {}</li>'.format(user.countryInCharge);
                 }  
             }
