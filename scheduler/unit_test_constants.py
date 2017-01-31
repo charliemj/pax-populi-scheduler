@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import pytz
 
 from weekly_time import WeeklyTime
 from availability import Availability
+from user import User
 
 # Numerical constants
 SLOTS_PER_WEEK = 672
@@ -89,3 +90,13 @@ et_no_ds = et.localize(dt_us_no_ds)
 kabul_2000_1_1 = kabul.localize(dt_2000_1_1)
 kathmandu_2017_end = kathmandu.localize(dt_2017_end)
 chatham_ds = chatham.localize(datetime(2018, 1, 20))
+
+# Genders
+genders = ['MALE', 'FEMALE']
+gender_preferences = ['MALE', 'FEMALE', 'NONE']
+
+# User objects
+student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', always_free_avail,
+               'UTC', ['Math'], date(2018, 1, 1))
+tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', always_free_avail,
+             'UTC', ['Math'], date(2018, 1, 1))

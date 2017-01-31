@@ -132,8 +132,8 @@ if __name__ == '__main__':
 
     a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['00:00','02:30'], ['17:00', '17:15']]})
     a2 = Availability.from_dict({'0': [['00:00', '24:00']], '3': [['03:00','12:00']], '6': [['15:00', '24:00']]})
-    a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['00:00','12:00']]})
-    a4 = Availability.from_dict({'0': [['00:00', '03:15']], '6': [['23:30','24:00']]})
+    a3 = Availability.from_dict({'4': [['23:45', '24:00']], '5':[['00:00','12:00']]})
+    a4 = Availability.from_dict({'5': [['00:00', '03:15']], '6': [['23:30','24:00']]})
     students.append(User('s1', 'reg1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
     students.append(User('s2', 'reg2', 'STUDENT', 'MALE', 'NONE', a2,'US/Eastern',['b'],date(2015,2,2)))
     tutors.append(User('t1', 'reg3', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))
@@ -141,5 +141,6 @@ if __name__ == '__main__':
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
+    print s.schedule_dicts_for_database()
     for schedule_dict in s.schedule_dicts_for_database():
         print schedule_dict

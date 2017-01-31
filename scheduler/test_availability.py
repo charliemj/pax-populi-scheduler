@@ -18,7 +18,7 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(Availability.SLOT_START_TIME_TO_INDEX[WeeklyTime(6, 23, 45)],
                          c.SLOTS_PER_WEEK-1)
 
-    def test_initializer_value_error(self):
+    def test_init_value_error(self):
         with self.assertRaises(ValueError):
             Availability([])
         with self.assertRaises(ValueError):
