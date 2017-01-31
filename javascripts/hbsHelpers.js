@@ -67,18 +67,6 @@ var HbsHelpers = function() {
         return options.inverse(this);
     }
 
-    Date.prototype.withoutTime = function () {
-        var d = new Date(this);
-        d.setHours(0, 0, 0, 0);
-        return d;
-    }
-
-    Date.prototype.withoutDate = function () {
-        var d = new Date(this);
-        d.setDate(0);
-        return d;
-    }
-
     /**
     * Source: http://stackoverflow.com/a/4974690
     * Replaces the '{}' in the string by the arguments in order

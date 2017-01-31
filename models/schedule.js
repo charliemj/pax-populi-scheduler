@@ -101,10 +101,33 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                                 callback({success: false, message: err.message});
                             } else {
                                 scheduleJSON.tutorCoord = tutorCoord ? tutorCoord._id: null;
-                                Schedule.create(scheduleJSON, function (err, match) {
+                                Schedule.create(scheduleJSON, function (err, schedule) {
                                     if (err) {
                                         console.log(err);
                                         callback({success: false, message: err.message});
+                                    } else {
+                                        var job = new CronJob(new Date(scheduleJSON.UTCPossibleSchedules[0][0][0]), function() {
+                                                Schedule.find({_id: scheduleId}, function (err, schedule) {
+                                                    if (err) {
+                                                        callback({success: false, message: err.message});
+                                                    } else {
+                                                        if (!schedule.adminApproved) {
+                                                            schedule.remove(function (err) {
+                                                                if (err) {
+                                                                    callback({success: false, message: err.message});
+                                                                } else {
+                                                                    console.log('deleted an outdated pending schedule');
+                                                                }
+                                                            });  
+                                                        }
+                                                    }
+                                                });
+                                          }, function () {
+                                            /* This function is executed when the job stops */
+                                          },
+                                          true, /* Start the job right now */
+                                          'America/New_York' /* Time zone of this job. */
+                                        );
                                     }
                                 });    
                             }
@@ -133,8 +156,6 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
         callback(null, matches);
     }
 }
-
-
 
 ScheduleSchema.statics.getMatches = function (callback) {
 
@@ -217,6 +238,27 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
                             if (err) {
                                 callback({sucess: false, message: err.message});
                             } else {
+                                // send weekly emails three days ahead of meeting day
+                                var dayOfWeek = new Date(schedule.firstDateTimeUTC[0]).getDay() - 3;
+                                dayOfWeek = dayOfWeek < 0 : dayOfWeek + 7: dayOfWeek;
+                                var emailJob = new CronJob({
+                                    cronTime: '00 00 17 * * ' + dayOfWeek,
+                                    onTick: function() {
+                                        // runs every week at 5pm
+                                        email.sendReminderEmail(schedule.student, schedule.studentClassSchedule, function (err) {
+                                            if (err) {
+                                                console.log('Failed to send reminder email to the student');
+                                            }
+                                        });
+                                        email.sendReminderEmail(schedule.tutor, schedule.tutorClassSchedule, function (err) {
+                                            if (err) {
+                                                console.log('Failed to send reminder email to the tutor');
+                                            } 
+                                        });
+                                    },
+                                    start: true,
+                                    timeZone: 'America/New_York'
+                                });
                                 callback(null, updatedSchedule);
                             }
                         });

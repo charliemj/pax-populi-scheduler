@@ -105,7 +105,7 @@ Enum.initialize(function (err, enums) {
     } else {
         global.enums = enums;
     }
-})
+});
 
 
 // error handlers

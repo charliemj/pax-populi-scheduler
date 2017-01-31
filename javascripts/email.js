@@ -205,6 +205,19 @@ var Email = function() {
         });  
     };
 
+    /**
+    * Sends an email to remind student/tutor to confirm that they could meet
+    * @param {Object} user - the user object of the user
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.sendReminderEmail = function (user, userSchedule, callback) {
+        var subject = 'Pax Populi Class Reminder';
+        var partner = user.role.toLowerCase() === 'student'? 'tutor': 'student';
+        var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that you have an appointment scheduled with your {} in three days on {}. If you cannot make this appointment, please contact your {} as well as your coordinator without delay.<br>{}</p>'.format(that.welcomeMessage, user.firstName, partner, utils.getFormatedNearestMeetingTime(userSchedule), partner, that.signature);
+        sendEmail(user.email, subject, emailContent, callback);
+    };
+
     that.makeApprovalRequestEmailContent = function (user, developmentMode, admin) {
         var link;
             if (developmentMode) {
