@@ -161,6 +161,19 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
     callback(null, registrationIds);
 }
 
+RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback) {
+    registrationIds.forEach(function (regId) {
+        Registration.findOneUpdate({_id: regId}, {isMatched: false}, function(err, updateRegistration) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log('marked as unmatched');
+            }
+        });
+    });
+    callback(null, registrationIds);
+}
+
 
 /*
  * Gets all unmatched registrations in the whole system

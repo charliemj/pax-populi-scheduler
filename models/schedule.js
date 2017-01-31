@@ -21,8 +21,6 @@ var ScheduleSchema = mongoose.Schema({
     studentReg: {type: ObjectId, ref:"Registration", required:true},
     tutorReg: {type: ObjectId, ref:"Registration", required:true},
     adminApproved: {type: Boolean, required: true, default: false},
-    tutorApproved: {type: Boolean, required: true, default: false},
-    studentApproved: {type: Boolean, required: true, default: false},
     course: {type: String},
     studentClassSchedule: {type: [[String]]},
     tutorClassSchedule: {type: [[String]]},
@@ -41,10 +39,11 @@ ScheduleSchema.path("course").validate(function(course) {
 ScheduleSchema.statics.getSchedules = function (user, callback) {
     if (utils.isRegularUser(user.role)) {
         // get personal schedules
-        Schedule.find( {$or: [{student: user._id}, {tutor: user._id}]} ).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
+        Schedule.find( {$and: [{adminApproved: true}, {$or: [{student: user._id}, {tutor: user._id}]}]}).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
             if (err) {
                 callback({success: false, message: err.message});
             } else {
+                console.log(schedules)
                 callback(null, schedules);
             }
         });
@@ -54,7 +53,7 @@ ScheduleSchema.statics.getSchedules = function (user, callback) {
             if (err) {
                 callback({success: false, message: err.message});
             } else {
-                Schedule.find( {$or: [{studentCoord: user._id}, {tutorCoord: user._id}]}).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
+                Schedule.find( {$and: [{adminApproved: true}, {$or: [{studentCoord: user._id}, {tutorCoord: user._id}]}]}).populate('student').populate('tutor').populate('studentCoord').populate('tutorCoord').exec(function (err, schedules) {
                     if (err) {
                         callback({success: false, message: err.message});
                     } else {
@@ -182,6 +181,54 @@ ScheduleSchema.statics.automateMatch = function () {
     });
     global.schedulerJob = schedulerJob;
     global.schedulerJob.start();
+}
+
+ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, course, callback) {
+    console.log('in approveSchedule')
+    Schedule.findOne({ _id: scheduleId}, function (err, schedule) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            schedule.adminApproved = true;
+            schedule.course = course;
+            schedule.studentClassSchedule = schedule.studentPossibleSchedules[scheduleIndex];
+            schedule.tutorClassSchedule = schedule.tutorPossibleSchedules[scheduleIndex];
+            schedule.UTCClassSchedule = schedule.UTCPossibleSchedules[scheduleIndex];
+            schedule.firstDateTimeUTC = schedule.UTCClassSchedule[0];
+            schedule.lastDateTimeUTC = schedule.UTCClassSchedule.slice(-1)[0];
+            schedule.save(function (err, updatedSchedule) {
+                console.log('updatedSchedule', updatedSchedule);
+                callback(null, updatedSchedule);
+                // inform student/tutor
+            })
+
+        }
+    });
+}
+
+ScheduleSchema.statics.rejectSchedule = function (scheduleId, callback) {
+    Schedule.findOne({ _id: scheduleId}, function(err, schedule) {
+        var studentRegId = schedule.studentReg;
+        var tutorRegId = schedule.tutorReg;
+        if (err){
+            callback({success: false, message: err.message});
+        }
+        else {
+            Registration.markAsUnmatched([studentRegId, tutorRegId], function (err, registrationIds) {
+                if (err) {
+                    callback({success: false, message: err.message});
+                } else {
+                    schedule.remove(function (err) {
+                        if (err) {
+                            callback({success: false, message: err.message});
+                        } else {
+                            callback(null);
+                        }
+                    });
+                } 
+            }); 
+        }
+    });
 }
 
 

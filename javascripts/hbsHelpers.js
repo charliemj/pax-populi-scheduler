@@ -83,6 +83,7 @@ var HbsHelpers = function() {
         });
     };
 
+    that.weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     that.summarizeSchedule = function (schedule) {
 
@@ -99,14 +100,16 @@ var HbsHelpers = function() {
             } else if (meetingTime == time) {
                 endDate = date;
             } else {
-                formatedSchedule.push('{} ({} - {})'.format(meetingTime, startDate, endDate));
+                var day = that.weekday[new Date(startDate).getDay()];
+                formatedSchedule.push('{} {} ({} - {})'.format(day, meetingTime, startDate, endDate));
                 startDate = date;
                 meetingTime = time;
                 endDate = date;
                 
             }
         });
-        formatedSchedule.push('{} ({} - {})'.format(meetingTime, startDate, endDate));
+        var day = that.weekday[new Date(startDate).getDay()];
+        formatedSchedule.push('{} {} ({} - {})'.format(day, meetingTime, startDate, endDate));
         return formatedSchedule;
     }
 
@@ -129,6 +132,15 @@ var HbsHelpers = function() {
     that.eachFormatedSchedule = function (studentSchedules, tutorSchedules, options) {
         var ret = "";
         context = that.formatSchedules(studentSchedules, tutorSchedules);
+        for(var i=0, j=context.length; i<j; i++) {
+            ret = ret + options.fn(context[i]);
+        }
+        return ret;
+    };
+
+    that.eachFormatedTutorSchedule = function (tutorSchedules, options) {
+        var ret = "";
+        context = that.summarizeSchedule(tutorSchedules);
         for(var i=0, j=context.length; i<j; i++) {
             ret = ret + options.fn(context[i]);
         }
