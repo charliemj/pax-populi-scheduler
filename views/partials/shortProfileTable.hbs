@@ -2,25 +2,13 @@
   <tbody>
     {{#isRegularUser role}}
       <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td>
-      <tr><th>Role</th><td>{{role}}</td>
-      <tr><th>Gender</th><td>{{gender}}</td>
-      <tr><th>Date of Birth</th><td>{{formatDate dateOfBirth}}</td>
       <tr><th>School</th><td>{{school}}</td>
-      <tr><th>Education Level</th><td>{{educationLevel}}</td>
-      <tr><th>Major</th><td>{{major}}</td>
-      <tr><th>Currently Enrolled</th><td>{{#if enrolled}}Yes{{else}}No{{/if}}</td>
       <tr><th>Country</th><td>{{country}}</td>
-      <tr><th>Region</th><td>{{region}}</td>
-      <tr><th>Nationality</th><td>{{nationality}}</td>
       <tr><th>Interests</th><td>{{interests}}</td>
       <tr><th>Email Address</th><td>{{email}}</td>
-      <tr><th>SkypeId</th><td>{{skypeId}}</td>
-      <tr><th>Phone Number</th><td>{{phoneNumber}}</td>
     {{else}}
       <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td>
-      <tr><th>Role</th><td>{{role}}</td>
       <tr><th>Email Address</th><td>{{email}}</td>
-      <tr><th>Phone Number</th><td>{{phoneNumber}}</td>
       {{#notNotApplicable schoolInCharge}}
         <tr><th>School in Charge</th><td>{{schoolInCharge}}</td>
       {{/notNotApplicable}}

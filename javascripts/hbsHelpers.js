@@ -21,6 +21,13 @@ var HbsHelpers = function() {
         return options.inverse(this);
     }
 
+    that.notNotApplicable = function (string, options) {
+        if (string.toLowerCase() !== 'n/a') {
+            return options.fn(this);
+        }
+        return options.inverse(this);
+    }
+
     that.formatDate = function (date) {
         return dateFormat(date, "mmm d, yyyy");
     };

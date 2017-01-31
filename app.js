@@ -46,7 +46,8 @@ app.engine('.hbs', exphbs({extname: '.hbs',
                                       summarizeSchedule: hbsHelpers.summarizeSchedule,
                                       formatSchedules: hbsHelpers.formatSchedules,
                                       eachFormatedSchedule: hbsHelpers.eachFormatedSchedule,
-                                      eachFormatedTutorSchedule: hbsHelpers.eachFormatedTutorSchedule}
+                                      eachFormatedTutorSchedule: hbsHelpers.eachFormatedTutorSchedule,
+                                      notNotApplicable: hbsHelpers.notNotApplicable}
                           }));
 app.set('view engine', 'hbs');
 

@@ -10,13 +10,23 @@
 			    <tr><th>Course</th><td>
 			    	{{course}}
 			    </td>
-			    <tr><th>Student</th><td>{{#isStudent ../role}}You{{else}}{{student.firstName}} {{student.lastName}}{{/isStudent}}</td>
-			    <tr><th>Tutor</th><td>{{#isTutor ../role}}You{{else}}{{tutor.firstName}} {{tutor.lastName}}{{/isTutor}}</td>
+			    <tr><th>Student</th><td>
+			    	<a data-toggle="modal" data-target='#student-modal-{{_id}}'>
+			    		{{#isStudent ../role}}You{{else}}{{student.firstName}} {{student.lastName}}{{/isStudent}}
+			    	</a>
+			    </td>
+			    <tr><th>Tutor</th><td>
+			    	<a data-toggle="modal" data-target='#tutor-modal-{{_id}}'>
+			    		{{#isTutor ../role}}You{{else}}{{tutor.firstName}} {{tutor.lastName}}{{/isTutor}}
+			    	</a>
+			    </td>
 			    <tr><th>Student Coordinator</th><td>
 			    	{{#if studentCoord}}
-			    		{{#isCoordinator ../role}}
-			    			{{#equalStrings ../username studentCoord.username}}You{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}{{/equalStrings}}
+			    		<a data-toggle="modal" data-target='#studentCoord-modal-{{_id}}'>
+			    			{{#isCoordinator ../role}}
+			    				{{#equalStrings ../username studentCoord.username}}You{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}{{/equalStrings}}
 			    		{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}
+			    		</a>
 			    		{{/isCoordinator}}
 			    	{{else}}
 			    		N/A
@@ -24,10 +34,12 @@
 			    </td>
 			    <tr><th>Tutor Coordinator</th><td>
 			    	{{#if tutorCoord}}
+			    		<a data-toggle="modal" data-target='#tutorCoord-modal-{{_id}}'>
 			    		{{#isCoordinator ../role}}
 			    			{{#equalStrings ../username tutorCoord.username}}You{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}{{/equalStrings}}
 			    		{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}
 			    		{{/isCoordinator}}</td>
+			    		</a>
 			    	{{else}}
 			    		N/A
 			    	{{/if}}
@@ -42,6 +54,66 @@
 	    </div>
 	    </div>
 	</div>
+	<div id="student-modal-{{_id}}" class="pending-request-item-modal modal fade" role="dialog">
+	  <div class="modal-messages"></div>
+	  <div class="modal-dialog modal-xs">
+	    <div class="modal-content">
+	      <div class="modal-header modal-title">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        {{#if student.fullName}}{{student.fullName}}{{else}}{{student.firstName}} {{student.lastName}}{{/if}}'s Profile
+	      </div>
+	      <div class="modal-body">
+	        {{> shortProfileTable student}}
+	      </div>     
+	    </div>
+	  </div>
+	</div> 
+	<div id="tutor-modal-{{_id}}" class="pending-request-item-modal modal fade" role="dialog">
+	  <div class="modal-messages"></div>
+	  <div class="modal-dialog modal-xs">
+	    <div class="modal-content">
+	      <div class="modal-header modal-title">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        {{#if tutor.fullName}}{{tutor.fullName}}{{else}}{{tutor.firstName}} {{tutor.lastName}}{{/if}}'s Profile
+	      </div>
+	      <div class="modal-body">
+	        {{> shortProfileTable tutor}}
+	      </div>     
+	    </div>
+	  </div>
+	</div>
+	<div id="studentCoord-modal-{{_id}}" class="pending-request-item-modal modal fade" role="dialog">
+	  <div class="modal-messages"></div>
+	  <div class="modal-dialog modal-xs">
+	    <div class="modal-content">
+	      <div class="modal-header modal-title">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        {{#if studentCoord.fullName}}{{studentCoord.fullName}}{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}{{/if}}'s Profile
+	      </div>
+	      <div class="modal-body">
+	        {{> shortProfileTable studentCoord}}
+	      </div>     
+	    </div>
+	  </div>
+	</div>
+	<div id="tutorCoord-modal-{{_id}}" class="pending-request-item-modal modal fade" role="dialog">
+	  <div class="modal-messages"></div>
+	  <div class="modal-dialog modal-xs">
+	    <div class="modal-content">
+	      <div class="modal-header modal-title">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        {{#if tutorCoord.fullName}}{{tutorCoord.fullName}}{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}{{/if}}'s Profile
+	      </div>
+	      <div class="modal-body">
+	        {{> shortProfileTable tutorCoord}}
+	      </div>     
+	    </div>
+	  </div>
+	</div> 
+
+
+
+
 	{{/if}}
 	{{/each}}
 {{else}}
