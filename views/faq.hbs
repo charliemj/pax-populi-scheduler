@@ -1,9 +1,10 @@
 <script src='javascripts/faq.js'></script>
+<link rel="stylesheet" href="stylesheets/faq.css"/>
 <div class='tab-content'>
 <h1>{{title}}</h1>
 
 <div class='content' id='faq-content'>
-	<div class = 'general' id='all'>
+	<div class = 'questions general' id='all'>
 		<div>
 			<input type="hidden" name="_csrf" value="{{csrfToken}}">
 			<span class='question'>Q: How do I log out?</span><br><br>
@@ -17,7 +18,7 @@
   	</div>
 
 {{#isRegularUser role}}
-	<div class = 'user' id='user'>
+	<div class = 'questions user' id='user'>
 		<div>
 			<input type="hidden" name="_csrf" value="{{csrfToken}}">
 			<span class='question'>Q: How do I schedule a weekly meeting with a {{#if isTutor}}student {{else}}tutor{{/if}}?</span><br><br>
@@ -42,7 +43,7 @@
 {{/isRegularUser}}
 
 {{#isCoordinator role}}
-  	<div class= 'coordinatorQuestions' id= 'coordinator'>
+  	<div class= 'questions coordinator' id= 'coordinator'>
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
   			<span class= 'question'> Q: Whose schedules can I see?</span><br><br>
@@ -58,7 +59,7 @@
 {{/isCoordinator}}
 
 {{#isAdministrator role}}
-  	<div class ='adminQuestions' id= 'admin'>
+  	<div class ='questions admin' id= 'admin'>
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
   			<span class= 'question'> Q: How do I run the Scheduling Algorithm?</span><br><br>
