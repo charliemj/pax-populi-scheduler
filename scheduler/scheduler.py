@@ -20,18 +20,24 @@ class Scheduler:
     def __init__(self, students, tutors, weeks_per_course=11):
         """
         Args:
-            students: A list of student User objects to be matched.
-            tutors: A list of tutor User objects to be matched.
+            students: A list of student User objects to be matched. The
+                user_id's of the union of students and tutors must be distinct.
+            tutors: A list of tutor User objects to be matched. The user_id's
+                of the union of students and tutors must be distinct.
             weeks_per_course: A positive integer representing the number of
                 occurrences of the course, assuming the course meets once per
                 week.
         """
         for student in students:
             if student.user_type != 'STUDENT':
-                raise ValueError('Every user in students must have the user_type "STUDENT"')
+                raise ValueError('Every user in students must have the user_type \'STUDENT\'')
         for tutor in tutors:
             if tutor.user_type != 'TUTOR':
-                raise ValueError('Every user in tutors must have the user_type "TUTOR"')
+                raise ValueError('Every user in tutors must have the user_type \'TUTOR\'')
+        student_ids = [student.user_id for student in students]
+        tutor_ids = [tutor.user_id for tutor in tutors]
+        if len(set(student_ids).union(set(tutor_ids))) != len(student_ids) + len(tutor_ids):
+            raise ValueError('The user_id\'s in the union of students and tutors must be distinct')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         self.students = students
@@ -132,8 +138,8 @@ if __name__ == '__main__':
 
     a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['00:00','02:30'], ['17:00', '17:15']]})
     a2 = Availability.from_dict({'0': [['00:00', '24:00']], '3': [['03:00','12:00']], '6': [['15:00', '24:00']]})
-    a3 = Availability.from_dict({'4': [['23:45', '24:00']], '5':[['00:00','12:00']]})
-    a4 = Availability.from_dict({'5': [['00:00', '03:15']], '6': [['23:30','24:00']]})
+    a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['00:00','12:00']]})
+    a4 = Availability.from_dict({'0': [['00:00', '03:15']], '1': [['23:30','24:00']]})
     students.append(User('s1', 'reg1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
     students.append(User('s2', 'reg2', 'STUDENT', 'MALE', 'NONE', a2,'US/Eastern',['b'],date(2015,2,2)))
     tutors.append(User('t1', 'reg3', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))
@@ -141,6 +147,5 @@ if __name__ == '__main__':
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
-    print s.schedule_dicts_for_database()
     for schedule_dict in s.schedule_dicts_for_database():
         print schedule_dict

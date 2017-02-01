@@ -25,9 +25,9 @@ class Match:
                 week.
         """
         if student.user_type != 'STUDENT':
-            raise ValueError('student must have the user_type "STUDENT"')
+            raise ValueError('student must have the user_type \'STUDENT\'')
         if tutor.user_type != 'TUTOR':
-            raise ValueError('tutor must have the user_type "TUTOR"')
+            raise ValueError('tutor must have the user_type \'TUTOR\'')
         if (earliest_course_start_UTC.tzinfo is not None
             and earliest_course_start_UTC.tzinfo.utcoffset(earliest_course_start_UTC) is not None):
             raise ValueError('earliest_course_start_UTC must be a naive datetime')

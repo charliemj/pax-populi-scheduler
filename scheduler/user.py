@@ -35,11 +35,11 @@ class User:
                 (earliest start datetime is 00:00 on earliest_start_date).
         """
         if user_type not in ['STUDENT', 'TUTOR']:
-            raise ValueError('user_type must be "STUDENT" or "TUTOR"')
+            raise ValueError('user_type must be \'STUDENT\' or \'TUTOR\'')
         if gender not in ['MALE', 'FEMALE']:
-            raise ValueError('gender must be "MALE" or "FEMALE"')
+            raise ValueError('gender must be \'MALE\' or \'FEMALE\'')
         if gender_preference not in ['MALE', 'FEMALE', 'NONE']:
-            raise ValueError('gender_preference must be "MALE", "FEMALE", or "NONE"')
+            raise ValueError('gender_preference must be \'MALE\', \'FEMALE\', or \'NONE\'')
         if tz_str not in pytz.all_timezones_set:
             raise ValueError('tz_str must be in the pytz timezone database')
         if (not isinstance(earliest_start_date, date)
@@ -166,9 +166,9 @@ class User:
                 availabilities, timezone differences, and daylight saving.
         """
         if self.user_type != 'STUDENT':
-            raise ValueError('self must have user_type of "STUDENT"');
+            raise ValueError('self must have user_type of \'STUDENT\'');
         if tutor.user_type != 'TUTOR':
-            raise ValueError('tutor must have user_type of "TUTOR"');
+            raise ValueError('tutor must have user_type of \'TUTOR\'');
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(tutor)
@@ -198,9 +198,9 @@ class User:
                 daylight saving.
         """
         if self.user_type != 'STUDENT':
-            raise ValueError('self must have user_type of "STUDENT"');
+            raise ValueError('self must have user_type of \'STUDENT\'');
         if tutor.user_type != 'TUTOR':
-            raise ValueError('tutor must have user_type of "TUTOR"');
+            raise ValueError('tutor must have user_type of \'TUTOR\'');
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         return len(self.get_availability_matches(tutor, weeks_per_course)) > 0

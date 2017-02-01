@@ -94,5 +94,257 @@ class TestUser(unittest.TestCase):
         self.assertEqual(user1.shared_courses(user2), ['English', 'Math'])
         self.assertEqual(user2.shared_courses(user1), ['English', 'Math'])
 
+    def test_gender_compatible_M_M_M_M(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_M_M_F(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_M_M_N(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_M_F_M(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_M_F_F(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_M_F_N(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_F_M_M(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_F_M_F(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_F_M_N(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_F_F_M(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_F_F_F(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_F_F_N(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_N_M_M(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_N_M_F(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_N_M_N(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_N_F_M(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_N_F_F(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_M_N_F_N(self):
+        user1 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_M_M_M(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_M_M_F(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_M_M_N(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_M_F_M(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_M_F_F(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_M_F_N(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_F_M_M(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_F_M_F(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_F_M_N(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_F_F_M(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_F_F_F(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_F_F_N(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_N_M_M(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_N_M_F(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_N_M_N(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'MALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_N_F_M(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'MALE'})
+        self.assertFalse(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_N_F_F(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'FEMALE'})
+        self.assertTrue(user1.gender_compatible(user2))
+
+    def test_gender_compatible_F_N_F_N(self):
+        user1 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        user2 = c.new_user(c.student, {'gender': 'FEMALE',
+                                       'gender_preference': 'NONE'})
+        self.assertTrue(user1.gender_compatible(user2))
+    
 if __name__ == '__main__':
     unittest.main()
