@@ -174,7 +174,7 @@ var Email = function() {
     */
     that.sendArchiveEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been archived by the administrators. You no longer have access to this account and will not receive any emails from us in the future.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been deactivated by the administrators. You no longer have access to this account and will not receive any emails from us in the future. If you think there was a mistake, please contact Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
@@ -187,7 +187,7 @@ var Email = function() {
     */
     that.sendScheduleEmails = function (user, callback) {
         var subject = 'Updates on the status of your Pax Populi class registration';
-        var emailContent = '{}<p> Hi {}!<br><br>You have been matched to a {} for the class you last registered for. You can see your schedule on your dashboard when you log into our scheduler.<br>{}</p>'.format(that.welcomeMessage, user.firstName, user.role.toLowerCase() === 'student'? 'tutor': 'student', that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>You have been matched to a {} for the class you last registered for. You can now see your schedule on your dashboard.<br>{}</p>'.format(that.welcomeMessage, user.firstName, user.role.toLowerCase() === 'student'? 'tutor': 'student', that.signature);
         sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -200,7 +200,7 @@ var Email = function() {
     that.notifyAdmins = function (numMatches, admins, callback) {
         admins.forEach(function (admin) {
             var subject = 'New matches generated in Pax Populi Scheduler';
-            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You may find the details of these new matches under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, that.signature);
+            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You can view them under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, that.signature);
             sendEmail(admin.email, subject, emailContent, callback);
         });  
     };
@@ -214,7 +214,7 @@ var Email = function() {
     that.sendReminderEmail = function (user, userSchedule, callback) {
         var subject = 'Pax Populi Class Reminder';
         var partner = user.role.toLowerCase() === 'student'? 'tutor': 'student';
-        var emailContent = '{}<p> Hi {}!<br><br>This is to confirm that you have an appointment scheduled with your {} in three days on {}. If you cannot make this appointment, please contact your {} as well as your coordinator without delay.<br>{}</p>'.format(that.welcomeMessage, user.firstName, partner, utils.getFormatedNearestMeetingTime(userSchedule), partner, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>You have an appointment scheduled with your {} in three days on {}. If you cannot make this appointment, please contact your {} as well as your coordinator.<br>{}</p>'.format(that.welcomeMessage, user.firstName, partner, utils.getFormatedNearestMeetingTime(userSchedule), partner, that.signature);
         sendEmail(user.email, subject, emailContent, callback);
     };
 
