@@ -172,17 +172,22 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
     var username = req.params.username;
     var user = req.session.passport.user;
     User.getUser(username, function (err, accountUser) {
-        accountUser.password = undefined;
-        var data = {title: 'Pax Populi Scheduler',
-                    user: accountUser,
-                    username: username,
-                    fullName: user.fullName,
-                    onHold: user.onHold,
-                    inPool: user.inPool,
-                    role: user.role,
-                    requestToken: req.params.requestToken,
-                    csrfToken: req.csrfToken()};
-        res.redirect('/'); 
+        if (err){
+            return res.json({'success': false, message: err});
+        }
+        else{
+            accountUser.password = undefined;
+            var data = {title: 'Pax Populi Scheduler',
+                        user: accountUser,
+                        username: username,
+                        fullName: user.fullName,
+                        onHold: user.onHold,
+                        inPool: user.inPool,
+                        role: user.role,
+                        requestToken: req.params.requestToken,
+                        csrfToken: req.csrfToken()};
+            res.redirect('/'); 
+        }
     });
          
 });
@@ -333,6 +338,7 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
     });
 });
 
+//Gets the FAQ page
 router.get('/faq', authentication.isAuthenticated, function (req, res) {
     var user = req.session.passport.user;
     res.render('faq', { title: 'FAQ',
@@ -344,6 +350,7 @@ router.get('/faq', authentication.isAuthenticated, function (req, res) {
                         csrfToken: req.csrfToken()});
 });
 
+//Gets the settings page for admin (where they can turn off/on scheduler and update sign up form info)
 router.get('/settings', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     var user = req.session.passport.user;
     res.render('settings', {title: 'Settings',
@@ -361,10 +368,29 @@ router.get('/settings', [authentication.isAuthenticated, authentication.isAdmini
                             schedulerOn: global.schedulerJob.running});
 });
 
+//Gets the "manage users" page for admins
+router.get('/manageUsers', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
+    var user = req.session.passport.user;
+    res.render('userSearch', {title: 'Manage Users',
+                            username: user.username,
+                            fullName: user.fullName,
+                            onHold: user.onHold,
+                            inPool: user.inPool,
+                            role: user.role,
+                            csrfToken: req.csrfToken(),
+                            studentSchools: global.enums.studentSchools,
+                            tutorSchools: global.enums.tutorSchools,
+                            majors: global.enums.majors,
+                            interests: global.enums.interests,
+                            courses: global.enums.courses,
+                            schedulerOn: global.schedulerJob.running});
+});
+
+//Performs the search request for admins looking up users
 router.post('/search', [authentication.isAuthenticated, authentication.isAdministrator], parseForm, csrfProtection, function(req, res, next) {
     var keyword = req.body.keyword.trim();
     var user = req.session.passport.user;
-    var data = {title: 'Settings',
+    var data = {title: 'Manage Users',
                 username: user.username,
                 fullName: user.fullName,
                 onHold: user.onHold,
@@ -389,7 +415,7 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
             });
             data.users = users;
         }
-        res.render('settings', data);
+        res.render('userSearch', data);
     });
 });
 

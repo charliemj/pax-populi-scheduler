@@ -31,6 +31,7 @@ $(document).ready(function () {
         });
     });
 
+
 	$('.match-button').unbind('click').click(function () {
 		var csrf = $('#csrf').val();
         $.ajax({

@@ -1,0 +1,26 @@
+<script src='/javascripts/userSearch.js'></script>
+<link href="/javascripts/vendor/bower_components/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="/javascripts/vendor/bower_components/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+<link rel="stylesheet" href="/stylesheets/settings.css"/>
+<div class='tab-content'>
+    <h1>{{title}}</h1>
+    <div class='content' id='dashboard-content'>
+    <div class='row' id="manage-users">
+        <span class='title-toggle' id='manage-users-toggle' data-toggle="collapse" data-target="#dashboard-manage-users"><h3>Manage Users<span class="badge hide notifs-count"></span>
+        <span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+        <form id='search-form' action='/search' method='post'>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="search" name='keyword' class="form-control search-bar col-xs-5 col-md-5" placeholder="first name or last name">
+            <input type="submit" id='search-button' class='btn btn-primary btn-lg' value="Search">
+        </form>
+        <div id='dashboard-manage-users' class='collapse in'>
+            {{#if message}}
+            <div id='search-message'>
+                <center>{{message}}</center>
+            </div>
+            {{else}}
+                {{> users}}
+            {{/if}}
+        </div>
+    </div>
+</div>
