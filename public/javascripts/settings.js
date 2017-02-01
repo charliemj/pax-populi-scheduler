@@ -19,7 +19,7 @@ $(document).ready(function () {
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
-                        }, 2500);   
+                        }, 1500);   
                     }
                 } else {
                     addMessage(data.message, false);
@@ -31,7 +31,7 @@ $(document).ready(function () {
         });
     });
 
-	$('.match-button').click(function () {
+	$('.match-button').unbind('click').click(function () {
 		var csrf = $('#csrf').val();
         $.ajax({
             url: '/schedules/match',
@@ -43,7 +43,7 @@ $(document).ready(function () {
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
-                        }, 2500);   
+                        }, 1500);   
                     }
                 } else {
                     addMessage(data.message, false);
@@ -64,10 +64,11 @@ $(document).ready(function () {
             success: function(data) {
                 if (data.success) {
                     addMessage(data.message, true);
+                    console.log('redirecting to ', data.redirect);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
-                        }, 2500);   
+                        }, 1500);   
                     }
                 } else {
                     addMessage(data.message, false);

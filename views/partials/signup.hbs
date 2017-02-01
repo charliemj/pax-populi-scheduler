@@ -67,9 +67,9 @@
                   <div class="formErr" id="emailErrors"></div>
                 </div>
                 <div class="form-group">
-                  <label class="control-label">Alternative Email Address</label>
+                  <label class="control-label">Alternative Email Address*</label>
                   <div>
-                    <input id='alternative-email-register-box' class='form-control signup-input' type='email' name='alternativeEmail' placeholder='alternative email address'></input>
+                    <input id='alternative-email-register-box' class='form-control signup-input' type='email' name='alternativeEmail' placeholder='alternative email address' required></input>
                   </div>
                   <div class="formErr" id="emailErrors"></div>
                 </div>
@@ -127,9 +127,9 @@
                   <div class="formErr" id="phoneNumErrors"></div>
                 </div>
                 <div class="form-group tutor student">
-                  <label class="control-label">Skype ID</label>
+                  <label class="control-label">Skype ID*</label>
                   <div>
-                    <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID'></input>
+                    <input id='skypeId-register-box' class='form-control signup-input' type='text' name='skypeId' placeholder='skype ID' required></input>
                   </div>
                   <div class="formErr" id="skypeErrors"></div>
                 </div>
@@ -222,9 +222,8 @@
                   </div>
                   <div class="formErr" id="nationalityErrors"></div>
                 </div>
-
                 <div class='student tutor'>
-                  <div class="form-group country" >
+                  <div class="form-group country">
                     <label class="control-label">Country*</label>
                     <div>
                       <!--Source: https://github.com/benkeen/country-region-selector-->
@@ -238,7 +237,6 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="form-group student tutor">
                   <label class="control-label">Select your timezone*: <b>{[{timezone}]}</b></label>
                   <div>
@@ -279,28 +277,14 @@
                     </div>
                   </div>
                 </div>
-
-                <div id='in-charge-of'></div>
-
-                <div class='form-group in-charge coordinator' id="incharge">
-                  <div class="form-group country" >
-                    <label class="control-label">Country*</label>
-                    <div>
-                      <!--Source: https://github.com/benkeen/country-region-selector-->
-                      <select name="countryInCharge" class="form-control signup-input crs-country" data-region-id="regionHere2" required></select>
-                    </div>
+                <div id='in-charge-of-container'>
+                  <div id='in-charge-of'>
                   </div>
-                  <div class="form-group region">
-                    <label class="control-label" id="regionLabel">Region*</label>
-                    <div>
-                      <select name="regionInCharge" class='form-control signup-input ' id="regionHere2"></select>
-                    </div>
-
-                    <!-- <div class="other form-group">
+                  <div class="other form-group">
                     <label class="control-label">Please specify</label>
                     <div>
                       <input id='other-school-in-charge-register-box' class='form-control signup-input' type='text' name='schoolInCharge' placeholder='school'></input>
-                    </div> -->
+                    </div>
                   </div>
                 </div>
               </div>
