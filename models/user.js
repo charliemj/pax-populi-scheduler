@@ -22,7 +22,7 @@ var UserSchema = mongoose.Schema({
     archived: {type: Boolean, default: false},
     role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
-    alternativeEmail: {type: String, required: true},
+    alternativeEmail: {type: String},
     firstName: {type: String, required: true},
     middleName: {type: String},
     lastName: {type: String, required: true},

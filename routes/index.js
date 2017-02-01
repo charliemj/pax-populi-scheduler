@@ -149,7 +149,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
         }
         User.find({role: 'Administrator'}, function (err, admins) {
                 if (err) {
-                    callback({success: false, message: err.message});
+                    res.send({success: false, message: err.message});
                 } else {
                     console.log('admins', admins);
                     email.sendApprovalRequestEmail(user, req.devMode, admins, function (err, user) {
@@ -157,11 +157,11 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
                             data.message = err.message;
                             return res.json({'success': false, message: err.message});
                         }
-                        data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
-                        data.success = true;
-                        data.redirect = '/';
-                        res.json(data);
-                    }); 
+                    });
+                    data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
+                    data.success = true;
+                    data.redirect = '/';
+                    res.json(data);
                 }
         });
     });

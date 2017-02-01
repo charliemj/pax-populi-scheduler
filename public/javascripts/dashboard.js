@@ -5,7 +5,7 @@ $(document).ready(function () {
 	$('.hideLink').on('click', function () {
 	  	var state = $(this).text().toLowerCase().trim();
 	  	console.log('state', state);
-	  	var newState = state === 'hide' ? 'Unhide': 'Hide'
+	  	var newState = state === 'hide' ? 'View Possible Schedules': 'Hide'
 	  	$(this).text(newState);
 	});
 
