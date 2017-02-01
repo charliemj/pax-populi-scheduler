@@ -1,8 +1,38 @@
 $(document).ready(function () {
 	$('#navbar-settings').addClass('active');
 
+	$('.archive-button').click(function () {
+        var id = $(this).attr('id').split('-').slice(-1)[0] ;
+        console.log('id', id);
+        var username = $('#username-' + id).val();
+        var csrf = $('#csrf').val();
+        var action = $(this).attr('id').split('-')[0];
+        console.log('username', username);
 
-	$('.match-button').click(function () {
+        $.ajax({
+            url: '/'+action+'/'+username,
+            type: 'PUT',
+            data: {username: username, _csrf: csrf},
+            success: function(data) {
+                if (data.success) {
+                    addMessage(data.message, true);
+                    if (typeof data.redirect === 'string') {
+                        setTimeout(function(){
+                            window.location = data.redirect;
+                        }, 1500);   
+                    }
+                } else {
+                    addMessage(data.message, false);
+                }
+            },
+            error: function(err) {
+                addMessage('A network error might have occurred. Please try again.', false);
+            }
+        });
+    });
+
+
+	$('.match-button').unbind('click').click(function () {
 		var csrf = $('#csrf').val();
         $.ajax({
             url: '/schedules/match',
@@ -14,7 +44,7 @@ $(document).ready(function () {
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
-                        }, 2500);   
+                        }, 1500);   
                     }
                 } else {
                     addMessage(data.message, false);
@@ -35,10 +65,11 @@ $(document).ready(function () {
             success: function(data) {
                 if (data.success) {
                     addMessage(data.message, true);
+                    console.log('redirecting to ', data.redirect);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
-                        }, 2500);   
+                        }, 1500);   
                     }
                 } else {
                     addMessage(data.message, false);

@@ -14,7 +14,7 @@
         <tr><th>Education Level</th><td>{{educationLevel}}</td>
         <tr><th>Major</th><td>{{major}}</td>
         <tr><th>Currently Enrolled</th><td>{{enrolled}}</td>
-        <tr><th>Time Zone</th><td>{{timezone}}</td>
+        <tr><th>Timezone</th><td>{{timezone}}</td>
         <tr><th>Country</th><td>{{country}}</td>
         <tr><th>Region</th><td>{{region}}</td>
         <tr><th>Nationality</th><td>{{nationality}}</td>
@@ -27,15 +27,15 @@
         <tr><th>Role</th><td>{{role}}</td>
         <tr><th>Email Address</th><td>{{email}}</td>
         <tr><th>Phone Number</th><td>{{phoneNumber}}</td>
-        {{#if schoolInCharge}}
+        {{#notNotApplicable schoolInCharge}}
           <tr><th>School in Charge</th><td>{{schoolInCharge}}</td>
-        {{/if}}
-        {{#if regionInCharge}}
+        {{/notNotApplicable}}
+        {{#notNotApplicable regionInCharge}}
           <tr><th>Region in Charge</th><td>{{regionInCharge}}</td>
-        {{/if}}
-        {{#if countryInCharge}}
+        {{/notNotApplicable}}
+        {{#notNotApplicable countryInCharge}}
           <tr><th>Country in Charge</th><td>{{countryInCharge}}</td>
-        {{/if}}
+        {{/notNotApplicable}}
       {{/isRegularUser}}
      </tbody>
   </table>
