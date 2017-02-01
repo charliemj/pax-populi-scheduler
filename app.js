@@ -95,6 +95,7 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+
 // lauch the job of running matching algorithm every week
 Schedule.automateMatch();
 // initialize enums
@@ -126,7 +127,7 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
-    message: err.message,
+    message: 'An error has occurred. Please refresh the page',
     error: {}
   });
 });

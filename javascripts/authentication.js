@@ -10,6 +10,7 @@ var Authentication = function() {
 
     /**
     * Checks if the request has a defined session and correct authentication
+    * If so, direct the user to the request route. Otherwise, 
     * @param {Object} req - request to check for authentication
     * @param {Object} res - response from the previous function
     * @param {Function} next - callback function
@@ -24,6 +25,7 @@ var Authentication = function() {
         } else if (req.isAuthenticated()) {
             next();
         } else {
+            // direct to homepage to either login
             res.render('home', {title: 'Pax Populi Scheduler',
                                 message: 'Please log in below',
                                 csrfToken: req.csrfToken(),
@@ -40,6 +42,14 @@ var Authentication = function() {
         }
     }
 
+
+    /**
+    * Checks if the owner of the request is an admin
+    * @param {Object} req - request to check for authentication
+    * @param {Object} res - response from the previous function
+    * @param {Function} next - callback function
+    * @return {Boolean} true if the request has the authenication, false otherwise
+    */
     that.isAdministrator = function (req, res, next) {
         var user = req.session.passport.user;
         if (utils.isAdministrator(user.role)) {
