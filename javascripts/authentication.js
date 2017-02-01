@@ -138,7 +138,7 @@ var Authentication = function() {
             if (utils.isCoordinator(role)) {
                 var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
                 scopes.forEach(function (scope) {
-                    if (typeof data[scope] !== 'undefined') {
+                    if (data[scope]) {
                         if (scope === 'schoolInCharge') {
                             userJSON[scope] = utils.extractChosen(data[scope]);
                         } else {

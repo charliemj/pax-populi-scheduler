@@ -1,3 +1,19 @@
 .edit-button {
 	width: 60px;
 }
+
+.no-bullets {
+    list-style-type: none;
+}
+
+.schedule-container th {
+	width: 60px;
+    height: 47px;
+}
+
+#search-message {
+	width: 180px;
+	padding: 20px;
+}
+
+	

@@ -147,16 +147,23 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
         		return res.json(data);
         	}
         }
-        email.sendApprovalRequestEmail(user, req.devMode, function (err, user) {
-        	if (err) {
-        		data.message = err.message;
-            	return res.json({'success': false, message: err.message});
-        	}
-        	data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
-        	data.success = true;
-        	data.redirect = '/';
-        	res.json(data);
-        }); 
+        User.find({role: 'Administrator'}, function (err, admins) {
+                if (err) {
+                    res.send({success: false, message: err.message});
+                } else {
+                    console.log('admins', admins);
+                    email.sendApprovalRequestEmail(user, req.devMode, admins, function (err, user) {
+                        if (err) {
+                            data.message = err.message;
+                            return res.json({'success': false, message: err.message});
+                        }
+                    });
+                    data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
+                    data.success = true;
+                    data.redirect = '/';
+                    res.json(data);
+                }
+        });
     });
 });
 
@@ -197,10 +204,12 @@ router.put('/approve/:username/:requestToken', [authentication.isAuthenticated, 
                 data.success = false;
                 return res.json(data);
 	        }
-	        data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
-	        data.success = true;
-	        data.redirect = '/';
-	        res.json(data);
+	        else{
+                data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
+    	        data.success = true;
+    	        data.redirect = '/';
+    	        res.json(data);
+            }
 	    });
     });
 });
@@ -222,10 +231,12 @@ router.put('/reject/:username/:requestToken', [authentication.isAuthenticated, a
                 data.success = false;
                 return res.json(data);
 	        }
-	        data.message = '{} {}\'s account has been rejected. He/She has been notified.'.format(user.firstName, user.lastName);   
-	        data.success = true;
-	        data.redirect = '/';
-	        res.json(data);
+            else{
+    	        data.message = '{} {}\'s account has been rejected. He/She has been notified.'.format(user.firstName, user.lastName);   
+    	        data.success = true;
+    	        data.redirect = '/';
+    	        res.json(data);
+            }
 	    });
     });
 });
@@ -247,10 +258,12 @@ router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated,
                 data.success = false;
                 return res.json(data);
 	        }
-	        data.message = '{} {}\'s account has been moved to waitlist. He/She has been notified'.format(user.firstName, user.lastName);
-	        data.success = true;
-	        data.redirect = '/';
-	        res.json(data);
+            else{
+    	        data.message = '{} {}\'s account has been moved to waitlist. He/She has been notified'.format(user.firstName, user.lastName);
+    	        data.success = true;
+    	        data.redirect = '/';
+    	        res.json(data);
+            }
 	    });
     });
 });
@@ -272,10 +285,12 @@ router.put('/archive/:username', [authentication.isAuthenticated, authentication
                 data.success = false;
                 return res.json(data);
             }
-            data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
-            data.success = true;
-            data.redirect = '/settings';
-            res.json(data);
+            else{
+                data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
+                data.success = true;
+                data.redirect = '/settings';
+                res.json(data);
+            }
         });
     });
 });
@@ -303,14 +318,16 @@ router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
             data.message = err.message;
             res.render('home', data);
         } else {
+            console.log('userJSON', userJSON);
             User.signUp(userJSON, req.devMode, function (err, user) {
                 if (err) {
                     data.mesage = err.message;
+                    res.render('home', data);
                 } else {
                     data.message = 'Sign up successful! We have sent you a verification email. '
                                     + 'Please check your email.';
+                    res.render('home', data);
                 }
-                res.render('home', data);
             });
         }
     });
@@ -354,6 +371,12 @@ router.post('/search', [authentication.isAuthenticated, authentication.isAdminis
                 inPool: user.inPool,
                 role: user.role,
                 csrfToken: req.csrfToken(),
+                schedulerOn: global.schedulerJob.running,
+                studentSchools: global.enums.studentSchools,
+                tutorSchools: global.enums.tutorSchools,
+                majors: global.enums.majors,
+                interests: global.enums.interests,
+                courses: global.enums.courses,
                 schedulerOn: global.schedulerJob.running};
     User.searchUsers(keyword, function (err, users) {
         if (err) {

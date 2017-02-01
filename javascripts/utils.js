@@ -61,6 +61,7 @@ var Utils = function() {
     }
 
     that.extractChosen = function (array) {
+        console.log('array', array);
         if (that.containsOther(array)) {
             return array[1].trim();
         }
@@ -70,9 +71,35 @@ var Utils = function() {
     that.formatDates = function (schedules) {
         return schedules.map(function (schedule) {
             return schedule.map(function (dateString) {
-                        return new Date(dateString);
+                        return dateString.split(' ');
             });
         });
+    }
+
+    Date.prototype.withoutTime = function () {
+        var d = new Date(this);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+
+    Date.prototype.withoutDate = function () {
+        var d = new Date(this);
+        d.setDate(0);
+        return d;
+    }
+
+    that.getFormatedNearestMeetingTime = function (schedule) {
+        var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        var today = new Date();
+        for (var i=0; i < schedule.length; i++) {
+            var date = new Date(schedule[i][0]);
+            if (today.withoutTime() <= date.withoutTime()) {
+              var day = weekday[date.getDay()];
+                return day + ' ' + schedule[i];
+            }
+        }
+        throw new Error('Could not find nearest meeting time');
+ 
     }
 
     Object.freeze(that);

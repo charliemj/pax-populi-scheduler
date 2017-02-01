@@ -22,28 +22,27 @@ var UserSchema = mongoose.Schema({
     archived: {type: Boolean, default: false},
     role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
-    alternativeEmail: {type: String, default: null},
+    alternativeEmail: {type: String},
     firstName: {type: String, required: true},
-    middleName: {type: String, default:null},
+    middleName: {type: String},
     lastName: {type: String, required: true},
-    nickname: {type: String, default:null},
+    nickname: {type: String},
     gender: {type: String, enum: enums.genders()},
-    dateOfBirth: {type: Date, default:null},
+    dateOfBirth: {type: Date},
     phoneNumber: {type: String, require: true},
-    skypeId: {type: String, default:null},
-    school: {type: String, default:null},
-    educationLevel: {type: String, default:null},
-    enrolled: {type: String, default:null},
-    major: {type: String, default:null},
-    country:{type: String, default:null},
-    region: {type: String, default:null},
-    timezone: {type: String, default:null},
-    nationality: {type: String, default:null},
-    interests: [{type: String, default:null}],
-    countryInCharge: {type: String},
-    regionInCharge: {type: String},
-    schoolInCharge: {type: String}
-
+    skypeId: {type: String},
+    school: {type: String},
+    educationLevel: {type: String},
+    enrolled: {type: String},
+    major: {type: String},
+    country:{type: String},
+    region: {type: String},
+    timezone: {type: String},
+    nationality: {type: String},
+    interests: [{type: String}],
+    countryInCharge: {type: String, default: 'N/A'},
+    regionInCharge: {type: String, default: 'N/A'},
+    schoolInCharge: {type: String, default: 'N/A'}
 });
 
 UserSchema.plugin(mongooseToCsv, 
@@ -518,11 +517,11 @@ UserSchema.statics.getUser = function(username, callback){
     });
 };
 
-UserSchema.statics.searchUsers = function(name, callback){
-    this.find({$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
+UserSchema.statics.searchUsers = function(name, callback) {
+    var query = name.length === 0 ? {} : {$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
                         {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}, 
-                    {$and: [{verified: true, approved: true}]}]},
-        function (err, users){
+                    {$and: [{verified: true, approved: true}]}]};
+    this.find(query, function (err, users){
         if (err) {
             console.log("Invalid usernmae");
             callback(new Error("Invalid username."));
@@ -552,6 +551,25 @@ UserSchema.statics.getAllUsers = function(){
     this.find({}).stream().pipe(this.csvTransformStream()).pipe(fs.createWriteStream('users.csv'));
     console.log("made csv");
 };
+
+UserSchema.statics.findCoordinator = function (userId, callback) {
+    var that = this;
+    that.findOne({_id: userId}, function (err, user) {
+        if (err) {
+           callback({success: false, message: err.message});
+        } else {
+            console.log(user.school, user.region, user.country);
+            that.findOne({$and: [{verified: true, approved: true}, {$or: [{schoolInCharge: user.school, regionInCharge: 'N/A', countryInCharge: 'N/A'}, {schoolInCharge: 'N/A', regionInCharge: user.region, countryInCharge: user.country}, {schoolInCharge: 'N/A', regionInCharge: 'N/A', countryInCharge: user.country}]}]}, function (err, coordinator) {
+                console.log('found', coordinator.username, coordinator.schoolInCharge, coordinator.regionInCharge, coordinator.countryInCharge);
+                if (err) {
+                  callback({success: false, message: err.message});
+                } else {
+                  callback(null, coordinator);
+                }               
+            });
+        }
+    });
+}
 
 
 
