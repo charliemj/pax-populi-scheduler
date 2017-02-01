@@ -87,19 +87,6 @@ class User:
                    self.get_earliest_start_dt_UTC(),
                    other_user.get_earliest_start_dt_UTC())
 
-    def shared_course_start_times(self, other_user):
-        """Computes weekly times during which both users are free to start a
-        course.
-
-        Args:
-            other_user: A User object.
-
-        Returns:
-            A list of WeeklyTime objects during which self and other_user are
-                both free to start a course.
-        """
-        return self.availability.shared_course_start_times(other_user.availability)
-
     def share_course(self, other_user):
         """Determines whether or not two users share at least one course.
 
@@ -141,7 +128,6 @@ class User:
         other_satisfied = (other_user.gender_preference == 'NONE'
                           or other_user.gender_preference == self.gender)
         return self_satisfied and other_satisfied
-
 
     def shared_course_slots_UTC(self, other_user):
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(other_user)
@@ -250,5 +236,3 @@ class User:
                                                           new_tz_str,
                                                           naive_dt_in_new_tz)
         return new_availability
-
-        
