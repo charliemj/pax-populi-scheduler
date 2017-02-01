@@ -33,6 +33,11 @@
   			<span class= 'question'> Q: How do I delete a previous registration?</span><br><br>
   			<span class='answer'> A: Click on the edit button for that registration in your dashboard, and then at the bottom of the edit registration page, click delete. </span> <br><br><br>
   		</div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: I can't make the tutoring session this week, how can I reschedule?</span><br><br>
+  			<span class='answer'> A: Email your {{#if isTutor}}student {{else}}tutor{{/if}} to reschedule. In the email, cc robert@appliedethics.org. If you do not have your {{#if isTutor}}student's {{else}}tutor's {{/if}}email, just email robert@appliedethics.org directly. </span> <br><br><br>
+  		</div>
   	</div>
 {{/isRegularUser}}
 
