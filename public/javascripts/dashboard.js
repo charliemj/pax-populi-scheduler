@@ -67,7 +67,7 @@ $(document).ready(function () {
 
                 return $cols.map(function (j, col) {
                     var $col = $(col),
-                        text = $col.text();
+                        text = $col.text().trim();
 
                     return text.replace(/"/g, '""'); // escape double quotes
 
@@ -76,9 +76,6 @@ $(document).ready(function () {
             }).get().join(tmpRowDelim)
                 .split(tmpRowDelim).join(rowDelim)
                 .split(tmpColDelim).join(colDelim) + '"';
-
-        console.log('rows', $rows);
-        console.log('csv', csv)
 
 				// Deliberate 'false', see comment below
         if (false && window.navigator.msSaveBlob) {
