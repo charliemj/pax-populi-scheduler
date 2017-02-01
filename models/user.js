@@ -530,7 +530,6 @@ UserSchema.statics.findCoordinator = function (userId, callback) {
         } else {
             console.log(user.school, user.region, user.country);
             that.findOne({$and: [{verified: true, approved: true}, {$or: [{schoolInCharge: user.school, regionInCharge: 'N/A', countryInCharge: 'N/A'}, {schoolInCharge: 'N/A', regionInCharge: user.region, countryInCharge: user.country}, {schoolInCharge: 'N/A', regionInCharge: 'N/A', countryInCharge: user.country}]}]}, function (err, coordinator) {
-                console.log('found', coordinator.username, coordinator.schoolInCharge, coordinator.regionInCharge, coordinator.countryInCharge);
                 if (err) {
                   callback({success: false, message: err.message});
                 } else {
@@ -539,7 +538,7 @@ UserSchema.statics.findCoordinator = function (userId, callback) {
             });
         }
     });
-}
+};
 
 
 
