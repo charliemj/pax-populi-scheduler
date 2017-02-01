@@ -21,12 +21,12 @@
 		<div>
 			<input type="hidden" name="_csrf" value="{{csrfToken}}">
 			<span class='question'>Q: How do I schedule a weekly meeting with a {{#if isTutor}}student {{else}}tutor{{/if}}?</span><br><br>
-  			<span class='answer'>A: Click on the registration tab in the navigation bar at the top of the screen. Follow the instructions on the page to fill out your availibility and fill out all the other fields. Submit the registration. You are now in the matching pool! You will be notified when you are matched with a {{#if isTutor}}student {{else}}tutor{{/if}}.</span><br><br><br>
+  			<span class='answer'>A: Click on the registration tab in the navigation bar at the top of the screen. Follow the instructions on the page to fill out your availability and fill out all the other fields. Submit the registration. You are now in the matching pool! You will be notified when you are matched with a {{#if isTutor}}student {{else}}tutor{{/if}}.</span><br><br><br>
   		</div>
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
   			<span class= 'question'> Q: How do I update a previous registration?</span><br><br>
-  			<span class='answer'> A: If you have created a previous registration, it will appear In your user dashboard (the first page you see when you log in). To update your registration, click on the edit button on that registration and change anything that you need to.</span> <br><br><br>
+  			<span class='answer'> A: If you have created a previous registration, it will appear in your user dashboard (the first page you see when you log in). To update your registration, click on the edit button on that registration and change anything that you need to.</span> <br><br><br>
   		</div>
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -40,7 +40,7 @@
   	<div class= 'coordinatorQuestions' id= 'coordinator'>
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
-  			<span class= 'question'> Q: Who’s schedules can I see?</span><br><br>
+  			<span class= 'question'> Q: Whose schedules can I see?</span><br><br>
   			<span class='answer'> A: You have permissions to view only the schedules of the Students or Tutors who you are the coordinator for. Any other schedules will be filtered out. </span> <br><br><br>
   		</div>
   		<div>
@@ -56,7 +56,7 @@
   	<div class ='adminQuestions' id= 'admin'>
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
-  			<span class= 'question'> Q: How do I run the Scheduling Alghorithm?</span><br><br>
+  			<span class= 'question'> Q: How do I run the Scheduling Algorithm?</span><br><br>
   			<span class= 'answer'> A: Click on the settings tab in the navigation bar at the top of the page. At the bottom of the settings page, there will be two buttons under "Manage Scheduler". The button that says "Run Once Now" runs the scheduling algorithm once at that time. The second button turns the automatic features of the scheduling algorithm on, so that it will run on its own every week.</span><br><br><br>
   		<div>
   		<div>
@@ -77,7 +77,7 @@
   		<div>
   			<input type="hidden" name="_csrf" value="{{csrfToken}}">
   			<span class= 'question'> Q: How do I approve/waitlist/reject an account?</span><br><br>
-  			<span class= 'answer'> A: When a student, tutor, coordinator, or admin makes a new account and confirms it, you will get a notification on your dashboard with the new user’s name and the type of user they are. Below their name will appear three buttons that say ‘approve’, ‘waitlist’, and ‘reject.’ Click on the action you want to take. If you wait list them, they will remain in your pending requests tab in your dashboard until you finally approve or reject them. Only reject accounts that should not be allowed to sign in, this will make it so that they cannot sign up for another account with the same email address.</span><br><br><br>
+  			<span class= 'answer'> A: When a student, tutor, coordinator, or admin makes a new account and confirms it, you will get a notification on your dashboard with the new user’s name and the type of user they are. Below their name will appear three buttons that say ‘approve’, ‘waitlist’, and ‘reject.’ Click on the action you want to take. If you waitlist them, they will remain in your pending requests tab in your dashboard until you finally approve or reject them. Only reject accounts that should not be allowed to sign in, this will make it so that they cannot sign up for another account with the same email address.</span><br><br><br>
   		<div>
 {{/isAdministrator}}
 </div>
