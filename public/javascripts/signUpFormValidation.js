@@ -220,7 +220,7 @@ $(document).ready(function(){
         $('#timezoneErrors').empty();
         validForm.timezone = true;
 
-        if($("input[name=timezone]").val() === "" && regularUser){
+        if($("input[name=timezone]").val() == "" && regularUser){ //do NOT do triple equals here
             validForm.timezone = false;
             $('#timezoneErrors').empty();
             $('#timezoneErrors').append('<p>Please select your timezone.</p>');
