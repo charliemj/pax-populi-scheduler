@@ -165,17 +165,22 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
     var username = req.params.username;
     var user = req.session.passport.user;
     User.getUser(username, function (err, accountUser) {
-        accountUser.password = undefined;
-        var data = {title: 'Pax Populi Scheduler',
-                    user: accountUser,
-                    username: username,
-                    fullName: user.fullName,
-                    onHold: user.onHold,
-                    inPool: user.inPool,
-                    role: user.role,
-                    requestToken: req.params.requestToken,
-                    csrfToken: req.csrfToken()};
-        res.redirect('/'); 
+        if (err){
+            return res.json({'success': false, message: err});
+        }
+        else{
+            accountUser.password = undefined;
+            var data = {title: 'Pax Populi Scheduler',
+                        user: accountUser,
+                        username: username,
+                        fullName: user.fullName,
+                        onHold: user.onHold,
+                        inPool: user.inPool,
+                        role: user.role,
+                        requestToken: req.params.requestToken,
+                        csrfToken: req.csrfToken()};
+            res.redirect('/'); 
+        }
     });
          
 });
