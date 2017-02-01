@@ -37,8 +37,16 @@ app.engine('.hbs', exphbs({extname: '.hbs',
                                      isRegularUser: hbsHelpers.isRegularUser,
                                       isAdministrator: hbsHelpers.isAdministrator,
                                       isCoordinator: hbsHelpers.isCoordinator,
+                                      isStudent: hbsHelpers.isStudent,
+                                      isTutor: hbsHelpers.isTutor,
                                       ifNot: hbsHelpers.ifNot,
-                                      formatDate: hbsHelpers.formatDate}
+                                      formatDate: hbsHelpers.formatDate,
+                                      equalStrings: hbsHelpers.equalStrings,
+                                      summarizeSchedule: hbsHelpers.summarizeSchedule,
+                                      formatSchedules: hbsHelpers.formatSchedules,
+                                      eachFormatedSchedule: hbsHelpers.eachFormatedSchedule,
+                                      eachFormatedTutorSchedule: hbsHelpers.eachFormatedTutorSchedule,
+                                      notNotApplicable: hbsHelpers.notNotApplicable}
                           }));
 app.set('view engine', 'hbs');
 
@@ -122,8 +130,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
- 
-
 
 module.exports = app; //keep at bottom of the file

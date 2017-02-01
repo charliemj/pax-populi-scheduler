@@ -1,6 +1,5 @@
 {{#each registrations}}
 <div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-5 registration-container tile-container' id='registration-container-{{_id}}'>
-	{{user.username}}
   <div class='tile registration-tile' name="registration-{{_id}}" data-id='{{_id}}'>
   	<div class='tile-icon' style='float: left'><img class='icon' src="/images/registration.png"></img></div>
   	<div class='registration-header tile-header'>
@@ -10,7 +9,6 @@
     </div>
     <div>
 		<input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
-		<input id='requestToken-{{_id}}' type="hidden" value="{{requestToken}}"></input>
 		<input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
 		<a href='/registrations/update/{{../username}}/{{_id}}'><button id='edit-button-{{_id}}' class='btn btn-info btn-hg edit-button'>Edit</button></a>
     </div>

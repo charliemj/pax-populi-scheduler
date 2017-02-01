@@ -69,7 +69,7 @@ var Enums = function() {
     }
 
     that.courses = function(){
-        return ["Beginner Math", "Advanced Math", "Beginner English", "Intermediate English", "Advanced English", "Intermediate Math"]
+        return ["Intermediate English 1A", "Intermediate English 1B", "Basic Mathematics"];
     };
 
    	Object.freeze(that);
