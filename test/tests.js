@@ -190,5 +190,33 @@ describe('Registration', function(){
 
 });
 
+describe('User', function(){
+    after(function () {
+        // disconnect for clean up
+        db.disconnect();
+    });
+
+    // drop database before each test
+    beforeEach(function (done) {
+        mongoose.connection.db.dropDatabase(done);
+    });
+
+    describe('verifyAccount', function(){
+        it('should sucessfully verify account', function (done){
+            User.verifyAccount(username, token, function(err, user){
+                if (err){console.log(err);}
+                
+                else{
+                    assert.equal(registration.availability, availTest);
+                    assert.equal(registration.genderPref, "MALE");
+                    assert.equal(registration.courses, "COURSES_THESE");
+                    assert.equal(registration.isMatched, false);
+                    done();}
+                }
+            );
+        });
+    });
+
+});
 
 

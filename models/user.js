@@ -7,7 +7,6 @@ var enums = require("../javascripts/enums.js");
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
 var regexs = require("../javascripts/regexs.js");
-var mongooseToCsv = require("mongoose-to-csv");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true},
@@ -45,35 +44,6 @@ var UserSchema = mongoose.Schema({
     schoolInCharge: {type: String, default: 'N/A'}
 });
 
-UserSchema.plugin(mongooseToCsv, 
-{
-  headers: 'FirstName LastName UserName Email AltEmail Phone Gender DOB Country Region TimeZone Major educationLevel School Nationality Role SkypeID Interests InChargeOfRegion InChargeOfCountry InChargeOfSchool',
-  constraints: {
-    'Username': 'username',
-    'Email': 'email',
-    'DOB': 'dateofBirth',
-    'FirstName': 'firstName',
-    'LastName': 'lastName',
-    'AltEmail': 'alternativeEmail',
-    'Phone': 'phoneNumber',
-    'SkypeID':'skypeId',
-    'TimeZone': 'timezone',
-    'Country': 'country',
-    'Region': 'region',
-    'Nationality': 'nationality',
-    'Role': 'role',
-    'Gender': 'gender',
-    'School': 'school',
-    'Major': 'major',
-    'Interests': 'interests',
-    'InChargeOfSchool': 'schoolInCharge',
-    'InChargeOfRegion': 'regionInCharge',
-    'InChargeOfCountry': 'countryInCharge',
-    'educationLevel': 'educationLevel'
-
-}
-
-  });
 
 
 UserSchema.path("role").validate(function(role) {
@@ -560,7 +530,6 @@ UserSchema.statics.findCoordinator = function (userId, callback) {
         } else {
             console.log(user.school, user.region, user.country);
             that.findOne({$and: [{verified: true, approved: true}, {$or: [{schoolInCharge: user.school, regionInCharge: 'N/A', countryInCharge: 'N/A'}, {schoolInCharge: 'N/A', regionInCharge: user.region, countryInCharge: user.country}, {schoolInCharge: 'N/A', regionInCharge: 'N/A', countryInCharge: user.country}]}]}, function (err, coordinator) {
-                console.log('found', coordinator.username, coordinator.schoolInCharge, coordinator.regionInCharge, coordinator.countryInCharge);
                 if (err) {
                   callback({success: false, message: err.message});
                 } else {
@@ -569,7 +538,7 @@ UserSchema.statics.findCoordinator = function (userId, callback) {
             });
         }
     });
-}
+};
 
 
 
