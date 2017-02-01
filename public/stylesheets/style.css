@@ -227,6 +227,10 @@ input {
   padding-bottom: 15px;
 }
 
+
+.formErr{
+  color:red;
+}
 .user-container {
   min-height: 160px;
   width: 30%;
