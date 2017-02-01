@@ -204,10 +204,12 @@ router.put('/approve/:username/:requestToken', [authentication.isAuthenticated, 
                 data.success = false;
                 return res.json(data);
 	        }
-	        data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
-	        data.success = true;
-	        data.redirect = '/';
-	        res.json(data);
+	        else{
+                data.message = '{} {}\'s account has been approved. He/She has been notified.'.format(user.firstName, user.lastName);   
+    	        data.success = true;
+    	        data.redirect = '/';
+    	        res.json(data);
+            }
 	    });
     });
 });
@@ -229,10 +231,12 @@ router.put('/reject/:username/:requestToken', [authentication.isAuthenticated, a
                 data.success = false;
                 return res.json(data);
 	        }
-	        data.message = '{} {}\'s account has been rejected. He/She has been notified.'.format(user.firstName, user.lastName);   
-	        data.success = true;
-	        data.redirect = '/';
-	        res.json(data);
+            else{
+    	        data.message = '{} {}\'s account has been rejected. He/She has been notified.'.format(user.firstName, user.lastName);   
+    	        data.success = true;
+    	        data.redirect = '/';
+    	        res.json(data);
+            }
 	    });
     });
 });
@@ -254,10 +258,12 @@ router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated,
                 data.success = false;
                 return res.json(data);
 	        }
-	        data.message = '{} {}\'s account has been moved to waitlist. He/She has been notified'.format(user.firstName, user.lastName);
-	        data.success = true;
-	        data.redirect = '/';
-	        res.json(data);
+            else{
+    	        data.message = '{} {}\'s account has been moved to waitlist. He/She has been notified'.format(user.firstName, user.lastName);
+    	        data.success = true;
+    	        data.redirect = '/';
+    	        res.json(data);
+            }
 	    });
     });
 });
@@ -279,10 +285,12 @@ router.put('/archive/:username', [authentication.isAuthenticated, authentication
                 data.success = false;
                 return res.json(data);
             }
-            data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
-            data.success = true;
-            data.redirect = '/settings';
-            res.json(data);
+            else{
+                data.message = '{} {}\'s account has been archived. He/She has been notified'.format(user.firstName, user.lastName);
+                data.success = true;
+                data.redirect = '/settings';
+                res.json(data);
+            }
         });
     });
 });
