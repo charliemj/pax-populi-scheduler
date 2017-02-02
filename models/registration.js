@@ -50,7 +50,7 @@ RegistrationSchema.statics.createRegistration = function(user, genderPref, avail
             callback(err); 
         }
         else if (registrations.length === 0){
-            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
+            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime: earliestStartTime}, 
             function(err, registration){
                 if (err){
                     console.log("Problem creating registration");
@@ -210,7 +210,7 @@ RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback
  * @param {Function} callback - The function to execute after the unmatched registrations are found.
  */
 RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
-    Registration.find({isMatched: false }).populate('user').exec(function (err, registrations) {
+    Registration.find({isMatched: false, earliestStartTime: {"$lt": new Date()}}).populate('user').exec(function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
         } else {

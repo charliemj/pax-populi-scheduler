@@ -106,7 +106,14 @@ Enum.initialize(function (err, enums) {
         global.enums = enums;
     }
 });
-
+// initialize super admin for Bob
+User.initializeSuperAdmin(function (err, superAdmin) {
+    if (err) {
+        console.log(err.message);
+    } else {
+        console.log('initialized super admin');
+    }
+});
 
 // error handlers
 

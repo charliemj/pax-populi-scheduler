@@ -93,6 +93,50 @@ UserSchema.path("requestToken").validate(function(verificationToken) {
 }, "Request token must have the correct number of digits");
 
 /**
+* Searches for an exisiting super admin object in the database. If there is not one, initializes one
+* using all the defaults in javascripts/config.js
+* @param {Function} callback - the function that gets called after the schedules are fetched
+*/
+UserSchema.statics.initializeSuperAdmin = function (callback) {
+    var that = this;
+    var firstName = process.env.SUPER_ADMIN_FIRST_NAME || config.adminFirstName();
+    var lastName = process.env.SUPER_ADMIN_LAST_NAME || config.adminLastName();
+    var email = process.env.SUPER_ADMIN_ADDRESS || config.adminEmailAddress();
+    var phoneNumber = process.env.SUPER_ADMIN_PHONE_NUMBER || config.adminPhoneNumber();
+    that.findOne({firstName: firstName, lastName: lastName, email: email}, function (err, users) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else if (!users) {
+            authentication.encryptPassword(password, function (err, hash) {
+            if (err) {
+                return err;
+            } else {
+                var userJSON = {username: username,
+                                password: hash,
+                                role: "Adminstrator",
+                                email: email,
+                                alternativeEmail: 'N/A',
+                                firstName: firstName,
+                                lastName: lastName,
+                                phoneNumber: phoneNumber,
+                                verified: true,
+                                approved: true}
+                that.create({}, function (err, superAdmin) {
+                    if (err) {
+                        callback({success: false, message: err.message});
+                    } else {
+                        console.log('created an account for super admin', firstName, lastName);
+                        callback(null, superAdmin);
+                    } 
+                });
+            }
+        } else {
+            callback(null, users);
+        }
+    });
+});
+
+/**
 * Sets a verification token for the user
 * @param {String} token - the verification token of the user
 * @param {Function} callback - the function that gets called after the token is set
