@@ -3,6 +3,7 @@ import inspect
 import pytz
 
 from availability import Availability
+from match import Match
 from user import User
 from weekly_time import WeeklyTime
 
@@ -16,6 +17,8 @@ MINUTES_PER_WEEK = MINUTES_PER_DAY * DAYS_PER_WEEK
 
 # WeeklyTime objects
 sunday_0000 = WeeklyTime(0, 0, 0)
+sunday_0115 = WeeklyTime(0, 1, 15)
+sunday_0215 = WeeklyTime(0, 2, 15)
 sunday_0059 = WeeklyTime(0, 0, 59)
 sunday_2300 = WeeklyTime(0, 23, 0)
 monday_0000 = WeeklyTime(1, 0, 0)
@@ -57,7 +60,11 @@ nonconsecutive_free_avail = Availability(nonconsecutive_free_slots)
 free_first_five_avail = Availability(free_first_five_slots)
 free_first_six_avail = Availability.from_dict(free_first_six_dict)
 free_first_seven_avail = Availability.from_dict(free_first_seven_dict)
+free_0_0115_0245_avail = Availability.from_dict({'0': [['01:15', '02:45']]})
+free_0_0215_0345_avail = Availability.from_dict({'0': [['02:15', '03:45']]})
+free_0_0830_1000_avail = Availability.from_dict({'0': [['08:30', '10:00']]})
 free_0_0930_1100_avail = Availability.from_dict(free_0_0930_1100_dict)
+
 
 # Timezone constants
 all_tz = [pytz.timezone(tz_name) for tz_name in pytz.all_timezones]
@@ -97,12 +104,6 @@ chatham_ds = chatham.localize(datetime(2018, 1, 20))
 genders = ['MALE', 'FEMALE']
 gender_preferences = ['MALE', 'FEMALE', 'NONE']
 
-# User objects
-student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', free_first_six_avail,
-               'US/Eastern', ['Math'], date(2018, 1, 1))
-tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', free_0_0930_1100_avail,
-             'Asia/Kabul', ['Math'], date(2018, 1, 1))
-
 # User __init__ arguments
 user_args = set(inspect.getargspec(User.__init__)[0]) - set(['self'])
 
@@ -129,6 +130,45 @@ def new_user(user, arg_to_value):
         else:
             user_input_dict[arg] = user.__dict__[arg]
     return User(**user_input_dict)
+
+# User objects
+student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', free_first_six_avail,
+               'US/Eastern', ['Math'], date(2018, 1, 1))
+student_first_course_nonexistent = new_user(student, 
+                                            {'availability': free_0_0215_0345_avail,
+                                             'earliest_start_date': date(2018, 3, 11)})
+student_first_course_ambiguous = new_user(student, 
+                                          {'availability': free_0_0115_0245_avail,
+                                           'earliest_start_date': date(2018, 11, 4)})
+tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', free_0_0930_1100_avail,
+             'Asia/Kabul', ['Math'], date(2018, 1, 1))
+tutor_always_free = new_user(tutor, {'availability': always_free_avail})
+tutor_match_ds = new_user(tutor, {'availability': free_0_0830_1000_avail})
+
+# Match objects
+match_one_week = Match(student, tutor, WeeklyTime(0, 5, 0),
+                       datetime(2018, 1, 1, 5, 0), 1)
+match_two_weeks = Match(student, tutor, WeeklyTime(0, 5, 0),
+                        datetime(2018, 1, 1, 5, 0), 2)
+match_et_ds_kabul = Match(student, tutor_match_ds, WeeklyTime(0, 4, 0),
+                          datetime(2017, 5, 1, 4, 0), 2)
+match_utc = Match(new_user(student, {'tz_str': 'UTC'}),
+                  new_user(tutor, {'tz_str': 'UTC',
+                                   'availability': free_first_six_avail}),
+                  WeeklyTime(0, 0, 0),
+                  datetime(2018, 1, 1),
+                  2)
+
+match_first_course_nonexistent = Match(student_first_course_nonexistent,
+                                       tutor,
+                                       WeeklyTime(0, 7, 15),
+                                       datetime(2018, 3, 11),
+                                       2)
+match_first_course_ambiguous = Match(student_first_course_ambiguous,
+                                     tutor,
+                                     WeeklyTime(0, 5, 15),
+                                     datetime(2018, 11, 4),
+                                     2)
 
 class FakeDatetime(datetime):
     """A fake replacement for datetime that can be mocked for testing. Overrides

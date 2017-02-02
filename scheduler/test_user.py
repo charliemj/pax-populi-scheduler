@@ -7,10 +7,21 @@ import mock
 from availability import Availability
 from match import Match
 import unit_test_constants as c
-from user import User
 from weekly_time import WeeklyTime
 
 class TestUser(unittest.TestCase):
+    def test_init_value_error(self):
+        with self.assertRaises(ValueError):
+            c.new_user(c.student, {'user_type': 'student'})
+        with self.assertRaises(ValueError):
+            c.new_user(c.student, {'gender': 'male'})
+        with self.assertRaises(ValueError):
+            c.new_user(c.student, {'gender_preference': 'None'})
+    
+    def test_init_type_error(self):
+        with self.assertRaises(TypeError):
+            c.new_user(c.student, {'earliest_start_date': datetime(2018,1,1)})
+
     def test_init_attributes(self):
         self.assertEqual(c.student.user_id, 'user1')
         self.assertEqual(c.student.reg_id, 'reg1')
@@ -23,18 +34,6 @@ class TestUser(unittest.TestCase):
         self.assertEqual(c.student.courses, ['Math'])
         self.assertEqual(c.student.courses_set, set(['Math']))
         self.assertEqual(c.student.earliest_start_date, date(2018, 1, 1))
-    
-    def test_init_value_error(self):
-        with self.assertRaises(ValueError):
-            c.new_user(c.student, {'user_type': 'student'})
-        with self.assertRaises(ValueError):
-            c.new_user(c.student, {'gender': 'male'})
-        with self.assertRaises(ValueError):
-            c.new_user(c.student, {'gender_preference': 'None'})
-    
-    def test_init_type_error(self):
-        with self.assertRaises(TypeError):
-            c.new_user(c.student, {'earliest_start_date': datetime(2018,1,1)})
 
     def test_get_earliest_start_dt_UTC_utc(self):
         user = c.new_user(c.student, {'tz_str': 'UTC',
@@ -601,41 +600,49 @@ class TestUser(unittest.TestCase):
         with self.assertRaises(ValueError):
             c.student.can_match(c.tutor, 0)
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_0_0_0(self):
         tutor = c.new_user(c.tutor, {'availability': c.free_first_six_avail,
                                      'gender_preference': 'FEMALE',
                                      'courses': []})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_0_0_1(self):
         tutor = c.new_user(c.tutor, {'availability': c.free_first_six_avail,
                                      'courses': []})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_0_1_0(self):
         tutor = c.new_user(c.tutor, {'availability': c.free_first_six_avail,
                                      'gender_preference': 'FEMALE'})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_0_1_1(self):
         tutor = c.new_user(c.tutor, {'availability': c.free_first_six_avail})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_1_0_0(self):
         tutor = c.new_user(c.tutor, {'gender_preference': 'FEMALE',
                                      'courses': []})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_1_0_1(self):
         tutor = c.new_user(c.tutor, {'courses': []})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_1_1_0(self):
         tutor = c.new_user(c.tutor, {'gender_preference': 'FEMALE'})
         self.assertFalse(c.student.can_match(tutor, 1))
 
+    @mock.patch('user.datetime', c.FakeDatetime)
     def test_can_match_availability_course_gender_1_1_1(self):
         self.assertTrue(c.student.can_match(c.tutor, 1))
-        
+
 if __name__ == '__main__':
     unittest.main()
