@@ -104,13 +104,18 @@ ScheduleSchema.statics.getMatches = function (callback) {
             }
             console.log('got matches');
             var matches = outputs[0];
-            Schedule.saveSchedules(matches, function (err, schedules) {
-                if (err) {
-                    callback({success: false, message: err.message});
-                } else {
-                    callback(null, schedules);
-                }
-            });
+            if (matches.length == 0) {
+                callback(null, []);
+            } else {
+                Schedule.saveSchedules(matches, function (err, schedules) {
+                    console.log('saving schedules...');
+                    if (err) {
+                        callback({success: false, message: err.message});
+                    } else {
+                        callback(null, schedules);
+                    }
+                });
+            }
         });
     });
 };
@@ -160,31 +165,44 @@ ScheduleSchema.statics.automateMatch = function () {
 */
 ScheduleSchema.statics.saveSchedules = function (matches, callback) {
     var count = 0;
+    console.log('number of matches', matches.length);
     matches.forEach(function (match) {
         // mark the matched registrations as unmatched
+        console.log('count', count)
         Registration.markAsMatched([match.studentRegID, match.tutorRegID], function (err, registration) {
+            console.log('marking registrations as matched...');
             if (err) {
                 console.log(err);
                 callback({success: false, message: err.message});
             } else {
                 // make scheduler JSON for creating a schedule object
-                Schedule.createScheduleJSON(match, function (schedule, callback) {
-                    Schedule.scheduleExpiredRemove(schedule, function (err) {
-                        if (err) {
-                            console.log(err);
-                        }
-                    });
-                    count++;
-                    if (count === matches.length) {
-                        // only notify admins after finishing saving all matches
-                        Schedule.notifyAdmins(matches.length, function (err) {
+                console.log('done marking registrations, creating the schedule...')
+                Schedule.createScheduleJSON(match, function (err, scheduleJSON) {
+                    Schedule.create(scheduleJSON, function (err, schedule) {
                         if (err) {
                             callback({success: false, message: err.message});
-                        } else { 
-                                callback(null, matches);
-                            }
-                        });
-                    };
+                        } else {
+                            Schedule.scheduleExpiredRemove(schedule, function (err) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log('scheduled a expired check')
+                                }
+                            });
+                            count++;
+                            if (count === matches.length) {
+                                // only notify admins after finishing saving all matches
+                                console.log('done saving the schedules!')
+                                Schedule.notifyAdmins(matches.length, function (err) {
+                                if (err) {
+                                    callback({success: false, message: err.message});
+                                } else { 
+                                        callback(null, matches);
+                                    }
+                                });
+                            };
+                        }
+                    });
                 });
             }
         });
@@ -279,13 +297,13 @@ ScheduleSchema.statics.scheduleExpiredRemove = function (schedule, callback) {
 *                               called once this function is done
 */
 ScheduleSchema.statics.notifyAdmins = function (numMatches, callback) {               
-    if (matches.length > 0) {
-        User.find({role: 'Administrator'}, function (err, admins) {
-            console.log('admins', admins);
+    if (numMatches > 0) {
+        User.find({role: 'Administrator', approved: true, verified: true, archived: false}, function (err, admins) {
+            console.log('admins', admins.length);
             if (err) {
                 callback({success: false, message: err.message});
             } else {
-                email.notifyAdmins(matches.length, admins, callback); 
+                email.notifyAdmins(numMatches, admins, callback); 
             }
         });
     } else {
@@ -307,41 +325,45 @@ ScheduleSchema.statics.notifyAdmins = function (numMatches, callback) {
 */
 ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, course, callback) {
     console.log('in approveSchedule');
-    Schedule.findOne({ _id: scheduleId}).populate('student').populate('tutor').exec(function (err, schedule) {
-        if (err) {
-            callback({success: false, message: err.message});
-        } else {
-            schedule.adminApproved = true;
-            schedule.course = course;
-            schedule.studentClassSchedule = schedule.studentPossibleSchedules[scheduleIndex];
-            schedule.tutorClassSchedule = schedule.tutorPossibleSchedules[scheduleIndex];
-            schedule.UTCClassSchedule = schedule.UTCPossibleSchedules[scheduleIndex];
-            schedule.firstDateTimeUTC = schedule.UTCClassSchedule[0];
-            schedule.lastDateTimeUTC = schedule.UTCClassSchedule.slice(-1)[0];
-            schedule.save(function (err, updatedSchedule) {
-                // inform the student and tutor
-                email.sendScheduleEmails(schedule.student, function (err) {
-                    if (err) {
-                        callback({sucess: false, message: err.message});
-                    } else {
-                        email.sendScheduleEmails(schedule.tutor, function (err) {
-                            if (err) {
-                                callback({sucess: false, message: err.message});
-                            } else {
-                                Schedule.scheduleWeeklyReminder(schedule, function (err) {
-                                    if (err) {
-                                        console.log(err);
-                                    }
-                                })
-                                callback(null, updatedSchedule);
-                            }
-                        });
-                    }
-                    
+    if (scheduleIndex === -1) {
+        callback({success: false, message: 'Please select a schedule from the list of possible schedules'});
+    } else {
+        Schedule.findOne({ _id: scheduleId}).populate('student').populate('tutor').exec(function (err, schedule) {
+            if (err) {
+                callback({success: false, message: err.message});
+            } else {
+                schedule.adminApproved = true;
+                schedule.course = course;
+                schedule.studentClassSchedule = schedule.studentPossibleSchedules[scheduleIndex];
+                schedule.tutorClassSchedule = schedule.tutorPossibleSchedules[scheduleIndex];
+                schedule.UTCClassSchedule = schedule.UTCPossibleSchedules[scheduleIndex];
+                schedule.firstDateTimeUTC = schedule.UTCClassSchedule[0];
+                schedule.lastDateTimeUTC = schedule.UTCClassSchedule.slice(-1)[0];
+                schedule.save(function (err, updatedSchedule) {
+                    // inform the student and tutor
+                    email.sendScheduleEmails(schedule.student, function (err) {
+                        if (err) {
+                            callback({sucess: false, message: err.message});
+                        } else {
+                            email.sendScheduleEmails(schedule.tutor, function (err) {
+                                if (err) {
+                                    callback({sucess: false, message: err.message});
+                                } else {
+                                    Schedule.scheduleWeeklyReminder(schedule, function (err) {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    })
+                                    callback(null, updatedSchedule);
+                                }
+                            });
+                        }
+                        
+                    });
                 });
-            });
-        }
-    });
+            }
+        });
+    }
 }
 
 /*

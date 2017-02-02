@@ -16,26 +16,29 @@ var Schedule = require("../models/schedule.js");
 // setup csurf middlewares 
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
+var formDefaults;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+    formDefaults = {userTypes: global.enums.userTypes,
+                    genders: global.enums.genders,
+                    confirmation: global.enums.confirmation,
+                    studentSchools: global.enums.studentSchools,
+                    tutorSchools: global.enums.tutorSchools,
+                    studentEducationLevels: global.enums.studentEducationLevels,
+                    tutorEducationLevels: global.enums.tutorEducationLevels,
+                    passwordRegex: JSON.stringify(regexs.passwordPattern()),
+                    emailRegex: JSON.stringify(regexs.emailPattern()),
+                    notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
+                    majors: global.enums.majors,
+                    interests: global.enums.interests}
     if (req.session.passport && req.session.passport.user && req.session.passport.user.username) {
         res.redirect('/users/'+ req.session.passport.user.username);
     } else {
-        res.render('home', {title: 'Pax Populi Scheduler',
-                            csrfToken: req.csrfToken(),
-                            userTypes: global.enums.userTypes,
-                        	genders: global.enums.genders,
-                        	confirmation: global.enums.confirmation,
-                        	studentSchools: global.enums.studentSchools,
-                        	tutorSchools: global.enums.tutorSchools,
-                        	studentEducationLevels: global.enums.studentEducationLevels,
-                        	tutorEducationLevels: global.enums.tutorEducationLevels,
-                            passwordRegex: JSON.stringify(regexs.passwordPattern()),
-                            emailRegex: JSON.stringify(regexs.emailPattern()),
-                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
-                        	majors: global.enums.majors,
-                        	interests: global.enums.interests});
+        var data = {title: 'Pax Populi Scheduler',
+                    csrfToken: req.csrfToken()}
+        Object.assign(data, formDefaults);
+        res.render('home', data);
     }
 });
 
@@ -59,6 +62,7 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
+        Object.assign(data, formDefaults);
         if (err) {
             data.message = err.message;
             return res.render('home', data);
@@ -68,14 +72,14 @@ router.post('/login', parseForm, csrfProtection, function(req, res, next) {
         }
         if (!user.verified) {
             data.message = 'Your account has not been verified, please go to your mailbox to verify.';
-            data.isValidAccount = true;
             data.username = user.username;
+            data.isValidAccount = true;
             return res.render('home', data);
         } else if (user.archived) {
             data.message = 'Your account has been archived by the adminstrators. '
                             + 'You no longer have access to this account';
+            data.username = user.username
             data.archived = true;
-            data.username = user.username;
             return res.render('home', data);
         } else if (user.rejected) {
         	data.message = 'Your account has been rejected by the adminstrators so you do not have '
@@ -111,6 +115,7 @@ router.get('/verify/:username/resend', function(req, res, next) {
     data = {title: 'Pax Populi Scheduler',
             username: username,
             csrfToken: req.csrfToken()};
+    Object.assign(data, formDefaults);
     User.sendVerificationEmail(username, req.devMode, function (err, user) {
         if (err) {
             return res.render('home', data);
@@ -128,6 +133,7 @@ router.get('/verify/:username/:verificationToken', function(req, res, next) {
             username: username,
             verificationToken: req.params.verificationToken,
             csrfToken: req.csrfToken()};
+    Object.assign(data, formDefaults);
     res.render('home', data);      
 });
 
@@ -136,6 +142,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
     User.verifyAccount(req.params.username, req.params.verificationToken, function (err, user) {
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
+        Object.assign(data, formDefaults);
         if (err) {
         	if (!err.isVerified) {
             	data.message = err.message;
@@ -147,7 +154,7 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
         		return res.json(data);
         	}
         }
-        User.find({role: 'Administrator'}, function (err, admins) {
+        User.find({role: 'Administrator', approved: true, verified: true, archived: false}, function (err, admins) {
                 if (err) {
                     res.send({success: false, message: err.message});
                 } else {
@@ -187,6 +194,7 @@ router.get('/respond/:username/:requestToken', [authentication.isAuthenticated, 
                         role: user.role,
                         requestToken: req.params.requestToken,
                         csrfToken: req.csrfToken()};
+            Object.assign(data, formDefaults);
             res.redirect('/'); 
         }
     });
@@ -199,6 +207,7 @@ router.put('/approve/:username/:requestToken', [authentication.isAuthenticated, 
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken(),
                 redirect: '/'};
+        Object.assign(data, formDefaults);
         if (!user || (err && !user.approved))  {
             data.message = err.message;
             data.success = false;
@@ -226,6 +235,7 @@ router.put('/reject/:username/:requestToken', [authentication.isAuthenticated, a
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken(),
                 redirect: '/'};
+        Object.assign(data, formDefaults);
         if (!user || (err && !user.rejected)) {
             data.message = err.message;
             data.success = false;
@@ -253,6 +263,7 @@ router.put('/waitlist/:username/:requestToken', [authentication.isAuthenticated,
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken(),
                 redirect: '/'};
+        Object.assign(data, formDefaults);
         if (!user || (err || !user.approved || !user.onHold)){
             data.message = err.message;
             data.success = false;
@@ -280,6 +291,7 @@ router.put('/archive/:username', [authentication.isAuthenticated, authentication
         data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken(),
                 redirect: '/'};
+        Object.assign(data, formDefaults);
         if (!user || (err || !user.archived)) {
             data.message = err.message;
             data.success = false;
@@ -304,18 +316,6 @@ router.put('/archive/:username', [authentication.isAuthenticated, authentication
 // signs up a new account
 router.post('/signup', parseForm, csrfProtection, function(req, res, next) {
 	console.log('signing up...');
-    var formDefaults = { userTypes: global.enums.userTypes,
-                            genders: global.enums.genders,
-                            confirmation: global.enums.confirmation,
-                            studentSchools: global.enums.studentSchools,
-                            tutorSchools: global.enums.tutorSchools,
-                            studentEducationLevels: global.enums.studentEducationLevels,
-                            tutorEducationLevels: global.enums.tutorEducationLevels,
-                            passwordRegex: JSON.stringify(regexs.passwordPattern()),
-                            emailRegex: JSON.stringify(regexs.emailPattern()),
-                            notAllowedRegex: JSON.stringify(regexs.notAllowedPattern()),
-                            majors: global.enums.majors,
-                            interests: global.enums.interests};
     var data = {title: 'Pax Populi Scheduler',
                 csrfToken: req.csrfToken()};
     Object.assign(data, formDefaults);

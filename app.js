@@ -104,6 +104,7 @@ Enum.initialize(function (err, enums) {
     if (err) {
         console.log(err.message);
     } else {
+    	console.log('ensured that enums exist');
         global.enums = enums;
     }
 });
@@ -112,7 +113,7 @@ User.initializeSuperAdmin(function (err, superAdmin) {
     if (err) {
         console.log(err.message);
     } else {
-        console.log('initialized super admin');
+        console.log('ensured that super admin account exist');
     }
 });
 

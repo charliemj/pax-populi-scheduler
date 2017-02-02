@@ -545,20 +545,19 @@ UserSchema.statics.getUser = function(username, callback){
 };
 
 /*
- * Find users whose first name or last name match `name` exactly. If name is an
+ * Find approved and verified users whose first name or last name match `name` exactly. If name is an
  * empty string, gets all users.
  * @param {String} name - the name string to search 
  * @param {Function} callback - The function to execute after the user is found. Callback
  * function takes 1 parameter: an error when the request is not properly claimed
  */
 UserSchema.statics.searchUsers = function(name, callback) {
-    var query = name.length === 0 ? {} : {$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
-                        {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}, 
-                    {$and: [{verified: true, approved: true}]}]};
+    var query = name.length === 0 ? {verified: true, approved: true} : {$and: [{$and: [{verified: true, approved: true}, 
+                                                 {$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
+                                                        {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}]}]};
     this.find(query, function (err, users){
         if (err) {
-            console.log("Invalid usernmae");
-            callback(new Error("Invalid username."));
+            callback({success: false, message: err.message});
         } 
         else {
             callback(null, users);
@@ -573,7 +572,6 @@ UserSchema.statics.searchUsers = function(name, callback) {
  * function takes 1 parameter: an error when the request is not properly claimed
  */
 UserSchema.statics.getPendingUsers = function (callback) {
-    // {$or: [{student: user._id}, {tutor: user._id}]}
     this.find({$and: [{verified: true}, 
                         {$or: [{$and: [{approved:false}, {rejected: false}, {onHold: false}]}, 
                                 {onHold: true, approved: true}]}]}, function (err, users) {
@@ -603,6 +601,11 @@ UserSchema.statics.findCoordinator = function (userId, callback) {
                 if (err) {
                     callback({success: false, message: err.message});
                 } else {
+                    if (coordinator) {
+                        console.log('coordinator', coordinator.schoolInCharge, coordinator.regionInCharge, coordinator.countryInCharge);
+                    } else {
+                        console.log('could not find any coordinator', coordinator)
+                    }
                     callback(null, coordinator);
                 }               
             });

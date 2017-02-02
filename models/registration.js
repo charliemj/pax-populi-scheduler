@@ -210,7 +210,7 @@ RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback
  * @param {Function} callback - The function to execute after the unmatched registrations are found.
  */
 RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
-    Registration.find({isMatched: false, earliestStartTime: {"$lt": new Date()}}).populate('user').exec(function (err, registrations) {
+    Registration.find({isMatched: false, earliestStartTime: {"$gte": new Date()}}).populate('user').exec(function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
         } else {

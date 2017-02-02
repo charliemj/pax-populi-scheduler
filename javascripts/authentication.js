@@ -119,7 +119,7 @@ var Authentication = function() {
                             password: hash,
                             role: role,
                             email: data.email.trim(),
-                            alternativeEmail: data.alternativeEmail ? data.alternativeEmail.trim(): 'N/A',
+                            alternativeEmail: data.alternativeEmail.trim().length > 0 ? data.alternativeEmail.trim(): 'N/A',
                             firstName: data.firstName.trim(),
                             middleName: data.middleName.trim(),
                             lastName: data.lastName.trim(),
@@ -133,7 +133,7 @@ var Authentication = function() {
                 var additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
-                                        skypeId: data.skypeId ? data.skypeId.trim(): 'N/A',
+                                        skypeId: data.skypeId.trim().length > 0 ? data.skypeId.trim(): 'N/A',
                                         school: isTutor ? data.tutorSchool : data.studentSchool,   
                                         educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
                                                             data.studentEducationLevel.trim(),

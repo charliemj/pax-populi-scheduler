@@ -1,35 +1,37 @@
 <table class="table table-hover" id='{{_id}}-profile'>
   <tbody>
     {{#isRegularUser role}}
-      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td>
-      <tr><th>Role</th><td>{{role}}</td>
-      <tr><th>Gender</th><td>{{gender}}</td>
-      <tr><th>Date of Birth</th><td>{{formatDate dateOfBirth}}</td>
-      <tr><th>School</th><td>{{school}}</td>
-      <tr><th>Education Level</th><td>{{educationLevel}}</td>
-      <tr><th>Major</th><td>{{major}}</td>
-      <tr><th>Currently Enrolled</th><td>{{#if enrolled}}Yes{{else}}No{{/if}}</td>
-      <tr><th>Country</th><td>{{country}}</td>
-      <tr><th>Region</th><td>{{region}}</td>
-      <tr><th>Nationality</th><td>{{nationality}}</td>
-      <tr><th>Timezone</th><td>{{timezone}}</td>
-      <tr><th>Interests</th><td>{{interests}}</td>
-      <tr><th>Email Address</th><td>{{email}}</td>
-      <tr><th>SkypeId</th><td>{{skypeId}}</td>
-      <tr><th>Phone Number</th><td>{{phoneNumber}}</td>
+      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td></tr>
+      <tr><th>Role</th><td>{{role}}</td></tr>
+      <tr><th>Gender</th><td>{{gender}}</td></tr>
+      <tr><th>Date of Birth</th><td>{{formatDate dateOfBirth}}</td></tr>
+      <tr><th>School</th><td>{{school}}</td></tr>
+      <tr><th>Education Level</th><td>{{educationLevel}}</td></tr>
+      <tr><th>Major</th><td>{{major}}</td></tr>
+      <tr><th>Currently Enrolled</th><td>{{#if enrolled}}Yes{{else}}No{{/if}}</td></tr>
+      <tr><th>Country</th><td>{{country}}</td></tr>
+      <tr><th>Region</th><td>{{region}}</td></tr>
+      <tr><th>Nationality</th><td>{{nationality}}</td></tr>
+      <tr><th>Timezone</th><td>{{timezone}}</td></tr>
+      <tr><th>Interests</th><td>{{interests}}</td></tr>
+      <tr><th>Email Address</th><td>{{email}}</td></tr>
+      <tr><th>Alternative Email Address</th><td>{{alternativeEmail}}</td></tr>
+      <tr><th>SkypeId</th><td>{{skypeId}}</td></tr>
+      <tr><th>Phone Number</th><td>{{phoneNumber}}</td></tr>
     {{else}}
-      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td>
-      <tr><th>Role</th><td>{{role}}</td>
-      <tr><th>Email Address</th><td>{{email}}</td>
-      <tr><th>Phone Number</th><td>{{phoneNumber}}</td>
+      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td></tr>
+      <tr><th>Role</th><td>{{role}}</td></tr>
+      <tr><th>Email Address</th><td>{{email}}</td></tr>
+      <tr><th>Alternative Email Address</th><td>{{alternativeEmail}}</td></tr>
+      <tr><th>Phone Number</th><td>{{phoneNumber}}</td></tr>
       {{#notNotApplicable schoolInCharge}}
-        <tr><th>School in Charge</th><td>{{schoolInCharge}}</td>
+        <tr><th>School in Charge</th><td>{{schoolInCharge}}</td></tr>
       {{/notNotApplicable}}
       {{#notNotApplicable regionInCharge}}
-        <tr><th>Region in Charge</th><td>{{regionInCharge}}</td>
+        <tr><th>Region in Charge</th><td>{{regionInCharge}}</td></tr>
       {{/notNotApplicable}}
       {{#notNotApplicable countryInCharge}}
-        <tr><th>Country in Charge</th><td>{{countryInCharge}}</td>
+        <tr><th>Country in Charge</th><td>{{countryInCharge}}</td></tr>
       {{/notNotApplicable}}
     {{/isRegularUser}}
    </tbody>

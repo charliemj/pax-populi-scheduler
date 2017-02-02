@@ -18,9 +18,17 @@ $(document).ready(function () {
         // // console.log($('#courseInput-' + id).html());
         // // console.log($("#scheduleOptions-" + id).html());
         var course = $('#courseInput-' + id + ' option:selected').text();
+        if (course.toLowerCase() === 'choose a course..' && action === 'apprrove') {
+            addMessage('Please select a course from the list of courses', false);
+            return
+        }
         // console.log('course', course);
         var radioButtons = $("#scheduleOptions-" + id + " input:radio");
 		var selectedIndex = radioButtons.index(radioButtons.filter(':checked'));
+        if (selectedIndex === -1 && action === 'apprrove') {
+            addMessage('Please select a schedule from the list of schedules', false);
+            return
+        }
 		// console.log('index', selectedIndex);
 
         $.ajax({
