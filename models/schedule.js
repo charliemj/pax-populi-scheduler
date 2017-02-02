@@ -134,12 +134,12 @@ ScheduleSchema.statics.automateMatch = function () {
                     console.log(message);
                     // only notify admins after finishing saving all matches
                     Schedule.notifyAdmins(matches.length, function (err) {
-                        if err {
+                        if (err) {
                             console.log(err);
                         } else { 
                             console.log('Successfully notified admins about weekly matches');
                         }
-                    }
+                    });
                 }
             });
         },
@@ -178,17 +178,17 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                     if (count === matches.length) {
                         // only notify admins after finishing saving all matches
                         Schedule.notifyAdmins(matches.length, function (err) {
-                        if err {
+                        if (err) {
                             callback({success: false, message: err.message});
                         } else { 
                                 callback(null, matches);
                             }
-                        }
-                    });
+                        });
+                    };
                 });
             }
         });
-    }
+    });
 }
 
 /*
