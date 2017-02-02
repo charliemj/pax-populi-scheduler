@@ -105,7 +105,7 @@ UserSchema.statics.initializeSuperAdmin = function (callback) {
     var lastName = process.env.SUPER_ADMIN_LAST_NAME || config.adminLastName();
     var email = process.env.SUPER_ADMIN_ADDRESS || config.adminEmailAddress();
     var phoneNumber = process.env.SUPER_ADMIN_PHONE_NUMBER || config.adminPhoneNumber();
-    var password = process.env.SUPER_ADMIN_PASSPORT || config.adminPassword();
+    var password = process.env.SUPER_ADMIN_PASSWORD || config.adminPassword();
     that.findOne({firstName: firstName, lastName: lastName, email: email}, function (err, users) {
         if (err) {
             callback({success: false, message: err.message});
