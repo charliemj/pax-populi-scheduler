@@ -1,9 +1,8 @@
-from datetime import time, datetime, timedelta
+from datetime import datetime, time, timedelta
 
-"""
-Represents an immutable (day of week, hour, minute) tuple.
-"""
 class WeeklyTime:
+    """Represents an immutable (day of week, hour, minute) tuple."""
+
     DAYS_OF_WEEK = ['Sunday',
                     'Monday',
                     'Tuesday',

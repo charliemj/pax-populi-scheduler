@@ -1,15 +1,13 @@
 import math
-import re
-
 import pytz
+import re
 
 import util
 from weekly_time import WeeklyTime
 
-"""
-Represents a weekly availability.
-"""
 class Availability:
+    """Represents a weekly availability."""
+
     DAYS_PER_WEEK = 7
     HOURS_PER_DAY = 24
     MINUTES_PER_HOUR = 60

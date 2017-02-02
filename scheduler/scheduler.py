@@ -2,21 +2,20 @@ import networkx as nx
 
 from match import Match
 
-"""
-Immutable source or sink vertex for max flow. This class was created so that
-instances of it can be used as the source and sink vertices in max flow instead
-of the strings 'SOURCE' and 'SINK', one of which could be equal to a student ID
-or tutor ID.
-"""
 class Vertex:
+    """Immutable source or sink vertex for max flow. This class was created so
+    that instances of it can be used as the source and sink vertices in max
+    flow instead of the strings 'SOURCE' and 'SINK', one of which could be
+    equal to a student ID or tutor ID.
+    """
+
     def __init__(self, vertex_type):
         if vertex_type not in ['SOURCE', 'SINK']:
             raise ValueError('vertex_type must be "SOURCE" or "SINK"')
 
-"""
-Performs schedule matching between students and tutors.
-"""
 class Scheduler:
+    """Performs schedule matching between students and tutors."""
+
     def __init__(self, students, tutors, weeks_per_course=11):
         """
         Args:
@@ -34,15 +33,15 @@ class Scheduler:
         for tutor in tutors:
             if tutor.user_type != 'TUTOR':
                 raise ValueError('Every user in tutors must have the user_type \'TUTOR\'')
-        student_ids = [student.user_id for student in students]
-        tutor_ids = [tutor.user_id for tutor in tutors]
-        if len(set(student_ids).union(set(tutor_ids))) != len(student_ids) + len(tutor_ids):
+        self.student_ids = [student.user_id for student in students]
+        self.tutor_ids = [tutor.user_id for tutor in tutors]
+        if len(set(self.student_ids).union(set(self.tutor_ids))) != len(self.student_ids) + len(self.tutor_ids):
             raise ValueError('The user_id\'s in the union of students and tutors must be distinct')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         self.students = students
         self.tutors = tutors
-        self.tutor_id_to_tutor = {tutor.user_id: tutor for tutor in tutors}
+        self.tutor_id_to_tutor = dict(zip(self.tutor_ids, self.tutors))
         self.weeks_per_course = weeks_per_course
         self.source = Vertex('SOURCE')
         self.sink = Vertex('SINK')
@@ -52,8 +51,8 @@ class Scheduler:
         network = nx.DiGraph()
         network.add_node(self.source)
         network.add_node(self.sink)
-        network.add_nodes_from([student.user_id for student in self.students])
-        network.add_nodes_from([tutor.user_id for tutor in self.tutors])
+        network.add_nodes_from(self.student_ids)
+        network.add_nodes_from(self.tutor_ids)
 
         # Add edges
         for student in self.students:

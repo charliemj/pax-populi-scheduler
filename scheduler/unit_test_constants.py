@@ -1,11 +1,10 @@
 from datetime import date, datetime, timedelta
 import inspect
-
 import pytz
 
-from weekly_time import WeeklyTime
 from availability import Availability
 from user import User
+from weekly_time import WeeklyTime
 
 # Numerical constants
 SLOTS_PER_WEEK = 672
@@ -86,7 +85,7 @@ dt_chatham_ds = datetime(2017, 9, 24, 3, 45)
 
 # Aware datetimes
 utc_halloween = utc.localize(datetime(2001, 10, 31, 17, 3)) 
-et_ds = et.localize(dt_us_ds) 
+et_ds = et.localize(dt_us_ds)
 et_no_ds = et.localize(dt_us_no_ds) 
 kabul_2000_1_1 = kabul.localize(dt_2000_1_1)
 kathmandu_2017_end = kathmandu.localize(dt_2017_end)
@@ -101,7 +100,6 @@ student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', free_first_six_avail,
                'UTC', ['Math'], date(2018, 1, 1))
 tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', always_free_avail,
              'UTC', ['Math'], date(2018, 1, 1))
-
 
 # User __init__ arguments
 user_args = set(inspect.getargspec(User.__init__)[0]) - set(['self'])
@@ -129,3 +127,15 @@ def new_user(user, arg_to_value):
         else:
             user_input_dict[arg] = user.__dict__[arg]
     return User(**user_input_dict)
+
+fake_utc_now = datetime(1996, 1, 11, 6, 53)
+class FakeDatetime(datetime):
+    """A fake replacement for datetime that can be mocked for testing. Overrides
+    datetime.utcnow().
+    """
+    def __new__(cls, *args, **kwargs):
+        return datetime.__new__(datetime, *args, **kwargs)
+
+    @classmethod
+    def utcnow(cls):
+        return fake_utc_now

@@ -1,15 +1,13 @@
 from datetime import timedelta
-
 import pytz
 
+from availability import Availability
 import util
 from weekly_time import WeeklyTime
-from availability import Availability
 
-"""
-Represents a match between a student and a tutor.
-"""
 class Match:
+    """Represents a match between a student and a tutor."""
+
     def __init__(self, student, tutor, course_start_wt_UTC,
                  earliest_course_start_UTC, weeks_per_course):
         """
@@ -63,12 +61,12 @@ class Match:
         student_course_schedule_naive = [student_first_course_dt
                                          + timedelta(days=Availability.DAYS_PER_WEEK*i)
                                          for i in range(self.weeks_per_course)]
-        student_course_schedule = map(lambda x: self.student.tz.localize(x),
-                                     student_course_schedule_naive) 
+        student_course_schedule = map(self.student.tz.localize,
+                                      student_course_schedule_naive) 
         tutor_course_schedule = [student_dt.astimezone(self.tutor.tz)
-                                for student_dt in student_course_schedule]
+                                 for student_dt in student_course_schedule]
         UTC_course_schedule = [student_dt.astimezone(pytz.utc)
-                              for student_dt in student_course_schedule]
+                               for student_dt in student_course_schedule]
         return (student_course_schedule, tutor_course_schedule, UTC_course_schedule)
 
     def daylight_saving_valid(self):

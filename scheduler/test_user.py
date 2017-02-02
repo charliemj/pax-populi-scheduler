@@ -1,12 +1,13 @@
-import unittest
-from datetime import date, datetime
-
+from datetime import date, datetime, timedelta
 import pytz
+import unittest
 
-import unit_test_constants as c
-from weekly_time import WeeklyTime
+import mock
+
 from availability import Availability
+import unit_test_constants as c
 from user import User
+from weekly_time import WeeklyTime
 
 class TestUser(unittest.TestCase):
     def test_init_attributes(self):
@@ -33,6 +34,35 @@ class TestUser(unittest.TestCase):
     def test_init_type_error(self):
         with self.assertRaises(TypeError):
             c.new_user(c.student, {'earliest_start_date': datetime(2018,1,1)})
+
+    def test_get_earliest_start_dt_UTC_utc(self):
+        user = c.new_user(c.student, {'tz_str': 'UTC',
+                                      'earliest_start_date': date(2000, 1, 1)})
+        earliest_start_dt_UTC = user.get_earliest_start_dt_UTC()
+        self.assertEqual(earliest_start_dt_UTC, datetime(2000, 1, 1, 0, 0))
+
+    def test_get_earliest_start_dt_UTC_central_time_daylight_saving(self):
+        user = c.new_user(c.student, {'tz_str': 'US/Central',
+                                      'earliest_start_date': date(2017, 11, 5)})
+        earliest_start_dt_UTC = user.get_earliest_start_dt_UTC()
+        self.assertEqual(earliest_start_dt_UTC, datetime(2017, 11, 5, 5, 0))
+
+    def test_get_earliest_start_dt_UTC_central_time_no_daylight_saving(self):
+        user = c.new_user(c.student, {'tz_str': 'US/Central',
+                                      'earliest_start_date': date(2017, 3, 12)})
+        earliest_start_dt_UTC = user.get_earliest_start_dt_UTC()
+        self.assertEqual(earliest_start_dt_UTC, datetime(2017, 3, 12, 6, 0))
+    
+    @mock.patch('user.datetime', c.FakeDatetime)
+    def test_get_shared_earliest_start_dt_UTC_utcnow_max(self):
+        user1 = c.new_user(c.student,
+                           {'earliest_start_date': date(1995, 1, 1)})
+        user2 = c.new_user(c.student,
+                           {'earliest_start_date': date(1996, 1, 1)})
+        dt = user1.get_shared_earliest_start_dt_UTC(user2)
+        self.assertEqual(dt, c.fake_utc_now + timedelta(days=7))
+        dt = user2.get_shared_earliest_start_dt_UTC(user1)
+        self.assertEqual(dt, c.fake_utc_now + timedelta(days=7))
 
     def test_share_course_empty_empty(self):
         user1 = c.new_user(c.student, {'courses': []})
@@ -345,6 +375,69 @@ class TestUser(unittest.TestCase):
         user2 = c.new_user(c.student, {'gender': 'FEMALE',
                                        'gender_preference': 'NONE'})
         self.assertTrue(user1.gender_compatible(user2))
-    
+
+    def test_new_timezone_availability_value_error(self):
+        with self.assertRaises(ValueError):
+            c.student.new_timezone_availability('utc', c.dt_2000_1_1)
+        with self.assertRaises(ValueError):
+            c.student.new_timezone_availability('UTC', c.utc_halloween)
+
+    def test_new_timezone_availability_invalid_datetime(self):
+        with self.assertRaises(ValueError):
+            c.student.new_timezone_availability('US/Mountain',
+                                                c.dt_us_nonexistent)
+        with self.assertRaises(ValueError):
+            c.student.new_timezone_availability('US/Mountain',
+                                                c.dt_us_ambiguous)
+
+    def test_new_timezone_availability_same_timezone(self):
+        for tz_str in pytz.all_timezones:
+            # Relies on the fact that datetime(2000, 1, 1) is valid in all timezones
+            user = c.new_user(c.student, {'tz_str': tz_str})
+            new_avail = user.new_timezone_availability(tz_str,
+                                                       datetime(2000, 1, 1))
+            self.assertEqual(new_avail, user.availability)
+
+    def test_new_timezone_availability_utc_et_no_daylight_saving(self):
+        # Shift forward
+        user = c.new_user(c.student, {'tz_str': 'US/Eastern'})
+        new_avail = user.new_timezone_availability('UTC', c.dt_us_no_ds)
+        avail = Availability.from_dict({'0': [['05:00', '06:30']]})
+        self.assertEqual(new_avail, avail)
+
+        # Shift backward
+        user = c.new_user(c.student, {'tz_str': 'UTC'})
+        new_avail = user.new_timezone_availability('US/Eastern', c.dt_us_no_ds)
+        avail = Availability.from_dict({'6': [['19:00', '20:30']]})
+        self.assertEqual(new_avail, avail)
+
+    def test_new_timezone_availability_utc_et_daylight_saving(self):
+        # Shift forward
+        user = c.new_user(c.student, {'tz_str': 'US/Eastern'})
+        new_avail = user.new_timezone_availability('UTC', c.dt_us_ds)
+        avail = Availability.from_dict({'0': [['04:00', '05:30']]})
+        self.assertEqual(new_avail, avail)
+
+        # Shift backward
+        user = c.new_user(c.student, {'tz_str': 'UTC'})
+        new_avail = user.new_timezone_availability('US/Eastern', c.dt_us_ds)
+        avail = Availability.from_dict({'6': [['20:00', '21:30']]})
+        self.assertEqual(new_avail, avail)
+
+    def test_shared_course_start_times_UTC_same_timezone_no_overlap(self):
+        for tz_str in pytz.all_timezones:
+            user1 = c.new_user(c.student, {'tz_str': tz_str,
+                                           'availability': c.free_first_five_avail})
+            user2 = c.new_user(c.student, {'tz_str': tz_str,
+                                           'availability': c.free_first_six_avail})
+            shared = user1.shared_course_start_times_UTC(user2)
+            self.assertEqual(shared, [])
+            shared = user2.shared_course_start_times_UTC(user1)
+            self.assertEqual(shared, [])
+
+    #def test_shared_course_start_times_UTC_utc_et_
+
+
+
 if __name__ == '__main__':
     unittest.main()

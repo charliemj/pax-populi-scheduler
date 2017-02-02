@@ -1,7 +1,6 @@
-import unittest
 from datetime import datetime, timedelta
-
 import pytz
+import unittest
 
 import unit_test_constants as c
 import util

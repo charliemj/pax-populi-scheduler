@@ -1,5 +1,5 @@
-import unittest
 from datetime import datetime
+import unittest
 
 import unit_test_constants as c
 from weekly_time import WeeklyTime

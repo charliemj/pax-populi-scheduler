@@ -1,11 +1,10 @@
-import unittest
 from datetime import datetime
-
 import pytz
+import unittest
 
+from availability import Availability
 import unit_test_constants as c
 from weekly_time import WeeklyTime
-from availability import Availability
 
 class TestAvailability(unittest.TestCase):
     def test_constants(self):
@@ -280,7 +279,7 @@ class TestAvailability(unittest.TestCase):
     def test_new_timezone_same_timezone(self):
         for tz_str in pytz.all_timezones:
             for avail in [c.always_free_avail, c.never_free_avail, c.free_first_five_avail]:
-                # Relies on the fact that datetime(2000,1,1,0,0) is valid in all timezones
+                # Relies on the fact that datetime(2000, 1, 1) is valid in all timezones
                 new_avail = avail.new_timezone(tz_str, tz_str, c.dt_2000_1_1)
                 self.assertEqual(new_avail, avail)
    
@@ -343,4 +342,5 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(new_avail, correct_avail)
 
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
+    print datetime.utcnow()

@@ -1,14 +1,12 @@
 from datetime import date, datetime, timedelta
-
 import pytz
 
 from match import Match
-
-"""
-Represents a student or tutor.
-"""
+import util
 
 class User:
+    """Represents a student or tutor."""
+
     # Positive integer k such that the earliest possible start date for a
     # (student, tutor) match is max of student's earliest possible start date,
     # tutor's earliest possible start date, and current datetime plus k days.
@@ -64,7 +62,8 @@ class User:
         Returns: A naive datetime object representing the earliest datetime
             in UTC for self to start a course.
         """
-        earliest_start_dt = datetime.combine(self.earliest_start_date, datetime.min.time())
+        earliest_start_dt = datetime.combine(self.earliest_start_date,
+                                             datetime.min.time())
         earliest_start_dt_aware = self.tz.localize(earliest_start_dt)
         earliest_start_dt_UTC = earliest_start_dt_aware.astimezone(pytz.UTC).replace(tzinfo=None)
         return earliest_start_dt_UTC
@@ -129,7 +128,45 @@ class User:
                           or other_user.gender_preference == self.gender)
         return self_satisfied and other_satisfied
 
-    def shared_course_slots_UTC(self, other_user):
+    def new_timezone_availability(self, new_tz_str, naive_dt_in_new_tz):
+        """Returns a copy of self's availability in a new timezone.
+
+        Args:
+            new_tz_str: A string representing the new timezone to shift to.
+                Must be in the pytz timezone database.
+            naive_dt_in_new_tz: An naive datetime object that provides the
+                reference time in the timezone new_tz_str with which to 
+                calculate UTC offsets. Must be a valid (neither non-existent
+                nor ambiguous) in the timezone new_tz_str.
+
+        Returns:
+            new_availability: An Availability object representing
+                self.availability in the timezone new_tz_str using
+                naive_datetime_in_new_tz as a reference.
+        """
+        if new_tz_str not in pytz.all_timezones_set:
+            raise ValueError('new_tz_str must be in the pytz timezone database')
+        if (naive_dt_in_new_tz.tzinfo is not None
+            and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
+            raise ValueError('naive_dt_in_new_tz must be a naive datetime')
+        if not util.naive_dt_is_valid(naive_dt_in_new_tz, new_tz_str):
+            raise ValueError('naive_dt_in_new_tz must be a valid datetime in the timezone new_tz_str')
+        new_availability = self.availability.new_timezone(self.tz_str,
+                                                          new_tz_str,
+                                                          naive_dt_in_new_tz)
+        return new_availability
+
+    def shared_course_start_times_UTC(self, other_user):
+        """Computes weekly times in UTC during which two users can both start a
+        a course.
+
+        Args:
+            other_user: A User object.
+
+        Returns:
+            A list of WeeklyTime objects representing times in UTC when self
+                and other_user can both start a course.
+        """
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(other_user)
         self_availability_UTC = self.new_timezone_availability('UTC', earliest_start_dt_UTC)
         other_availability_UTC = other_user.new_timezone_availability('UTC', earliest_start_dt_UTC)
@@ -159,7 +196,7 @@ class User:
             raise ValueError('weeks_per_course must be a positive integer')
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(tutor)
         matches = []
-        for wt_UTC in self.shared_course_slots_UTC(tutor):
+        for wt_UTC in self.shared_course_start_times_UTC(tutor):
             match = Match(self, tutor, wt_UTC, earliest_start_dt_UTC,
                           weeks_per_course)
             if match.daylight_saving_valid():
@@ -212,27 +249,4 @@ class User:
                 and self.share_course(other_user)
                 and self.gender_compatible(other_user))
 
-    def new_timezone_availability(self, new_tz_str, naive_dt_in_new_tz):
-        """Returns a copy of self's availability in a new timezone.
-
-        Args:
-            new_tz_str: A string representing the new timezone to shift to.
-                Must be in the pytz timezone database.
-            naive_dt_in_new_tz: An naive datetime object that provides the
-                reference time in the timezone new_tz_str with which to 
-                calculate UTC offsets.
-
-        Returns:
-            new_availability: An Availability object representing
-                self.availability in the timezone new_tz_str using
-                naive_datetime_in_new_tz as a reference.
-        """
-        if new_tz_str not in pytz.all_timezones_set:
-            raise ValueError('new_tz_str must be in the pytz timezone database')
-        if (naive_dt_in_new_tz.tzinfo is not None
-            and naive_dt_in_new_tz.tzinfo.utcoffset(naive_dt_in_new_tz) is not None):
-            raise ValueError('naive_dt_in_new_tz must be a naive datetime')
-        new_availability = self.availability.new_timezone(self.tz_str,
-                                                          new_tz_str,
-                                                          naive_dt_in_new_tz)
-        return new_availability
+    
