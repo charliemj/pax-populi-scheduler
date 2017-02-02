@@ -20,7 +20,7 @@ The app is defaulted to create a "super administrator" account when it is first 
 
 In addition to that, the app also needs an email address (must be gmail or one might need to change the setting in `/javascripts/email.js`) that it can send emails to users from. 
 
-Thus, there are a few environment variables one needs to set in order to get this app to run in production. The environment variables are `GMAIL_ADDRESS, GMAIL_PASSWORD, PRODUCTION_URL, SUPER_ADMIN_USERNAME, SUPER_ADMIN_FIRST_NAME, SUPER_ADMIN_LAST_NAME, SUPER_ADMIN_ADDRESS, SUPER_ADMIN_PHONE_NUMBER, SUPER_ADMIN_PASSWORD, MONGODB_URI, and SECRET`. When running locally, please fill in `/javascripts/config.js` with appropriate information.
+Thus, there are a few environment variables one needs to set in order to get this app to run in production. The environment variables are `GMAIL_ADDRESS`, `GMAIL_PASSWORD`, `PRODUCTION_URL`, `SUPER_ADMIN_USERNAME`, `SUPER_ADMIN_FIRST_NAME`, `SUPER_ADMIN_LAST_NAME`, `SUPER_ADMIN_ADDRESS`, `SUPER_ADMIN_PHONE_NUMBER`, `SUPER_ADMIN_PASSWORD`, `MONGODB_URI` (for the database), and `SECRET` (secret for cookie encryption). When running locally, please fill in `/javascripts/config.js` with appropriate information.
  
 To start the app locally, run `npm start` (or `node app.js`). The app will be available on [`http://localhost:3000`](http://localhost:3000).
 
