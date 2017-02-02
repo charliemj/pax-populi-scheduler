@@ -2,6 +2,8 @@ var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
 var enums = require('../javascripts/enums.js');
 
+// this enum object is intend to have only instance because its use is to
+// store the defaults for the signup forms
 var EnumSchema = mongoose.Schema({
 	numTokenDigits: {type: Number, default: enums.numTokenDigits()},
 	minUsernameLength: {type: Number, default: enums.minUsernameLength()},
@@ -17,24 +19,6 @@ var EnumSchema = mongoose.Schema({
 	interests: [{type: String, default: enums.interests()}],
 	courses: [{type: String, default: enums.courses()}]
 });
-
-EnumSchema.methods.updateEnum = function (data, callback) {
-	var id = this._id;
-	var that = EnumModel;
-    that.update(data, function (err, enums) {
-    	if (err) {
-    		callback({success: false, message: err.message});
-    	} else {
-    		that.findOne({_id: id}, function (err, enums) {
-    			if (err) {
-    				callback({success: false, message: err.message});
-    			} else {
-    				callback(null, enums);
-    			}
-    		});
-    	}
-    });
-};
 
 EnumSchema.pre("save", function (next) {
   	if (this.userTypes.length == 0)
@@ -96,19 +80,47 @@ EnumSchema.pre("save", function (next) {
   	next();
 });
 
+/**
+* Searches for an exisiting enum object in the database. If there is not one, initializes one
+* using all the defaults in javascripts/enums.js
+* @param {Function} callback - the function that gets called after the schedules are fetched
+*/
 EnumSchema.statics.initialize = function (callback) {
 	var that = this;
 	that.findOne({}, function (err, enums) {
-    if (err) {
-       	callback({success: false, message: err.message});
-    } else if (!enums) {
-        that.create({}, function (err, enums) {
+        if (err) {
+           	callback({success: false, message: err.message});
+        } else if (!enums) {
+            that.create({}, function (err, enums) {
+                callback(null, enums);
+            });
+        } else {
             callback(null, enums);
-        });
-    } else {
-        callback(null, enums);
-    }
-});
+        }
+    });
+};
+
+/**
+* Updates the existing enum object using the given data
+* @param {Object} data - the mongoose schedule object of the data
+* @param {Function} callback - the function that gets called after the schedules are fetched
+*/
+EnumSchema.methods.updateEnum = function (data, callback) {
+    var id = this._id;
+    var that = EnumModel;
+    that.update(data, function (err, enums) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else {
+            that.findOne({_id: id}, function (err, enums) {
+                if (err) {
+                    callback({success: false, message: err.message});
+                } else {
+                    callback(null, enums);
+                }
+            });
+        }
+    });
 };
 
 var EnumModel = mongoose.model("Enum", EnumSchema);
