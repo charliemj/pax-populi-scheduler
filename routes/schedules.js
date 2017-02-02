@@ -26,11 +26,13 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 	});
 });
 
+// switch on/off the weekly matching cron job
 router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	global.schedulerJob.running = !global.schedulerJob.running;
 	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off', redirect: '/settings'});
 });
 
+// approves the schedule
 router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	var scheduleIndex = parseInt(req.body.scheduleIndex);
 	var course = req.body.course.trim();
@@ -46,6 +48,7 @@ router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, au
 	});
 });
 
+// rejects the schedule
 router.put('/reject/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	console.log('in reject');
 	var scheduleId = req.body.scheduleId;

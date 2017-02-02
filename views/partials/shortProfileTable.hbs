@@ -1,23 +1,26 @@
 <table class="table table-hover" id='{{_id}}-profile'>
   <tbody>
     {{#isRegularUser role}}
-      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td>
-      <tr><th>School</th><td>{{school}}</td>
-      <tr><th>Country</th><td>{{country}}</td>
-      <tr><th>Timezone</th><td>{{timezone}}</td>
-      <tr><th>Interests</th><td>{{interests}}</td>
-      <tr><th>Email Address</th><td>{{email}}</td>
+      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td></tr>
+      {{#if nickname}}
+      <tr><th>Nickname</th><td>{{nickname}}</td></tr>
+      {{/if}}
+      <tr><th>School</th><td>{{school}}</td></tr>
+      <tr><th>Country</th><td>{{country}}</td></tr>
+      <tr><th>Timezone</th><td>{{timezone}}</td></tr>
+      <tr><th>Interests</th><td>{{interests}}</td></tr>
+      <tr><th>Email Address</th><td>{{email}}</td></tr>
     {{else}}
-      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td>
-      <tr><th>Email Address</th><td>{{email}}</td>
+      <tr><th>Full Name</th><td>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</td></tr>
+      <tr><th>Email Address</th><td>{{email}}</td></tr>
       {{#notNotApplicable schoolInCharge}}
-        <tr><th>School in Charge</th><td>{{schoolInCharge}}</td>
+        <tr><th>School in Charge</th><td>{{schoolInCharge}}</td></tr>
       {{/notNotApplicable}}
       {{#notNotApplicable regionInCharge}}
-        <tr><th>Region in Charge</th><td>{{regionInCharge}}</td>
+        <tr><th>Region in Charge</th><td>{{regionInCharge}}</td></tr>
       {{/notNotApplicable}}
       {{#notNotApplicable countryInCharge}}
-        <tr><th>Country in Charge</th><td>{{countryInCharge}}</td>
+        <tr><th>Country in Charge</th><td>{{countryInCharge}}</td></tr>
       {{/notNotApplicable}}
     {{/isRegularUser}}
    </tbody>

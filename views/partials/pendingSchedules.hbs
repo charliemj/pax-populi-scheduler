@@ -2,6 +2,7 @@
  {{#ifNot adminApproved}}
 	<div class='col-xs-12 col-ms-6 col-sm-6 col-md-6 col-lg-7 schedule-container tile-container' id='schedule-container-{{_id}}'>
 	  <div class='tile schedule-tile' name="schedule-{{_id}}" data-id='{{_id}}'>
+	  	<form>
 	  	<div class='tile-icon' style='float: left'><img class='icon' src="/images/schedule.gif" style="margin-left: 10px;"></img></div>
 	  	<div class='schedule-header tile-header'>
 	    	<table class="table table-hover" id='{{_id}}-profile'>
@@ -43,7 +44,7 @@
 			    	<div id='scheduleOptions-{{_id}}' class='collapse'> 
 				    	{{#eachFormatedSchedule studentPossibleSchedules tutorPossibleSchedules}}
 		  					<div class="radio">
-		  						<label><input type="radio" name="scheduleRadio">Student Schedule: <ul class='no-bullets'>{{#each studentSchedule}}<li>{{this}}</li>{{/each}}</ul>
+		  						<label><input required type="radio" name="scheduleRadio">Student Schedule: <ul class='no-bullets'>{{#each studentSchedule}}<li>{{this}}</li>{{/each}}</ul>
 		  						Tutor Schedule: <ul class='no-bullets'>{{#each tutorSchedule}}<li>{{this}}</li>{{/each}}</ul></label>
 							</div>
 						{{/eachFormatedSchedule}}
@@ -56,9 +57,10 @@
 	    <div>
 			<input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
 			<input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-			<button id='approve-schedule-button-{{_id}}' class='btn btn-info btn-hg approve-schedule-button'>Approve</button>
+			<input type="submit" value="Approve" id='approve-schedule-button-{{_id}}' class='btn btn-info btn-hg approve-schedule-button'></input>
 			<button id='reject-schedule-button-{{_id}}' class='btn btn-danger btn-hg reject-schedule-button'>Reject</button>
 	    </div>
+	    </form>
 	</div>
  {{/ifNot}}
 {{/each}}

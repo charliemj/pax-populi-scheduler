@@ -16,6 +16,7 @@ var schedules = require('./routes/schedules.js');
 var hbsHelpers = require('./javascripts/hbsHelpers.js');
 var Schedule = require('./models/schedule.js');
 var Enum = require('./models/enum.js');
+var User = require('./models/user.js');
 
 // database setup
 var mongoose = require('mongoose');
@@ -95,6 +96,7 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+
 // lauch the job of running matching algorithm every week
 Schedule.automateMatch();
 // initialize enums
@@ -102,10 +104,18 @@ Enum.initialize(function (err, enums) {
     if (err) {
         console.log(err.message);
     } else {
+    	console.log('ensured that enums exist');
         global.enums = enums;
     }
 });
-
+// initialize super admin for Bob
+User.initializeSuperAdmin(function (err, superAdmin) {
+    if (err) {
+        console.log(err.message);
+    } else {
+        console.log('ensured that super admin account exist');
+    }
+});
 
 // error handlers
 
@@ -126,7 +136,7 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
-    message: err.message,
+    message: 'An error has occurred. Please refresh the page',
     error: {}
   });
 });

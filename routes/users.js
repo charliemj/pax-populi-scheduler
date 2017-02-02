@@ -14,8 +14,7 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
-//gets a user's dashboard and any registrations they might have
-//TODO-- eventually add a similar functionality for getting any schedules they might have
+// get dashboard
 router.get('/:username', authentication.isAuthenticated, function (req, res, next) {
 	var user = req.session.passport.user;
     var data = {title: 'Dashboard',
@@ -29,11 +28,13 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                 role: user.role,                                        
                 fullName: user.fullName};
 
+    // get unmatched registration to allow regular users to edit the registrations
     Registration.getUnmatchedRegistrationsForUser(user, function(err, registrations){
         if (err) {
           res.send({success: false, message: err.message});
         } else {
             data.registrations = registrations;
+            // get either final schedules or pending schedules related to ther user
             Schedule.getSchedules(user, function (err, schedules) {
                 if (err) {
                     res.send({success: false, message: err.message});
@@ -43,6 +44,8 @@ router.get('/:username', authentication.isAuthenticated, function (req, res, nex
                     if (utils.isCoordinator(user.role) || utils.isRegularUser(user.role)) {
                         res.render('dashboard', data);
                     } else if (utils.isAdministrator(user.role)) {
+                        // get the pending users so the admin can approve/reject/wailist from
+                        // the dashboard
                         User.getPendingUsers(function (err, users) {
                             if (err) {
                                 res.send({success: false, message: err.message});
