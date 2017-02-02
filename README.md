@@ -5,18 +5,18 @@ This app uses [Node.js](https://nodejs.org/en/), [MongoDB](https://www.mongodb.c
 ## Installation
 
 To run this locally, make sure you have Node and MongoDB installed on your machine. The scheduler script is in python and requires several pip packages. Therefore, please run the commands below to setup the virtual environment.
+
 ```
-$ conda install python=2.7.9
-$ virtualenv -p /Users/cmao18/anaconda2/bin/python .env/
+$ virtualenv -p <the path to the directory where you have python installed> .env/
 $ source ./.env/bin/activate
 $ pip install -r requirements.txt
 ```
 
-Start a mongo server in one terminal. Next, in a separate terminal by running `mongo`, enter the directory housing the app, and run `npm install` to install the required node packages. Additionally, make sure you have [bower](https://bower.io/) and run `bower install` to install all the required javascript packages.
+Start a mongo server in one terminal by running `mongod --dbpath <path to where directory you want the database files written to>`. Next, in a separate terminal by running `mongo`, enter the directory housing the app, and run `npm install` to install the required node packages. Additionally, make sure you have [bower](https://bower.io/) and run `bower install` to install all the required javascript packages.
 
 ## Defining environment variables
 
-The app is defaulted to create a super admin account when it is first launched with an empty database. This is because every account needs to be approved by an admin so without a starter admin account, no-one can get to use the app. We recommend that after the app is first launched, Bob signs up for an account and use that super admin account to approve his account. Then he can log in and archive the super admin account.
+The app is defaulted to create a "super admininstrator" account when it is first launched with an empty database. This is because every account needs to be approved by an admin so without a starter admin account, no-one can get to use the app. We recommend that after the app is first launched, Bob signs up for an account and uses that super admin account to approve his account. Then he can log in and archive the super admin account.
 
 In addition to that, the app also needs an email address (must be gmail or one might need to change the setting in `/javascripts/email.js`) that it can send emails to users from. 
 
