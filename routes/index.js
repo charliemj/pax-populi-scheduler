@@ -156,12 +156,13 @@ router.put('/verify/:username/:verificationToken', parseForm, csrfProtection, fu
                         if (err) {
                             data.message = err.message;
                             return res.json({'success': false, message: err.message});
+                        } else {
+                            data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
+                            data.success = true;
+                            data.redirect = '/';
+                            res.json(data);
                         }
                     });
-                    data.message = 'Your account has been verified successfully. Next, the adminstrators will be going through your application, and inform you shortly about their decision.';  
-                    data.success = true;
-                    data.redirect = '/';
-                    res.json(data);
                 }
         });
     });

@@ -103,27 +103,6 @@ var Email = function() {
     };
 
     /**
-    * Sends an email to the admin to ask for the approval for a new 
-    * @param {Object} user - the user object for while the verification token is for
-    * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
-    * @param {Function} callback - the function to call after the email has been sent
-    */
-    that.sendApprovalRequestEmail = function (user, developmentMode, admins, callback) {
-        that.createToken(user, false, function (err, user) {
-            if (err) {
-                return callback({success: false, message: err.message});
-            }
-            admins.forEach(function (admin) {
-                var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
-                var content = that.makeApprovalRequestEmailContent(user, developmentMode, admin);
-                console.log(content);
-                console.log('about to send an approval request email to', user.email);
-                sendEmail(admin.email, subject, content, callback); // for now send it back to the user
-            });
-        });
-    };
-
-    /**
     * Sends an email to inform the user that his/her account has been approved
     * @param {Object} user - the user object whose account just got approved
     * @param {Object} developmentMode - true if the app is in development mode, false otherwise
@@ -192,20 +171,6 @@ var Email = function() {
     };
 
     /**
-    * Sends an email to inform admins that there are new matches
-    * @param {Number} numMatches - the number of newly generated matches
-    * @return {Object} object - object.success is true if the email was sent
-                                successfully, false otherwise
-    */
-    that.notifyAdmins = function (numMatches, admins, callback) {
-        admins.forEach(function (admin) {
-            var subject = 'New matches generated in Pax Populi Scheduler';
-            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new matches. You can view them under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, that.signature);
-            sendEmail(admin.email, subject, emailContent, callback);
-        });  
-    };
-
-    /**
     * Sends an email to remind student/tutor to confirm that they could meet
     * @param {Object} user - the user object of the user
     * @return {Object} object - object.success is true if the email was sent
@@ -218,6 +183,69 @@ var Email = function() {
         sendEmail(user.email, subject, emailContent, callback);
     };
 
+    /**
+    * Sends an email to the admins to ask for the approval of a new account registration
+    * @param {Object} user - the user object for while the verification token is for
+    * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
+    * @param {Function} callback - the function to call after the email has been sent
+    */
+    that.sendApprovalRequestEmail = function (user, developmentMode, admins, callback) {
+        that.createToken(user, false, function (err, user) {
+            if (err) {
+                return callback({success: false, message: err.message});
+            }
+            var count = 0;
+            admins.forEach(function (admin) {
+                var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
+                var content = that.makeApprovalRequestEmailContent(user, developmentMode, admin);
+                sendEmail(admin.email, subject, content, function (err) {
+                    if (err) {
+                        callback(err);
+                    }
+                });
+                count++;
+                // only fires successful callback after all emails have been sent
+                if (count == admins.length) {
+                    callback(null);
+                }
+            });
+        });
+    };
+
+    /**
+    * Sends an email to inform admins that there are new matches
+    * @param {Number} numMatches - the number of newly generated matches
+    * @param Array {Object} admins - an array of admin objects to send emails to
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.notifyAdmins = function (numMatches, admins, callback) {
+        var count = 0;
+        admins.forEach(function (admin) {
+            var subject = 'New matches generated in Pax Populi Scheduler';
+            var word = numMatches > 1 ? 'matches' : 'match';
+            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new ' + word + '. You can view them under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, that.signature);
+            sendEmail(admin.email, subject, emailContent, function (err) {
+                if (err) {
+                    callback(err);
+                }
+            });
+            count++;
+            // only fires successful callback after all emails have been sent
+            if (count == admins.length) {
+                callback(null);
+            }
+        });  
+    };
+
+    /**
+    * Make the content of the approval requset email for the given admin and user
+    * @param {Object} user - the user object of the account
+    * @param {Boolean} developmentMode - true if the app is in developmentMode
+    * @param {Object} admin - the admin object to send an email to
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
     that.makeApprovalRequestEmailContent = function (user, developmentMode, admin) {
         var link;
             if (developmentMode) {
