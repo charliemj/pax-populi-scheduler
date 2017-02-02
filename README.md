@@ -16,7 +16,7 @@ Start a mongo server in one terminal. Next, in a separate terminal by running `m
 
 ## Defining environment variables
 
-The app is defaulted to create a super admin account when it is first launched with an empty database (presumably belongs to Robert McNulty, the founder of Pax Populi Academy). It also needs an email address (must be gmail or one might need to change the setting in `/javascripts/email.js`) that it can send emails to users from. Thus, there are a few environment variables one needs to set in order to get this app to run. The environment variables are GMAIL_ADDRESS, GMAIL_PASSWORD, PRODUCTION_URL, SUPER_ADMIN_USERNAME, SUPER_ADMIN_FIRST_NAME, SUPER_ADMIN_LAST_NAME, SUPER_ADMIN_ADDRESS, SUPER_ADMIN_PHONE_NUMBER, and SUPER_ADMIN_PASSWORD. 
+The app is defaulted to create a super admin account when it is first launched with an empty database (presumably belongs to Robert McNulty, the founder of Pax Populi Academy). It also needs an email address (must be gmail or one might need to change the setting in `/javascripts/email.js`) that it can send emails to users from. Thus, there are a few environment variables one needs to set in order to get this app to run. The environment variables are `GMAIL_ADDRESS, GMAIL_PASSWORD, PRODUCTION_URL, SUPER_ADMIN_USERNAME, SUPER_ADMIN_FIRST_NAME, SUPER_ADMIN_LAST_NAME, SUPER_ADMIN_ADDRESS, SUPER_ADMIN_PHONE_NUMBER, and SUPER_ADMIN_PASSWORD`. 
  
 To start the app, run `npm start` (or `node app.js`). The app will be available on [`http://localhost:3000`](http://localhost:3000).
 
