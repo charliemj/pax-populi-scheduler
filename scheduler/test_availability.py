@@ -44,8 +44,6 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(c.nonconsecutive_free_avail.free_course_slots,
                          c.never_free_slots)
 
-    # test_str_always_free_avail
-
     def test_str_free_first_five_avail(self):
         avail_str = ('Sunday 00:00 - Sunday 00:15\n'
                      'Sunday 00:15 - Sunday 00:30\n'
@@ -342,5 +340,4 @@ class TestAvailability(unittest.TestCase):
         self.assertEqual(new_avail, correct_avail)
 
 if __name__ == '__main__':
-    #unittest.main()
-    print datetime.utcnow()
+    unittest.main()

@@ -55,6 +55,20 @@ class User:
         self.courses_set = set(self.courses)
         self.earliest_start_date = earliest_start_date
 
+    def __eq__(self, other):
+        return (self.user_id == other.user_id
+                and self.reg_id == other.reg_id
+                and self.user_type == other.user_type
+                and self.gender == other.gender
+                and self.gender_preference == other.gender_preference
+                and self.availability == other.availability
+                and self.tz_str == other.tz_str
+                and self.courses == other.courses
+                and self.earliest_start_date == other.earliest_start_date)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def get_earliest_start_dt_UTC(self):
         """Returns a naive UTC datetime of the earliest start datetime during
         which the user can start a course.
@@ -86,18 +100,6 @@ class User:
                    self.get_earliest_start_dt_UTC(),
                    other_user.get_earliest_start_dt_UTC())
 
-    def share_course(self, other_user):
-        """Determines whether or not two users share at least one course.
-
-        Args:
-            other_user: A User object.
-
-        Returns:
-            A boolean whether or not self and other_user share at least one
-                course.
-        """
-        return len(self.courses_set.intersection(other_user.courses_set)) > 0
-
     def shared_courses(self, other_user):
         """Determines the courses shared by two users.
 
@@ -110,6 +112,18 @@ class User:
         """
         shared_courses_set = self.courses_set.intersection(other_user.courses_set)
         return sorted(list(shared_courses_set))
+
+    def share_course(self, other_user):
+        """Determines whether or not two users share at least one course.
+
+        Args:
+            other_user: A User object.
+
+        Returns:
+            A boolean whether or not self and other_user share at least one
+                course.
+        """
+        return len(self.courses_set.intersection(other_user.courses_set)) > 0
 
     def gender_compatible(self, other_user):
         """Determines whether or not two users are gender compatible.
@@ -189,9 +203,9 @@ class User:
                 availabilities, timezone differences, and daylight saving.
         """
         if self.user_type != 'STUDENT':
-            raise ValueError('self must have user_type of \'STUDENT\'');
+            raise ValueError('self must have user_type of \'STUDENT\'')
         if tutor.user_type != 'TUTOR':
-            raise ValueError('tutor must have user_type of \'TUTOR\'');
+            raise ValueError('tutor must have user_type of \'TUTOR\'')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         earliest_start_dt_UTC = self.get_shared_earliest_start_dt_UTC(tutor)
@@ -221,32 +235,38 @@ class User:
                 daylight saving.
         """
         if self.user_type != 'STUDENT':
-            raise ValueError('self must have user_type of \'STUDENT\'');
+            raise ValueError('self must have user_type of \'STUDENT\'')
         if tutor.user_type != 'TUTOR':
-            raise ValueError('tutor must have user_type of \'TUTOR\'');
+            raise ValueError('tutor must have user_type of \'TUTOR\'')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         return len(self.get_availability_matches(tutor, weeks_per_course)) > 0
 
-    def can_match(self, other_user, weeks_per_course):
-        """Determines whether or not two users can be matched according to the
-        availability, course, and gender constraints.
+    def can_match(self, tutor, weeks_per_course):
+        """Determines whether or not a student and tutor can be matched
+        according to the availability, course, and gender constraints.
 
         Args:
-            other_user: A User object.
+            self: A student User object
+            tutor: A tutor User object.
             weeks_per_course: A positive integer representing the number of
                 occurrences of the course, assuming the course meets once per
                 week.
 
         Returns:
-            A boolean whether or not self and other_user can be matched.
-                Specifically, both users must share at least one course slot,
-                share at least one course, and be gender compatible.
+            A boolean whether or not self and tutor can be matched.
+                Specifically, both users must share at least one UTC course
+                start time, share at least one course, and be gender
+                compatible.
         """
+        if self.user_type != 'STUDENT':
+            raise ValueError('self must have user_type of \'STUDENT\'')
+        if tutor.user_type != 'TUTOR':
+            raise ValueError('tutor must have user_type of \'TUTOR\'')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
-        return (self.availability_matches(other_user, weeks_per_course)
-                and self.share_course(other_user)
-                and self.gender_compatible(other_user))
+        return (self.availability_matches(tutor, weeks_per_course)
+                and self.share_course(tutor)
+                and self.gender_compatible(tutor))
 
     

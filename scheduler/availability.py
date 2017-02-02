@@ -59,7 +59,7 @@ class Availability:
         return self.free_slots == other.free_slots
 
     def __ne__(self, other):
-        return self.free_slots != other.free_slots
+        return not self.__eq__(other)
 
     @classmethod
     def time_str_to_index(cls, time_str):

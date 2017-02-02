@@ -39,6 +39,16 @@ class Match:
         self.weeks_per_course = weeks_per_course
         (self.student_course_schedule, self.tutor_course_schedule, self.UTC_course_schedule) = self.get_course_schedules()
 
+    def __eq__(self, other):
+        return (self.student == other.student
+                and self.tutor == other.tutor
+                and self.course_start_wt_UTC == other.course_start_wt_UTC
+                and self.earliest_course_start_UTC == other.earliest_course_start_UTC
+                and self.weeks_per_course == other.weeks_per_course)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     def get_course_schedules(self):
         """
         Computes the datetimes of the course schedule in the student's timezone,

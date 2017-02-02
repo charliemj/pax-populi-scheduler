@@ -40,8 +40,7 @@ class WeeklyTime:
                 and self.hour == other.hour and self.minute == other.minute)
 
     def __ne__(self, other):
-        return (self.day_of_week_index != other.day_of_week_index
-                or self.hour != other.hour or self.minute != other.minute)
+        return not self.__eq__(other)
 
     def __hash__(self):
         return hash((self.day_of_week_index, self.hour, self.minute))

@@ -47,6 +47,7 @@ nonconsecutive_free_dict = {'0': [['00:15', '00:30'], ['00:45', '01:30']],
 free_first_five_dict = {'0': [['00:00', '01:15']]}
 free_first_six_dict = {'0': [['00:00', '01:30']]}
 free_first_seven_dict = {'0': [['00:00', '01:45']]}
+free_0_0930_1100_dict = {'0': [['09:30', '11:00']]}
 
 # Availability objects
 always_free_avail = Availability(always_free_slots)
@@ -56,6 +57,7 @@ nonconsecutive_free_avail = Availability(nonconsecutive_free_slots)
 free_first_five_avail = Availability(free_first_five_slots)
 free_first_six_avail = Availability.from_dict(free_first_six_dict)
 free_first_seven_avail = Availability.from_dict(free_first_seven_dict)
+free_0_0930_1100_avail = Availability.from_dict(free_0_0930_1100_dict)
 
 # Timezone constants
 all_tz = [pytz.timezone(tz_name) for tz_name in pytz.all_timezones]
@@ -97,16 +99,16 @@ gender_preferences = ['MALE', 'FEMALE', 'NONE']
 
 # User objects
 student = User('user1', 'reg1', 'STUDENT', 'MALE', 'NONE', free_first_six_avail,
-               'UTC', ['Math'], date(2018, 1, 1))
-tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', always_free_avail,
-             'UTC', ['Math'], date(2018, 1, 1))
+               'US/Eastern', ['Math'], date(2018, 1, 1))
+tutor = User('user2', 'reg2', 'TUTOR', 'MALE', 'NONE', free_0_0930_1100_avail,
+             'Asia/Kabul', ['Math'], date(2018, 1, 1))
 
 # User __init__ arguments
 user_args = set(inspect.getargspec(User.__init__)[0]) - set(['self'])
 
 def new_user(user, arg_to_value):
     """Returns a copy of a User object after modifying some of its __init__
-    arguments.
+    arguments. Provides a fast way to create User objects.
 
     Args:
         user: A User object.
@@ -128,14 +130,16 @@ def new_user(user, arg_to_value):
             user_input_dict[arg] = user.__dict__[arg]
     return User(**user_input_dict)
 
-fake_utc_now = datetime(1996, 1, 11, 6, 53)
 class FakeDatetime(datetime):
     """A fake replacement for datetime that can be mocked for testing. Overrides
     datetime.utcnow().
     """
+
+    FAKE_UTC_NOW = datetime(1996, 1, 11, 6, 53)
+
     def __new__(cls, *args, **kwargs):
         return datetime.__new__(datetime, *args, **kwargs)
 
     @classmethod
     def utcnow(cls):
-        return fake_utc_now
+        return cls.FAKE_UTC_NOW
