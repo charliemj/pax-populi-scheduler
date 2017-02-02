@@ -16,7 +16,7 @@ Start a mongo server in one terminal by running `mongod --dbpath <path to where 
 
 ## Defining environment variables
 
-The app is defaulted to create a "super admininstrator" account when it is first launched with an empty database. This is because every account needs to be approved by an admin so without a starter admin account, no-one can get to use the app. We recommend that after the app is first launched, Bob signs up for an account and uses that super admin account to approve his account. Then he can log in and archive the super admin account.
+The app is defaulted to create a "super administrator" account when it is first launched with an empty database. This is because every account needs to be approved by an admin so without a starter admin account, no-one can get to use the app. We recommend that after the app is first launched, Bob signs up for an account and uses that super admin account to approve his account. Then he can log in and archive the super admin account.
 
 In addition to that, the app also needs an email address (must be gmail or one might need to change the setting in `/javascripts/email.js`) that it can send emails to users from. 
 
