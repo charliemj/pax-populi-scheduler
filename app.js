@@ -16,6 +16,7 @@ var schedules = require('./routes/schedules.js');
 var hbsHelpers = require('./javascripts/hbsHelpers.js');
 var Schedule = require('./models/schedule.js');
 var Enum = require('./models/enum.js');
+var User = require('./models/user.js');
 
 // database setup
 var mongoose = require('mongoose');

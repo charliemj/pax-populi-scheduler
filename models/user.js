@@ -4,6 +4,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
 var email = require('../javascripts/email.js');
 var enums = require("../javascripts/enums.js");
+var config = require('../javascripts/config.js');
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
 var regexs = require("../javascripts/regexs.js");
@@ -99,42 +100,46 @@ UserSchema.path("requestToken").validate(function(verificationToken) {
 */
 UserSchema.statics.initializeSuperAdmin = function (callback) {
     var that = this;
+    var username = process.env.SUPER_ADMIN_USERNAME || config.adminUsername();
     var firstName = process.env.SUPER_ADMIN_FIRST_NAME || config.adminFirstName();
     var lastName = process.env.SUPER_ADMIN_LAST_NAME || config.adminLastName();
     var email = process.env.SUPER_ADMIN_ADDRESS || config.adminEmailAddress();
     var phoneNumber = process.env.SUPER_ADMIN_PHONE_NUMBER || config.adminPhoneNumber();
+    var password = process.env.SUPER_ADMIN_PASSPORT || config.adminPassword();
     that.findOne({firstName: firstName, lastName: lastName, email: email}, function (err, users) {
         if (err) {
             callback({success: false, message: err.message});
         } else if (!users) {
             authentication.encryptPassword(password, function (err, hash) {
-            if (err) {
-                return err;
-            } else {
-                var userJSON = {username: username,
-                                password: hash,
-                                role: "Adminstrator",
-                                email: email,
-                                alternativeEmail: 'N/A',
-                                firstName: firstName,
-                                lastName: lastName,
-                                phoneNumber: phoneNumber,
-                                verified: true,
-                                approved: true}
-                that.create({}, function (err, superAdmin) {
-                    if (err) {
-                        callback({success: false, message: err.message});
-                    } else {
-                        console.log('created an account for super admin', firstName, lastName);
-                        callback(null, superAdmin);
-                    } 
-                });
-            }
+                if (err) {
+                    return err;
+                } else {
+                    var userJSON = {username: username,
+                                    password: hash,
+                                    role: "Administrator",
+                                    email: email,
+                                    alternativeEmail: 'N/A',
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    phoneNumber: phoneNumber,
+                                    verified: true,
+                                    approved: true}
+                    that.create(userJSON, function (err, superAdmin) {
+                        if (err) {
+                            console.log(err);
+                            callback({success: false, message: err.message});
+                        } else {
+                            console.log('created an account for super admin', firstName, lastName);
+                            callback(null, superAdmin);
+                        } 
+                    });
+                }
+            });
         } else {
             callback(null, users);
         }
     });
-});
+};
 
 /**
 * Sets a verification token for the user
