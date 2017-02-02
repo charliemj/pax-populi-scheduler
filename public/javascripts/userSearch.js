@@ -3,11 +3,11 @@ $(document).ready(function () {
 
     $('.archive-button').click(function () {
         var id = $(this).attr('id').split('-').slice(-1)[0] ;
-        console.log('id', id);
+        // console.log('id', id);
         var username = $('#username-' + id).val();
         var csrf = $('#csrf').val();
         var action = $(this).attr('id').split('-')[0];
-        console.log('username', username);
+        // console.log('username', username);
 
         $.ajax({
             url: '/'+action+'/'+username,

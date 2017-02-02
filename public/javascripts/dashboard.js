@@ -4,24 +4,24 @@ $(document).ready(function () {
 
 	$('.hideLink').on('click', function () {
 	  	var state = $(this).text().toLowerCase().trim();
-	  	console.log('state', state);
+	  	// console.log('state', state);
 	  	var newState = state === 'hide' ? 'View Possible Schedules': 'Hide'
 	  	$(this).text(newState);
 	});
 
 	$('.approve-schedule-button, .reject-schedule-button').click(function () {
-		console.log('clicked')
+		// console.log('clicked')
         var id = $(this).attr('id').split('-').slice(-1)[0];
         var username = $('#username').val();
         var csrf = $('#csrf').val();
         var action = $(this).attr('id').split('-')[0];
-        // console.log($('#courseInput-' + id).html());
-        // console.log($("#scheduleOptions-" + id).html());
+        // // console.log($('#courseInput-' + id).html());
+        // // console.log($("#scheduleOptions-" + id).html());
         var course = $('#courseInput-' + id + ' option:selected').text();
-        console.log('course', course);
+        // console.log('course', course);
         var radioButtons = $("#scheduleOptions-" + id + " input:radio");
 		var selectedIndex = radioButtons.index(radioButtons.filter(':checked'));
-		console.log('index', selectedIndex);
+		// console.log('index', selectedIndex);
 
         $.ajax({
             url: '/schedules/'+action+'/'+username+'/'+ id,

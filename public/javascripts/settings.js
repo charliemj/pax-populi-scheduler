@@ -3,11 +3,11 @@ $(document).ready(function () {
 
 	$('.archive-button').click(function () {
         var id = $(this).attr('id').split('-').slice(-1)[0] ;
-        console.log('id', id);
+        // console.log('id', id);
         var username = $('#username-' + id).val();
         var csrf = $('#csrf').val();
         var action = $(this).attr('id').split('-')[0];
-        console.log('username', username);
+        // console.log('username', username);
 
         $.ajax({
             url: '/'+action+'/'+username,
@@ -65,7 +65,7 @@ $(document).ready(function () {
             success: function(data) {
                 if (data.success) {
                     addMessage(data.message, true);
-                    console.log('redirecting to ', data.redirect);
+                    // console.log('redirecting to ', data.redirect);
                     if (typeof data.redirect === 'string') {
                         setTimeout(function(){
                             window.location = data.redirect;
@@ -96,7 +96,7 @@ $(document).ready(function () {
     $(addButton).click( function (e) {
         e.preventDefault();
         var thisWrapper = $(this).parent().find(".input-fields-wrap");
-        console.log(thisWrapper);
+        // console.log(thisWrapper);
         var name = $(thisWrapper).find('.form-control').attr('name');
         $(thisWrapper).append('<div class="form-group"><input class="form-control" type="text" name="'+ name + '"/><a href="#" class="remove-field">Remove</a></div>'); //add input box
     });
@@ -104,7 +104,7 @@ $(document).ready(function () {
     var wrapper = $('.input-fields-wrap');
     $(wrapper).on("click",".remove-field", function (e) { //user click on remove text
         e.preventDefault();
-        console.log($(this).parent('div').html());
+        // console.log($(this).parent('div').html());
         $(this).parent('div').remove();
     });
 

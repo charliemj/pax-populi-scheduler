@@ -55,7 +55,7 @@ $(document).ready(function(){
         $('#interestsErrors').empty();
 
         if (regularUser){
-            console.log(country);
+            // console.log(country);
             if(!country){
                 validForm.country = false;
                 $('#countryErrors').empty();
@@ -328,9 +328,9 @@ $(document).ready(function(){
         $("#nationalityErrors").empty();
 
         if (regularUser){
-            console.log("nation"+nationality);
+            // console.log("nation"+nationality);
             if (nationality === ""){
-                console.log("work?");
+                // console.log("work?");
                 validForm.nationality = false;
                 $("#nationalityErrors").empty();
                 $("#nationalityErrors").append("<p>Please indicate your nationality.</p>");
@@ -352,7 +352,7 @@ $(document).ready(function(){
         $('#inChargeRegionErrors').empty();
 
         if (role === "coordinator"){
-            console.log(inCharge);
+            // console.log(inCharge);
             if (!inCharge){
                 validForm.inCharge = false;
                 $('#inChargeErrors').empty();
@@ -396,11 +396,11 @@ $(document).ready(function(){
 
 
         var allValid = true;
-        console.log(validForm);
+        // console.log(validForm);
         for (var key in validForm){
             if (validForm[key] === false){
                 allValid = false;
-                //console.log(key);
+                //// console.log(key);
             }
 
         }
