@@ -130,7 +130,5 @@ class TestMatch(unittest.TestCase):
                                                    '2018-01-14 05:00']}
         self.assertEqual(match_dict, correct_match_dict)
 
-# daylight saving tutor but not student
-
 if __name__ == '__main__':
     unittest.main()
