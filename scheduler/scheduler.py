@@ -1,41 +1,47 @@
 import networkx as nx
+
 from match import Match
 
-"""
-Immutable source or sink vertex for max flow. This class was created so that
-instances of it can be used as the source and sink vertex in max flow instead
-of the strings 'SOURCE' and 'SINK', one of which could be equal to a student ID
-or tutor ID.
-"""
 class Vertex:
+    """Immutable source or sink vertex for max flow. This class was created so
+    that instances of it can be used as the source and sink vertices in max
+    flow instead of the strings 'SOURCE' and 'SINK', one of which could be
+    equal to a student ID or tutor ID.
+    """
+
     def __init__(self, vertex_type):
         if vertex_type not in ['SOURCE', 'SINK']:
             raise ValueError('vertex_type must be "SOURCE" or "SINK"')
 
-"""
-Performs schedule matching between students and tutors.
-"""
 class Scheduler:
+    """Performs schedule matching between students and tutors."""
+
     def __init__(self, students, tutors, weeks_per_course=11):
         """
         Args:
-            students: A list of student User objects to be matched.
-            tutors: A list of tutor User objects to be matched.
+            students: A list of student User objects to be matched. The
+                user_id's of the union of students and tutors must be distinct.
+            tutors: A list of tutor User objects to be matched. The user_id's
+                of the union of students and tutors must be distinct.
             weeks_per_course: A positive integer representing the number of
                 occurrences of the course, assuming the course meets once per
                 week.
         """
         for student in students:
             if student.user_type != 'STUDENT':
-                raise ValueError('Every user in students must have the user_type "STUDENT"')
+                raise ValueError('Every user in students must have the user_type \'STUDENT\'')
         for tutor in tutors:
             if tutor.user_type != 'TUTOR':
-                raise ValueError('Every user in tutors must have the user_type "TUTOR"')
+                raise ValueError('Every user in tutors must have the user_type \'TUTOR\'')
+        self.student_ids = [student.user_id for student in students]
+        self.tutor_ids = [tutor.user_id for tutor in tutors]
+        if len(set(self.student_ids).union(set(self.tutor_ids))) != len(self.student_ids) + len(self.tutor_ids):
+            raise ValueError('The user_id\'s in the union of students and tutors must be distinct')
         if weeks_per_course <= 0:
             raise ValueError('weeks_per_course must be a positive integer')
         self.students = students
         self.tutors = tutors
-        self.tutor_id_to_tutor = {tutor.user_id: tutor for tutor in tutors}
+        self.tutor_id_to_tutor = dict(zip(self.tutor_ids, self.tutors))
         self.weeks_per_course = weeks_per_course
         self.source = Vertex('SOURCE')
         self.sink = Vertex('SINK')
@@ -45,8 +51,8 @@ class Scheduler:
         network = nx.DiGraph()
         network.add_node(self.source)
         network.add_node(self.sink)
-        network.add_nodes_from([student.user_id for student in self.students])
-        network.add_nodes_from([tutor.user_id for tutor in self.tutors])
+        network.add_nodes_from(self.student_ids)
+        network.add_nodes_from(self.tutor_ids)
 
         # Add edges
         for student in self.students:
@@ -54,13 +60,15 @@ class Scheduler:
         for student in self.students:
             for tutor in self.tutors:
                 if student.can_match(tutor, self.weeks_per_course):
-                    network.add_edge(student.user_id, tutor.user_id, capacity=1)
+                    network.add_edge(student.user_id, tutor.user_id,
+                                     capacity=1)
         for tutor in self.tutors:
             network.add_edge(tutor.user_id, self.sink, capacity=1)
         return network
 
     def match_max_flow(self):
-        (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(), self.source, self.sink)
+        (max_flow, flow_dict) = nx.maximum_flow(self.get_max_flow_network(),
+                                                self.source, self.sink)
         student_tutor_to_matches = {}
         for student in self.students:
             edge_dict = flow_dict[student.user_id]
@@ -126,14 +134,15 @@ if __name__ == '__main__':
     from datetime import date
     students = []
     tutors = []
-    a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['0:00','2:30'], ['17:00', '17:15']]})
-    a2 = Availability.from_dict({'4': [['0:00', '24:00']], '3': [['3:00','12:00']]})
-    a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['0:00','12:00']]})
-    a4 = Availability.from_dict({'4': [['0:00', '2:30']]})
+
+    a1 = Availability.from_dict({'0':[['23:00','24:00']], '1': [['00:00','02:30'], ['17:00', '17:15']]})
+    a2 = Availability.from_dict({'0': [['00:00', '24:00']], '3': [['03:00','12:00']], '6': [['15:00', '24:00']]})
+    a3 = Availability.from_dict({'0': [['23:45', '24:00']], '1':[['00:00','12:00']]})
+    a4 = Availability.from_dict({'0': [['00:00', '03:15']], '1': [['23:30','24:00']]})
     students.append(User('s1', 'reg1', 'STUDENT', 'MALE', 'NONE', a1,'Iran',['d','a'],date(2017,1,1)))
-    students.append(User('s2', 'reg2', 'STUDENT', 'MALE', 'NONE', a2,'Iran',['b'],date(2015,2,2)))
+    students.append(User('s2', 'reg2', 'STUDENT', 'MALE', 'NONE', a2,'US/Eastern',['b'],date(2015,2,2)))
     tutors.append(User('t1', 'reg3', 'TUTOR', 'MALE', 'NONE', a3,'Iran',['c','a','d'],date(2018,4,1)))
-    tutors.append(User('t2', 'reg4', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b', 'e'],date(2017,1,1)))
+    tutors.append(User('t2', 'reg4', 'TUTOR', 'FEMALE', 'NONE', a4,'US/Eastern',['b', 'e'],date(2017,11,4)))
     s1, s2 = students[0], students[1]
     t1, t2 = tutors[0], tutors[1]
     s = Scheduler(students, tutors)
