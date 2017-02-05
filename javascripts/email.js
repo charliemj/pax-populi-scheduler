@@ -2,6 +2,8 @@ var nodemailer = require('nodemailer');
 var config = require('./config.js');
 var utils = require('./utils.js');
 var enums = require('./enums.js');
+var User = require('../models/user.js');
+
 
 var Email = function() {
 
@@ -101,26 +103,6 @@ var Email = function() {
     };
 
     /**
-    * Sends an email to the admin to ask for the approval for a new 
-    * @param {Object} user - the user object for while the verification token is for
-    * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
-    * @param {Function} callback - the function to call after the email has been sent
-    */
-    that.sendApprovalRequestEmail = function (user, developmentMode, callback) {
-        that.createToken(user, false, function (err, user) {
-            if (err) {
-                return callback({success: false, message: err.message});
-            }
-            var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
-            var content = that.makeApprovalRequestEmailContent(user, developmentMode);
-            console.log(content);
-            console.log('about to send an approval request email to', user.email);
-            sendEmail(config.adminEmailAddress(), subject, content, callback); // for now send it back to the user
-
-        });
-    };
-
-    /**
     * Sends an email to inform the user that his/her account has been approved
     * @param {Object} user - the user object whose account just got approved
     * @param {Object} developmentMode - true if the app is in development mode, false otherwise
@@ -129,8 +111,8 @@ var Email = function() {
     */
     that.sendApprovalEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved! You can now log in and register for a class.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
-        console.log('user', user);
+        var action = utils.isRegularUser(user.role) ? 'register for classes' : 'view the schedules';
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved! You can now log in and {}.<br>{}</p>'.format(that.welcomeMessage, user.firstName, action, that.signature);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -143,8 +125,8 @@ var Email = function() {
     */
     that.sendRejectionEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>Sorry, you have not been approved by an administrator and will not be able to login or register for classes. If you have any concerns or would like us to re-evaluate your account, please email Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
-        console.log('user', user);
+        var action = utils.isRegularUser(user.role) ? 'register for classes' : 'view the schedules';
+        var emailContent = '{}<p> Hi {}!<br><br>Sorry, you have not been approved by an administrator and will not be able to login or {}. If you have any concerns or would like us to re-evaluate your account, please email Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, action, that.signature);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -157,8 +139,8 @@ var Email = function() {
     */
     that.sendWaitlistEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved. However, due to limited capacity, you are currenly waitlisted. This means that while you can now sign in to your account, you cannot register for classes just yet. We will notify you when you can register for a class. Sorry for the inconvenience!<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
-        console.log('user', user);
+        var action = utils.isRegularUser(user.role) ? 'register for classes' : 'view the schedules';
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved. However, due to limited capacity, you are currenly waitlisted. This means that while you can now sign in to your account, you cannot {} just yet. We will notify you when you can {}. Sorry for the inconvenience!<br>{}</p>'.format(that.welcomeMessage, user.firstName, action, action, that.signature);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -171,30 +153,121 @@ var Email = function() {
     */
     that.sendArchiveEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been archived by the administrators. You no longer have access to this account and will not receive any emails from us in the future.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been deactivated by the administrators. You no longer have access to this account and will not receive any emails from us in the future. If you think there was a mistake, please contact Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
-    that.makeApprovalRequestEmailContent = function (user, developmentMode) {
+    /**
+    * Sends an email to inform the user that they have been matched to someone
+    * @param {Object} user - the user object of the user
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.sendScheduleEmails = function (user, callback) {
+        var subject = 'Updates on the status of your Pax Populi class registration';
+        var emailContent = '{}<p> Hi {}!<br><br>You have been matched to a {} for the class you last registered for. You can now see your schedule on your dashboard.<br>{}</p>'.format(that.welcomeMessage, user.firstName, user.role.toLowerCase() === 'student'? 'tutor': 'student', that.signature);
+        sendEmail(user.email, subject, emailContent, callback);
+    };
+
+    /**
+    * Sends an email to remind student/tutor to confirm that they could meet
+    * @param {Object} user - the user object of the user
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.sendReminderEmail = function (user, userSchedule, callback) {
+        var subject = 'Pax Populi Class Reminder';
+        var partner = user.role.toLowerCase() === 'student'? 'tutor': 'student';
+        var emailContent = '{}<p> Hi {}!<br><br>You have an appointment scheduled with your {} in three days on {}. If you cannot make this appointment, please contact your {} as well as your coordinator.<br>{}</p>'.format(that.welcomeMessage, user.firstName, partner, utils.getFormatedNearestMeetingTime(userSchedule), partner, that.signature);
+        sendEmail(user.email, subject, emailContent, callback);
+    };
+
+    /**
+    * Sends an email to the admins to ask for the approval of a new account registration
+    * @param {Object} user - the user object for while the verification token is for
+    * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
+    * @param {Function} callback - the function to call after the email has been sent
+    */
+    that.sendApprovalRequestEmail = function (user, developmentMode, admins, callback) {
+        that.createToken(user, false, function (err, user) {
+            if (err) {
+                return callback({success: false, message: err.message});
+            }
+            var count = 0;
+            admins.forEach(function (admin) {
+                var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
+                var content = that.makeApprovalRequestEmailContent(user, developmentMode, admin);
+                sendEmail(admin.email, subject, content, function (err) {
+                    if (err) {
+                        callback(err);
+                    }
+                });
+                count++;
+                // only fires successful callback after all emails have been sent
+                if (count == admins.length) {
+                    callback(null);
+                }
+            });
+        });
+    };
+
+    /**
+    * Sends an email to inform admins that there are new matches
+    * @param {Number} numMatches - the number of newly generated matches
+    * @param Array {Object} admins - an array of admin objects to send emails to
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.notifyAdmins = function (numMatches, admins, callback) {
+        var count = 0;
+        console.log('notifying admins');
+        admins.forEach(function (admin) {
+            var subject = 'New matches generated in Pax Populi Scheduler';
+            var word = numMatches > 1 ? 'matches' : 'match';
+            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new {}. You can view them under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, word, that.signature);
+            console.log('sending email...');
+            sendEmail(admin.email, subject, emailContent, function (err) {
+                if (err) {
+                    callback(err);
+                }
+            });
+            count++;
+            // only fires successful callback after all emails have been sent
+            if (count == admins.length) {
+                callback(null);
+            } 
+        });  
+    };
+
+    /**
+    * Make the content of the approval requset email for the given admin and user
+    * @param {Object} user - the user object of the account
+    * @param {Boolean} developmentMode - true if the app is in developmentMode
+    * @param {Object} admin - the admin object to send an email to
+    * @return {Object} object - object.success is true if the email was sent
+                                successfully, false otherwise
+    */
+    that.makeApprovalRequestEmailContent = function (user, developmentMode, admin) {
         var link;
             if (developmentMode) {
                 link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
             } else {
                 link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
             }
-        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, config.adminFirstName(), config.adminLastName())
-                            + '{} {} has just requested to join Pax Populi as a/an {}. '.format(user.firstName, user.lastName, user.role.toLowerCase())
+        var role = user.role.toLowerCase() === 'administrator' ? 'an administrator': 'a {}'.format(user.role.toLowerCase());
+        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, admin.firstName, admin.lastName)
+                            + '{} {} has just requested to join Pax Populi as {}. '.format(user.firstName, user.lastName, role)
                             + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
                             + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
                             + '<li>Email Address: {}'.format(user.email);
             if (utils.isCoordinator(user.role)) {
-                if (user.schoolInCharge) {
+                if (user.schoolInCharge !== 'N/A') {
                     content += '<li>School in Charge: {}</li>'.format(user.schoolInCharge);
-                } else if (user.regionInCharge) {
+                } else if (user.regionInCharge !== 'N/A') {
                     content += '<li>Region in Charge: {}</li>'.format(user.regionInCharge);
                 }
-                if (user.countryInCharge) {
+                if (user.countryInCharge !== 'N/A') {
                     content += '<li>Country in Charge: {}</li>'.format(user.countryInCharge);
                 }  
             }

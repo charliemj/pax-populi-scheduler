@@ -1,9 +1,87 @@
-<script src='/javascripts/faq.js'></script>
+<script src='javascripts/faq.js'></script>
+<link rel="stylesheet" href="stylesheets/faq.css"/>
 <div class='tab-content'>
 <h1>{{title}}</h1>
+
 <div class='content' id='faq-content'>
-	<input type="hidden" name="_csrf" value="{{csrfToken}}">
-	<span class='question'>Q: How do I schedule a weekly meeting with a tutor?</span><br>
-  	<span class='answer'>A: TBD</span>
+	<div class = 'questions general' id='all'>
+		<div>
+			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I access my profile?</span><br><br>
+  			<span class='answer'> A: Click on your name at the top right corner of the page. There should be a drop down menu where 'Your Profile' should appear. Click on the profile button to see your information.</span> <br><br><br>
+  		</div>
+  	</div>
+
+{{#isRegularUser role}}
+	<div class = 'questions user' id='user'>
+		<div>
+			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+			<span class='question'>Q: How do I schedule a weekly meeting with a {{#if isTutor}}student {{else}}tutor{{/if}}?</span><br><br>
+  			<span class='answer'>A: Click on the registration tab in the navigation bar at the top of the screen. Follow the instructions on the page to fill out your availability and fill out all the other fields. Submit the registration. You are now in the matching pool! You will be notified when you are matched with a {{#if isTutor}}student {{else}}tutor{{/if}}.</span><br><br><br>
+  		</div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I update a previous registration?</span><br><br>
+  			<span class='answer'> A: If you have created a previous registration, it will appear in your user dashboard (the first page you see when you log in). To update your registration, click on the edit button on that registration and change anything that you need to.</span> <br><br><br>
+  		</div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I delete a previous registration?</span><br><br>
+  			<span class='answer'> A: Click on the edit button for that registration in your dashboard, and then at the bottom of the edit registration page, click delete. </span> <br><br><br>
+  		</div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: I can't make the tutoring session this week, how can I reschedule?</span><br><br>
+  			<span class='answer'> A: Email your {{#if isTutor}}student {{else}}tutor{{/if}} to reschedule. In the email, cc robert@appliedethics.org. If you do not have your {{#if isTutor}}student's {{else}}tutor's {{/if}}email, just email robert@appliedethics.org directly. </span> <br><br><br>
+  		</div>
+  	</div>
+{{/isRegularUser}}
+
+{{#isCoordinator role}}
+  	<div class= 'questions coordinator' id= 'coordinator'>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: Whose schedules can I see?</span><br><br>
+  			<span class='answer'> A: You have permissions to view only the schedules of the Students or Tutors who you are the coordinator for. Any other schedules will be filtered out. </span> <br><br><br>
+  		</div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I see my students' or tutors' schedules? </span><br><br>
+  			<span class= 'answer'> A: To download schedules of all the current matches and the times that they are meeting, navigate back to your dashboard and then click on the “Download CSV" button</span><br><br><br>
+  		<div>
+
+  	</div>
+{{/isCoordinator}}
+
+{{#isAdministrator role}}
+  	<div class ='questions admin' id= 'admin'>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I run the Scheduling Algorithm?</span><br><br>
+  			<span class= 'answer'> A: Click on the settings tab in the navigation bar at the top of the page. At the bottom of the settings page, there will be two buttons under "Manage Scheduler". The button that says "Run Once Now" runs the scheduling algorithm once at that time. The second button turns the automatic features of the scheduling algorithm on, so that it will run on its own every week.</span><br><br><br>
+  		<div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I get the master schedule? </span><br><br>
+  			<span class= 'answer'> A: To download the master schedule of all the current matches and the times that they are meeting, navigate back to your dashboard and then click on the “Download CSV" button.</span><br><br><br>
+  		<div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I deactivate an account?</span><br><br>
+  			<span class= 'answer'> A: Click on the "Manage Users" tab in the navigation bar. Here you can search for users based on first OR last name (note: you can only search based on one or the other). Search for the user with the search function. When the users name pops up, it will have a yellow "archive" button under it. If you press the archive button, it will deactivate the account. </span><br><br><br>
+  		<div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I update forms?</span><br><br>
+  			<span class= 'answer'>A: Click on the settings tab. Under the Manage Forms tab, you will find buttons to modify different forms. To modify a specific form, click on the name of the form in the Manage Forms tab. There will be a drop down of all the current items in the form. Each of these items will appear in a textbox where you can modify the contents and under the textbox there will be a delete button if you would like to completely delete the entry. If you would like to add an Item to the list, click on the ‘+’ button and a new textbox will appear. Enter the new item into the textbox and click save to update it. </span><br><br><br>
+  		<div>
+  		<div>
+  			<input type="hidden" name="_csrf" value="{{csrfToken}}">
+  			<span class= 'question'> Q: How do I approve/waitlist/reject an account?</span><br><br>
+  			<span class= 'answer'> A: When a student, tutor, coordinator, or admin makes a new account and confirms it, you will get a notification on your dashboard with the new user’s name and the type of user they are. Below their name will appear three buttons that say ‘approve’, ‘waitlist’, and ‘reject.’ Click on the action you want to take. If you waitlist them, they will remain in your pending requests tab in your dashboard until you finally approve or reject them. Only reject accounts that should not be allowed to sign in, this will make it so that they cannot sign up for another account with the same username or email address.</span><br><br><br>
+  		<div>
+{{/isAdministrator}}
 </div>
 </div>

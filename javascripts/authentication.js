@@ -10,6 +10,8 @@ var Authentication = function() {
 
     /**
     * Checks if the request has a defined session and correct authentication
+    * If so, direct the user to the request route. Otherwise, direct the user
+    * back to the homepage to login
     * @param {Object} req - request to check for authentication
     * @param {Object} res - response from the previous function
     * @param {Function} next - callback function
@@ -24,6 +26,7 @@ var Authentication = function() {
         } else if (req.isAuthenticated()) {
             next();
         } else {
+            // direct to homepage to either login
             res.render('home', {title: 'Pax Populi Scheduler',
                                 message: 'Please log in below',
                                 csrfToken: req.csrfToken(),
@@ -40,6 +43,15 @@ var Authentication = function() {
         }
     }
 
+
+    /**
+    * Checks if the owner of the request is an admin. If so, direct 
+    * the user to the request route. Otherwise, direct the user
+    * @param {Object} req - request to check for authentication
+    * @param {Object} res - response from the previous function
+    * @param {Function} next - callback function
+    * @return {Boolean} true if the request has the authenication, false otherwise
+    */
     that.isAdministrator = function (req, res, next) {
         var user = req.session.passport.user;
         if (utils.isAdministrator(user.role)) {
@@ -64,7 +76,8 @@ var Authentication = function() {
     /*
     * Encrypts the password using hashing and salting
     * @param {String} password - the password to encrypt
-    * @param  {Function} callback - the function that takes in an object and is called once this function is done
+    * @param  {Function} callback - the function that takes in an object and
+    *                               is called once this function is done
     */
     that.encryptPassword = function (password, callback) {
         bcrypt.genSalt(function(err, salt) {
@@ -83,9 +96,10 @@ var Authentication = function() {
     };
 
     /*
-    * Creates a JSON object whose fields are username, hashed password, first name, last name, email
+    * Creates a JSON for creating user object using the data provided
     * @param {Object} data - the object which contains information about the user
-    * @param  {Function} callback - the function that takes in an object and is called once this function is done
+    * @param  {Function} callback - the function that takes in an object and is
+    *                               called once this function is done
     */
 
     that.createUserJSON = function (data, callback) {
@@ -100,11 +114,12 @@ var Authentication = function() {
             if (err) {
                 return err;
             }
+            // add the basic information
             var userJSON = {username: data.username.trim().toLowerCase(),
                             password: hash,
                             role: role,
                             email: data.email.trim(),
-                            alternativeEmail: data.alternativeEmail.trim(),
+                            alternativeEmail: data.alternativeEmail.trim().length > 0 ? data.alternativeEmail.trim(): 'N/A',
                             firstName: data.firstName.trim(),
                             middleName: data.middleName.trim(),
                             lastName: data.lastName.trim(),
@@ -118,7 +133,7 @@ var Authentication = function() {
                 var additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
-                                        skypeId: data.skypeId.trim(),
+                                        skypeId: data.skypeId.trim().length > 0 ? data.skypeId.trim(): 'N/A',
                                         school: isTutor ? data.tutorSchool : data.studentSchool,   
                                         educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
                                                             data.studentEducationLevel.trim(),
@@ -138,7 +153,7 @@ var Authentication = function() {
             if (utils.isCoordinator(role)) {
                 var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
                 scopes.forEach(function (scope) {
-                    if (typeof data[scope] !== 'undefined') {
+                    if (data[scope]) {
                         if (scope === 'schoolInCharge') {
                             userJSON[scope] = utils.extractChosen(data[scope]);
                         } else {

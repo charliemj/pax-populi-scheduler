@@ -13,33 +13,60 @@
       {{> registrations}}
   	</div>
 </div>
+{{/isRegularUser}}
+{{#isAdministrator role}}
+ {{#ifNot onHold}}
+  <div class='row' id="pending-requests">
+  	<span class='title-toggle' id='pendingRegistrations-toggle' data-toggle="collapse" data-target="#dashboard-pendingRegistrations"><h3>Pending Requests<span class="badge hide notifs-count"></span>
+  	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+    	<div id='dashboard-pendingRegistrations' class='collapse in'>
+        {{#if pendingUsers}}
+    		  {{> pendingRequests}}
+        {{else}}
+        {{/if}}
+    	</div>
+   </div>
+   <div class='row' id="pending-schedules">
+    <span class='title-toggle' id='pending-schedules-toggle' data-toggle="collapse" data-target="#dashboard-pending-schedules"><h3>Pending Schedules<span class="badge hide notifs-count"></span>
+    <span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
+      <div id='dashboard-pending-schedules' class='collapse in'>
+        {{#if schedules}}
+          {{> pendingSchedules}}
+        {{else}}
+        {{/if}}
+      </div>
+   </div>
+  {{else}}
+  <div id='message-container'>
+      <center>You are currenly on the waitlist so you do not have the permisson to view all the pending requests or schedules.</center>
+  </div>
+  {{/ifNot}}
+{{/isAdministrator}}
+{{#ifNot onHold}}
 <div class='row' id="schedules">
   <span class='title-toggle' id='schedules-toggle' data-toggle="collapse" data-target="#dashboard-schedules"><h3>Schedules<span class="badge hide notifs-count"></span>
   <span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
     <div id='dashboard-schedules' class='collapse in'>
-      {{> schedules}}
+      {{#if schedules}}
+        {{> schedules}}
+      {{else}}
+        <div id='search-message'>
+          <center>No Results</center>
+        </div>
+      {{/if}}
     </div>
- </div>
-{{/isRegularUser}}
-{{#isAdministrator role}}
-<div class='row' id="pending-requests">
-	<span class='title-toggle' id='pendingRegistrations-toggle' data-toggle="collapse" data-target="#dashboard-pendingRegistrations"><h3>Pending Requests<span class="badge hide notifs-count"></span>
-	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
-  	<div id='dashboard-pendingRegistrations' class='collapse in'>
-  		{{> pendingRequests}}
-  	</div>
- </div>
-{{/isAdministrator}}
-{{#isRegularUser role}}
+</div>
 {{else}}
-<div class='row' id="schedules">
-	<span class='title-toggle' id='schedules-toggle' data-toggle="collapse" data-target="#dashboard-schedules"><h3>Schedules<span class="badge hide notifs-count"></span>
-	<span class="glyphicon glyphicon-chevron-down" id="requests-chevron-toggle"></span></h3></span>
-  	<div id='dashboard-schedules' class='collapse in'>
-  		{{> schedules}}
-  	</div>
- </div>
-{{/isRegularUser}}
-
+{{#isAdministrator role}}
+  <div id='message-container'>
+      <center>You are currenly on the waitlist so you do not have the permission to view the master schedule.</center>
+  </div>
+{{/isAdministrator}}
+{{#isCoordinator role}}
+  <div id='message-container'>
+      <center>You are currenly on the waitlist so you do not have the permission to view any schedule.</center>
+  </div>
+{{/isCoordinator}}
+{{/ifNot}}
 </div>
 </div>

@@ -1,5 +1,5 @@
 {{#each users}}
-<div class='col-xs-12 col-ms-6 col-sm-4 col-md-4 col-lg-4 user-container tile-container' id='user-container-{{_id}}'>
+<div class='col-xs-12 col-ms-6 col-sm-4 col-md-3 col-lg-4 user-container tile-container' id='user-container-{{_id}}'>
   <div class='tile user-tile' name="user-{{_id}}" data-id='{{_id}}'>
     <div class='tile-icon' style='float: left'><img class='icon' src="/images/user.gif"></img></div>
     <div class='user-header tile-header'>
@@ -31,6 +31,7 @@
     <center>
       {{#ifNot archived}}
         <button id='archive-button-{{_id}}' class='btn btn-warning btn-hg archive-button'>Archive</button>
+      {{else}}
       {{/ifNot}}
     </center>
     </div>

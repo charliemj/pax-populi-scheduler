@@ -226,3 +226,19 @@ input {
   padding-left: 10px;
   padding-bottom: 15px;
 }
+
+.formErr{
+  color:red;
+}
+
+.user-container {
+  min-height: 160px;
+  width: 30%;
+}
+
+#message-container {
+  margin:0 auto;
+  margin-top: 50px;
+  padding: 50px;
+  background: #F0F3F4;
+}

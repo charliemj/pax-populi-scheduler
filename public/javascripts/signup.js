@@ -31,36 +31,34 @@ $(document).ready(function () {
 		    default:
 		        break;
 		}
-
-		$("#incharge").hide();
-	    
 	});
 
 	$('input:radio[name="in-charge"]').change(
 	    function () {
-            
+	    	$('#in-charge-of').empty();
+	    	$('.other').hide();
+	    	var countryHTML = $('<div class="form-group country" ><label class="control-label">Country*</label><div><!--Source: https://github.com/benkeen/country-region-selector--><select name="countryInCharge" class="form-control signup-input crs-country" data-region-id="regionHere2" required></select></div></div>')
+	    	var regionHTML = $('<div class="form-group region"><label class="control-label">Region*</label><div><select name="regionInCharge" class="form-control signup-input" id="regionHere2"></select></div></div>');
+	    	regionHTML = countryHTML.add(regionHTML);
             var schoolHTML = $('#tutor-schools').clone();
+            // console.log($('#student-schools').html());
+            $('#student-schools option').slice(1).slice(0, -1).clone().appendTo(schoolHTML.find('select'))
             schoolHTML.find('select').attr('name', 'schoolInCharge');
 
 	        if ($(this).is(':checked')) {
 	        	var inCharge = $(this).val();
 	        	switch (inCharge) {
 	        		case 'School':
-	        			$("#incharge").hide();
-	        			$("#regionHere2").hide();
 	        			$('#in-charge-of').html(schoolHTML);
 	        			break;
 	        		case 'Region':
-	     				$('#in-charge-of').html(schoolHTML).empty();
-	        			$("#incharge").show();
-	        			$("#regionHere2").show();
+	        			$('#in-charge-of').html(regionHTML);
+	        			// $.getScript('/javascripts/vendor/crs.min.js');
+	        			window.crs.init();
 	        			break;
 	        		case 'Country':
-	        			$('#in-charge-of').html(schoolHTML).empty();
-	        			$("#incharge").show();
-	        			$("#regionHere2").hide();
-	        			$("#regionLabel").hide();
-	        			$("#regionHere2").val("--"); //no region selected
+	        			$('#in-charge-of').html(countryHTML);
+	        			window.crs.init();
 	        			break;
 	        	}  
 	        }

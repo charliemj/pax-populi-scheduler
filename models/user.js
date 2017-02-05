@@ -4,10 +4,10 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 var utils = require("../javascripts/utils.js");
 var email = require('../javascripts/email.js');
 var enums = require("../javascripts/enums.js");
+var config = require('../javascripts/config.js');
 var authentication = require('../javascripts/authentication.js');
 var validators = require("mongoose-validators");
 var regexs = require("../javascripts/regexs.js");
-var mongooseToCsv = require("mongoose-to-csv");
 
 var UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true},
@@ -22,64 +22,34 @@ var UserSchema = mongoose.Schema({
     archived: {type: Boolean, default: false},
     role: {type: String, enum: enums.userTypes(), required: true},
     email: {type: String, required: true},
-    alternativeEmail: {type: String, default: null},
+    alternativeEmail: {type: String},
     firstName: {type: String, required: true},
-    middleName: {type: String, default:null},
+    middleName: {type: String},
     lastName: {type: String, required: true},
-    nickname: {type: String, default:null},
+    nickname: {type: String},
     gender: {type: String, enum: enums.genders()},
-    dateOfBirth: {type: Date, default:null},
+    dateOfBirth: {type: Date},
     phoneNumber: {type: String, require: true},
-    skypeId: {type: String, default:null},
-    school: {type: String, default:null},
-    educationLevel: {type: String, default:null},
-    enrolled: {type: String, default:null},
-    major: {type: String, default:null},
-    country:{type: String, default:null},
-    region: {type: String, default:null},
-    timezone: {type: String, default:null},
-    nationality: {type: String, default:null},
-    interests: [{type: String, default:null}],
-    countryInCharge: {type: String},
-    regionInCharge: {type: String},
-    schoolInCharge: {type: String}
-
+    skypeId: {type: String, default: 'N/A'},
+    school: {type: String},
+    educationLevel: {type: String},
+    enrolled: {type: String},
+    major: {type: String},
+    country:{type: String},
+    region: {type: String},
+    timezone: {type: String},
+    nationality: {type: String},
+    interests: [{type: String}],
+    countryInCharge: {type: String, default: 'N/A'},
+    regionInCharge: {type: String, default: 'N/A'},
+    schoolInCharge: {type: String, default: 'N/A'}
 });
 
-UserSchema.plugin(mongooseToCsv, 
-{
-  headers: 'FirstName LastName UserName Email AltEmail Phone Gender DOB Country Region TimeZone Major educationLevel School Nationality Role SkypeID Interests InChargeOfRegion InChargeOfCountry InChargeOfSchool',
-  constraints: {
-    'Username': 'username',
-    'Email': 'email',
-    'DOB': 'dateofBirth',
-    'FirstName': 'firstName',
-    'LastName': 'lastName',
-    'AltEmail': 'alternativeEmail',
-    'Phone': 'phoneNumber',
-    'SkypeID':'skypeId',
-    'TimeZone': 'timezone',
-    'Country': 'country',
-    'Region': 'region',
-    'Nationality': 'nationality',
-    'Role': 'role',
-    'Gender': 'gender',
-    'School': 'school',
-    'Major': 'major',
-    'Interests': 'interests',
-    'InChargeOfSchool': 'schoolInCharge',
-    'InChargeOfRegion': 'regionInCharge',
-    'InChargeOfCountry': 'countryInCharge',
-    'educationLevel': 'educationLevel'
-
-}
-
-  });
 
 
 UserSchema.path("role").validate(function(role) {
     if (utils.isRegularUser(role)) {
-        if (!this.gender || !this.dateOfBirth || !this.skypeId || !this.interests || 
+        if (!this.gender || !this.dateOfBirth || !this.interests || 
             !this.school || !this.educationLevel || !this.enrolled || !this.major ||
             !this.timezone || !this.nationality || !this.country || !this.region) {
             return false;
@@ -124,8 +94,56 @@ UserSchema.path("requestToken").validate(function(verificationToken) {
 }, "Request token must have the correct number of digits");
 
 /**
+* Searches for an exisiting super admin object in the database. If there is not one, initializes one
+* using all the defaults in javascripts/config.js
+* @param {Function} callback - the function that gets called after the schedules are fetched
+*/
+UserSchema.statics.initializeSuperAdmin = function (callback) {
+    var that = this;
+    var username = process.env.SUPER_ADMIN_USERNAME || config.adminUsername();
+    var firstName = process.env.SUPER_ADMIN_FIRST_NAME || config.adminFirstName();
+    var lastName = process.env.SUPER_ADMIN_LAST_NAME || config.adminLastName();
+    var email = process.env.SUPER_ADMIN_ADDRESS || config.adminEmailAddress();
+    var phoneNumber = process.env.SUPER_ADMIN_PHONE_NUMBER || config.adminPhoneNumber();
+    var password = process.env.SUPER_ADMIN_PASSWORD || config.adminPassword();
+    that.findOne({firstName: firstName, lastName: lastName, email: email}, function (err, users) {
+        if (err) {
+            callback({success: false, message: err.message});
+        } else if (!users) {
+            authentication.encryptPassword(password, function (err, hash) {
+                if (err) {
+                    return err;
+                } else {
+                    var userJSON = {username: username,
+                                    password: hash,
+                                    role: "Administrator",
+                                    email: email,
+                                    alternativeEmail: 'N/A',
+                                    firstName: firstName,
+                                    lastName: lastName,
+                                    phoneNumber: phoneNumber,
+                                    verified: true,
+                                    approved: true}
+                    that.create(userJSON, function (err, superAdmin) {
+                        if (err) {
+                            console.log(err);
+                            callback({success: false, message: err.message});
+                        } else {
+                            console.log('created an account for super admin', firstName, lastName);
+                            callback(null, superAdmin);
+                        } 
+                    });
+                }
+            });
+        } else {
+            callback(null, users);
+        }
+    });
+};
+
+/**
 * Sets a verification token for the user
-* @param {String} token - the 32-digit verification token
+* @param {String} token - the verification token of the user
 * @param {Function} callback - the function that gets called after the token is set
 */
 UserSchema.methods.setVerificationToken = function (token, callback) {
@@ -144,7 +162,7 @@ UserSchema.methods.verify = function (callback) {
 
 /**
 * Sets a request token for the user
-* @param {String} token - the 32-digit request token
+* @param {String} token - the request token of the user
 * @param {Function} callback - the function that gets called after the token is set
 */
 UserSchema.methods.setRequestToken = function (token, callback) {
@@ -224,10 +242,13 @@ UserSchema.statics.verifyAccount = function (username, token, callback) {
 };
 
 /**
-* Verifies the account so that user can start using it
+* Responds to the account registration request. Approve on the UI corresponds to approve and
+* not waitlist. Reject corresponds to not approve and not waitlist. Waitlist corresponds to
+* approve and waitlist 
 * @param {String} username - username of the account to verify
-* @param {String} token - the enums.numTokenDigits-digit verification token
-* @param {Boolean} approve - true 
+* @param {String} token - the request token of the user
+* @param {Boolean} approve - true if the action is to approve the account
+* @param {Boolean} waitlist - true if the action is to waitlist the account
 * @param {Function} callback - the function that gets called after the account is verified
 */
 UserSchema.statics.respondToAccountRequest = function (username, token, approve, waitlist, callback) {
@@ -261,6 +282,11 @@ UserSchema.statics.respondToAccountRequest = function (username, token, approve,
     });
 };
 
+/*
+* Archives the account so the account is no longer active
+* @param {String} username - username of the account to archive
+* @param {Function} callback - the function that gets called after the action is done
+*/
 UserSchema.statics.archiveUser = function (username, callback) {
     this.findOne({username: username}, function (err, user) {
         if (err || (!err & !user)) {
@@ -518,14 +544,20 @@ UserSchema.statics.getUser = function(username, callback){
     });
 };
 
-UserSchema.statics.searchUsers = function(name, callback){
-    this.find({$and: [{$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
-                        {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}, 
-                    {$and: [{verified: true, approved: true}]}]},
-        function (err, users){
+/*
+ * Find approved and verified users whose first name or last name match `name` exactly. If name is an
+ * empty string, gets all users.
+ * @param {String} name - the name string to search 
+ * @param {Function} callback - The function to execute after the user is found. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.statics.searchUsers = function(name, callback) {
+    var query = name.length === 0 ? {verified: true, approved: true} : {$and: [{$and: [{verified: true, approved: true}, 
+                                                 {$or: [{firstName: new RegExp(["^", name, "$"].join(""), "i")},
+                                                        {lastName: new RegExp(["^", name, "$"].join(""), "i")}]}]}]};
+    this.find(query, function (err, users){
         if (err) {
-            console.log("Invalid usernmae");
-            callback(new Error("Invalid username."));
+            callback({success: false, message: err.message});
         } 
         else {
             callback(null, users);
@@ -533,8 +565,13 @@ UserSchema.statics.searchUsers = function(name, callback){
     });
 };
 
+/*
+ * Find users whose has verified their accounts but have been approved, rejected
+ * or waitlisted by the admins
+ * @param {Function} callback - The function to execute after the user is found. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
 UserSchema.statics.getPendingUsers = function (callback) {
-    // {$or: [{student: user._id}, {tutor: user._id}]}
     this.find({$and: [{verified: true}, 
                         {$or: [{$and: [{approved:false}, {rejected: false}, {onHold: false}]}, 
                                 {onHold: true, approved: true}]}]}, function (err, users) {
@@ -546,11 +583,34 @@ UserSchema.statics.getPendingUsers = function (callback) {
     });
 };
 
-
-UserSchema.statics.getAllUsers = function(){
-    console.log("trying to make csv");
-    this.find({}).stream().pipe(this.csvTransformStream()).pipe(fs.createWriteStream('users.csv'));
-    console.log("made csv");
+/*
+ * Find the coordinator for the user with the given user ID. A user is a coordinator of
+ * another users (student/tutor) iff he/she is in charge of the school/region/country
+ * the user is from
+ * @param {Function} callback - The function to execute after the user is found. Callback
+ * function takes 1 parameter: an error when the request is not properly claimed
+ */
+UserSchema.statics.findCoordinator = function (userId, callback) {
+    var that = this;
+    that.findOne({_id: userId}, function (err, user) {
+        if (err) {
+           callback({success: false, message: err.message});
+        } else {
+            console.log(user.school, user.region, user.country);
+            that.findOne({$and: [{verified: true, approved: true}, {$or: [{schoolInCharge: user.school, regionInCharge: 'N/A', countryInCharge: 'N/A'}, {schoolInCharge: 'N/A', regionInCharge: user.region, countryInCharge: user.country}, {schoolInCharge: 'N/A', regionInCharge: 'N/A', countryInCharge: user.country}]}]}, function (err, coordinator) {
+                if (err) {
+                    callback({success: false, message: err.message});
+                } else {
+                    if (coordinator) {
+                        console.log('coordinator', coordinator.schoolInCharge, coordinator.regionInCharge, coordinator.countryInCharge);
+                    } else {
+                        console.log('could not find any coordinator', coordinator)
+                    }
+                    callback(null, coordinator);
+                }               
+            });
+        }
+    });
 };
 
 

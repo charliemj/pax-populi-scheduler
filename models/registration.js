@@ -1,8 +1,10 @@
 var mongoose = require("mongoose");
 var validators = require("mongoose-validators");
-var User = require('../models/user.js');
 var ObjectId = mongoose.Schema.Types.ObjectId;
-var genderPrefs = ["MALE","FEMALE", "NONE"]; 
+var async = require('async');
+var User = require('../models/user.js');
+var email = require('../javascripts/email.js');
+var genderPrefs = ["MALE","FEMALE", "NONE"];
 
 // availability are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -48,7 +50,7 @@ RegistrationSchema.statics.createRegistration = function(user, genderPref, avail
             callback(err); 
         }
         else if (registrations.length === 0){
-            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime:earliestStartTime}, 
+            Registration.create({availability: availability, user: user, genderPref: genderPref, courses: courses, earliestStartTime: earliestStartTime}, 
             function(err, registration){
                 if (err){
                     console.log("Problem creating registration");
@@ -152,16 +154,15 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
     });
 };
 
-//TODO -- this documentation (type of registration)
-
 /*
  * Takes a series of registration IDs and marks them as matched
- * @param {} registrationIds -  of ID numbers (assigned by MongoDB) for each registration object.
+ * @param {Array} registrationIds -  the ids for each registration object.
  * @param {Function} callback - The function to execute after the registrations are marked as matched.
  */
 RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
+    var count = 0;
     registrationIds.forEach(function (regId) {
-        Registration.findOne({_id: regId}, function (err, registration) {
+        Registration.findOne({_id: regId}).populate('user').exec(function (err, registration) {
             if (err) {
                 console.log(err);
                 callback({success: false, message: err.message});
@@ -169,22 +170,47 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
                 registration.matched(function (err, registration) {
                     if (err) {
                         console.log(err);
-                        callback({success: false, message: err.message});
+                    } else {
+                        console.log('Marked as matched');
                     }
                 });
+                count++;
+                if (count === registrationIds.length) {
+                    callback(null, registrationIds);
+                }
             }
         });
     });
-    setTimeout(function(){callback(null, registrationIds);}, 2500);  
-};
+}
 
+/*
+ * Takes a series of registration IDs and marks them as unmatched
+ * @param {Array} registrationIds -  the IDs for each registration object.
+ * @param {Function} callback - The function to execute after the registrations are marked as matched.
+ */
+RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback) {
+    var count = 0;
+    registrationIds.forEach(function (regId) {
+        Registration.findOneAndUpdate({_id: regId}, {isMatched: false}, function(err, updateRegistration) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log('marked as unmatched');
+                count++;
+                if (count === registrationIds.length) {
+                    callback(null, registrationIds);
+                }
+            }
+        });
+    });
+}
 
 /*
  * Gets all unmatched registrations in the whole system
  * @param {Function} callback - The function to execute after the unmatched registrations are found.
  */
 RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
-    Registration.find({isMatched: false }).populate('user').exec(function (err, registrations) {
+    Registration.find({isMatched: false, earliestStartTime: {"$gte": new Date()}}).populate('user').exec(function (err, registrations) {
         if (err) {
             callback({success: false, message: err.message});
         } else {
@@ -193,6 +219,5 @@ RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
     });
 };
 
-//keep at bottom of file
 var Registration = mongoose.model("Registration", RegistrationSchema);
 module.exports = Registration;

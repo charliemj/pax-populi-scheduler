@@ -1,0 +1,30 @@
+<script src='/javascripts/userSearch.js'></script>
+<link href="/javascripts/vendor/bower_components/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="/javascripts/vendor/bower_components/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+<link rel="stylesheet" href="/stylesheets/settings.css"/>
+<div class='tab-content'>
+    <h1>{{title}}</h1>
+    <div class='content' id='dashboard-content'>
+    {{#ifNot onHold}}
+        <div class='row' id="manage-users">
+            <form id='search-form' action='/search' method='post'>
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+                <input type="search" name='keyword' class="form-control search-bar col-xs-5 col-md-5" placeholder="first name or last name or nothing">
+                <input type="submit" id='search-button' class='btn btn-primary btn-lg' value="Search">
+            </form>
+            <div id='dashboard-manage-users' class='collapse in'>
+                {{#if message}}
+                <div id='search-message'>
+                    <center>{{message}}</center>
+                </div>
+                {{else}}
+                    {{> users}}
+                {{/if}}
+            </div>
+        </div>
+    {{else}}
+        <div id='message-container'>
+            <center>You are currenly on the waitlist so you do not have the permission to lookup any user information.</center>
+        </div>
+    {{/ifNot}}
+</div>

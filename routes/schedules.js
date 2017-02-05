@@ -10,29 +10,6 @@ var utils = require('../javascripts/utils.js');
 var csrf = require('csurf');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-//TODO GET req for user
-
-//PUT update schedule for a user --> must send notifications to user/tutor/admin|coordinator 
-
-
-//only display schedules that are current. delete schedules for classes that are over. 
-
-//get schedules for the user
-// router.get('/:username', authentication.isAuthenticated, function (req, res, next) {
-// 	var user = req.session.passport.user;
-// 	Schedule.getSchedules(user, function (err, schedules) {
-// 		if (err) {
-// 			res.send({success: false, message: err.message});
-// 		} else {
-// 			res.send({success: true, schedules: schedules});
-// 		}
-// 	});	
-// });
-
-// DELETE where should this happen?
-
-// PUT maybe we want ppl to be able to update and then send verifications to Admin/tutor/student
-
 
 // gets all the registration objects and feed those to the python script 
 // to get the pairs
@@ -41,14 +18,48 @@ router.put('/match', [authentication.isAuthenticated, authentication.isAdministr
 		if (err) {
 			res.send({success: false, message: err.message});
 		} else {
-			res.send({success: true, message: 'Successfully generated matches!'});
+			var numMatches = matches.length;
+			var message = 'Successfully generated ' +  numMatches + ' new ';
+			message += numMatches > 1 ? 'matches!': 'match!';
+			res.send({success: true, message: message, redirect: '/settings'});
 		}
 	});
 });
 
+// switch on/off the weekly matching cron job
 router.put('/toggleSwitch', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
 	global.schedulerJob.running = !global.schedulerJob.running;
-	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off'});
+	res.send({success: true, message: global.schedulerJob.running ? 'Turned the scheduler on': 'Turned the scheduler off', redirect: '/settings'});
 });
 
-module.exports = router; //keep at the bottom of the file
+// approves the schedule
+router.put('/approve/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
+	var scheduleIndex = parseInt(req.body.scheduleIndex);
+	var course = req.body.course.trim();
+	var scheduleId = req.body.scheduleId;
+	console.log(scheduleIndex, course, scheduleId)
+	Schedule.approveSchedule(scheduleId, scheduleIndex, course, function (err, updatedSchedule) {
+		if (err) {
+			console.log(err);
+			res.send({success: false, message :err.message});
+		} else {
+			res.send({success: true, message: 'Successfully approved the schedule!', redirect: '/'});
+		}
+	});
+});
+
+// rejects the schedule
+router.put('/reject/:username/:scheduleId', [authentication.isAuthenticated, authentication.isAdministrator], function (req, res, next) {
+	console.log('in reject');
+	var scheduleId = req.body.scheduleId;
+	Schedule.rejectSchedule(scheduleId, function (err, updatedSchedule) {
+		if (err) {
+			res.send({success: false, message :err.message});
+		} else {
+			console.log('removeSchedule', updatedSchedule);
+			res.send({success: true, message: 'Successfully rejected the schedule', redirect: '/'});
+		}
+	});
+});
+
+module.exports = router;

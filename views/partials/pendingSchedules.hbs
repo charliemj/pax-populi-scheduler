@@ -1,0 +1,66 @@
+{{#each schedules}}
+ {{#ifNot adminApproved}}
+	<div class='col-xs-12 col-ms-6 col-sm-6 col-md-6 col-lg-7 schedule-container tile-container' id='schedule-container-{{_id}}'>
+	  <div class='tile schedule-tile' name="schedule-{{_id}}" data-id='{{_id}}'>
+	  	<form>
+	  	<div class='tile-icon' style='float: left'><img class='icon' src="/images/schedule.gif" style="margin-left: 10px;"></img></div>
+	  	<div class='schedule-header tile-header'>
+	    	<table class="table table-hover" id='{{_id}}-profile'>
+			  <tbody>
+			    <tr><th>Possible Courses</th><td>
+			    	<select id='courseInput-{{_id}}' name='course' class='form-control' required>
+
+			    		<option value="" disabled selected hidden>Choose a course..</option>
+
+
+	                    {{#each possibleCourses}}
+	                        <option>{{this}}</option>
+	                      {{/each}}
+	                </select>
+			    </td>
+			    <tr><th>Student</th><td>{{#isStudent ../role}}You{{else}}{{student.firstName}} {{student.lastName}}{{/isStudent}}</td>
+			    <tr><th>Tutor</th><td>{{#isTutor ../role}}You{{else}}{{tutor.firstName}} {{tutor.lastName}}{{/isTutor}}</td>
+			    <tr><th>Student Coordinator</th><td>
+			    	{{#if studentCoord}}
+			    		{{#isCoordinator ../role}}
+			    			{{#equalStrings ../username studentCoord.username}}You{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}{{/equalStrings}}
+			    		{{else}}{{studentCoord.firstName}} {{studentCoord.lastName}}
+			    		{{/isCoordinator}}
+			    	{{else}}
+			    		N/A
+			    	{{/if}}
+			    </td>
+			    <tr><th>Tutor Coordinator</th><td>
+			    	{{#if tutorCoord}}
+			    		{{#isCoordinator ../role}}
+			    			{{#equalStrings ../username tutorCoord.username}}You{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}{{/equalStrings}}
+			    		{{else}}{{tutorCoord.firstName}} {{tutorCoord.lastName}}
+			    		{{/isCoordinator}}</td>
+			    	{{else}}
+			    		N/A
+			    	{{/if}}
+			    <tr><th>Options</th><td>
+			    	<a class='hideLink' data-toggle="collapse" data-target="#scheduleOptions-{{_id}}">View Possible Schedules</a>
+			    	<div id='scheduleOptions-{{_id}}' class='collapse'> 
+				    	{{#eachFormatedSchedule studentPossibleSchedules tutorPossibleSchedules}}
+		  					<div class="radio">
+		  						<label><input required type="radio" name="scheduleRadio">Student Schedule: <ul class='no-bullets'>{{#each studentSchedule}}<li>{{this}}</li>{{/each}}</ul>
+		  						Tutor Schedule: <ul class='no-bullets'>{{#each tutorSchedule}}<li>{{this}}</li>{{/each}}</ul></label>
+							</div>
+						{{/eachFormatedSchedule}}
+					</div>
+			    </td>
+			  </tbody>
+			  </table>
+	    </div>
+	    </div>
+	    <div>
+			<input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
+			<input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
+			<input type="submit" value="Approve" id='approve-schedule-button-{{_id}}' class='btn btn-info btn-hg approve-schedule-button'></input>
+			<button id='reject-schedule-button-{{_id}}' class='btn btn-danger btn-hg reject-schedule-button'>Reject</button>
+	    </div>
+	    </form>
+	</div>
+ {{/ifNot}}
+{{/each}}
