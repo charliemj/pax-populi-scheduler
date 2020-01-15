@@ -7,10 +7,11 @@ var User = require('../models/user.js');
 
 var Email = function() {
 
-    var that = Object.create(Email.prototype);
+    var newEmail = Object.create(Email.prototype);
+    //newEmail is the object created each time an email has to be sent
 
-    that.welcomeMessage = '<center><h2>Hello from Pax Populi Scheduler!</h2></center>';
-    that.signature = '<br> Cheers, <br> Pax Populi Scheduler Team';
+    newEmail.welcomeMessage = '<center><h2>Hello from Pax Populi Scheduler!</h2></center>';
+    newEmail.signature = '<br> Cheers, <br> Pax Populi Scheduler Team';
 
     // create reusable transporter object using the default SMTP transport
     var smtpConfig = {
@@ -18,11 +19,11 @@ var Email = function() {
         port: 465,
         secure: true, // use SSL
         auth: {
-            user: process.env.GMAIL_ADDRESS || config.emailAddress(),
-            pass: process.env.GMAIL_PASSWORD || config.emailPassword()
+            user: process.env.GMAIL_ADDRESS || config.emailAddress(), //sets  object value to either the  gmail address of the user as seen in the user's environment, or the emailAddress as found in config.js
+            pass: process.env.GMAIL_PASSWORD || config.emailPassword() //sets object value to either the gmail password of the user as seen in the user's environment, or the emailPassword as found in config.js
         }
     };
-    that.transporter = nodemailer.createTransport(smtpConfig);
+    newEmail.transporter = nodemailer.createTransport(smtpConfig); //makes a transporter to send mail based off the configuration specified above
 
 
     /**
@@ -54,7 +55,7 @@ var Email = function() {
             html: htmlContent // html body
         };
         // send mail with defined transport object
-        that.transporter.sendMail(mailOptions, function(err, info){
+        newEmail.transporter.sendMail(mailOptions, function(err, info){ //uses transporter created to send email to recipient
             if(err){
                 console.log('could not send', err.message);
                 return callback({success: false, message: 'Failed to send the email'});
@@ -70,7 +71,7 @@ var Email = function() {
     * @param {Object} user - the user object for while the verification token is for
     * @param {Function} callback - the function to call after the token has been created
     */
-    that.createToken = function (user, isVerifyToken, callback) {
+    newEmail.createToken = function (user, isVerifyToken, callback) {
         // create random 32 character token
         var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         var token = '';
@@ -86,16 +87,16 @@ var Email = function() {
     * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
     * @param {Function} callback - the function to call after the email has been sent
     */
-    that.sendVerificationEmail = function (user, developmentMode, callback) {
-        that.createToken(user, true, function (err, user) {
+    newEmail.sendVerificationEmail = function (user, developmentMode, callback) {
+        newEmail.createToken(user, true, function (err, user) {
             var subject = 'Confirm your Pax Populi Scheduler Account, {}!'.format(user.username);
             var link;
             if (developmentMode) {
                 link = 'http://localhost:3000/verify/{}/{}'.format(user.username, user.verificationToken);
             } else {
-                link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken);
+                link = '{}/verify/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.verificationToken); //provide productionUrl in config.js needing to test
             }
-            var content = '{}<p>Hi {}!<br><br>Confirm your Pax Populi Scheduler account by clicking on the confirm button below.<form action="{}"><input type="submit" value="Confirm" /></form>{}</p>'.format(that.welcomeMessage, user.firstName, link, that.signature);
+            var content = '{}<p>Hi {}!<br><br>Confirm your Pax Populi Scheduler account by clicking on the confirm button below.<form action="{}"><input type="submit" value="Confirm" /></form>{}</p>'.format(newEmail.welcomeMessage, user.firstName, link, newEmail.signature);
             console.log('about to send a verification email to', user.email);
             sendEmail(user.email, subject, content, callback);
 
@@ -109,10 +110,10 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.sendApprovalEmail = function (user, developmentMode, callback) {
+    newEmail.sendApprovalEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
         var action = utils.isRegularUser(user.role) ? 'register for classes' : 'view the schedules';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved! You can now log in and {}.<br>{}</p>'.format(that.welcomeMessage, user.firstName, action, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved! You can now log in and {}.<br>{}</p>'.format(newEmail.welcomeMessage, user.firstName, action, newEmail.signature);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -123,10 +124,10 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.sendRejectionEmail = function (user, developmentMode, callback) {
+    newEmail.sendRejectionEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
         var action = utils.isRegularUser(user.role) ? 'register for classes' : 'view the schedules';
-        var emailContent = '{}<p> Hi {}!<br><br>Sorry, you have not been approved by an administrator and will not be able to login or {}. If you have any concerns or would like us to re-evaluate your account, please email Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, action, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Sorry, you have not been approved by an administrator and will not be able to login or {}. If you have any concerns or would like us to re-evaluate your account, please email Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(newEmail.welcomeMessage, user.firstName, action, newEmail.signature);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -137,10 +138,10 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.sendWaitlistEmail = function (user, developmentMode, callback) {
+    newEmail.sendWaitlistEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
         var action = utils.isRegularUser(user.role) ? 'register for classes' : 'view the schedules';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved. However, due to limited capacity, you are currenly waitlisted. This means that while you can now sign in to your account, you cannot {} just yet. We will notify you when you can {}. Sorry for the inconvenience!<br>{}</p>'.format(that.welcomeMessage, user.firstName, action, action, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been approved. However, due to limited capacity, you are currenly waitlisted. This means that while you can now sign in to your account, you cannot {} just yet. We will notify you when you can {}. Sorry for the inconvenience!<br>{}</p>'.format(newEmail.welcomeMessage, user.firstName, action, action, newEmail.signature);
         return sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -151,9 +152,9 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.sendArchiveEmail = function (user, developmentMode, callback) {
+    newEmail.sendArchiveEmail = function (user, developmentMode, callback) {
         var subject = 'Updates on the status of your Pax Populi account';
-        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been deactivated by the administrators. You no longer have access to this account and will not receive any emails from us in the future. If you think there was a mistake, please contact Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(that.welcomeMessage, user.firstName, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>Your Pax Populi account has been deactivated by the administrators. You no longer have access to this account and will not receive any emails from us in the future. If you think there was a mistake, please contact Bob McNulty at robert@appliedethics.org.<br>{}</p>'.format(newEmail.welcomeMessage, user.firstName, newEmail.signature);
         console.log('user', user);
         return sendEmail(user.email, subject, emailContent, callback);
     };
@@ -164,9 +165,9 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.sendScheduleEmails = function (user, callback) {
+    newEmail.sendScheduleEmails = function (user, callback) {
         var subject = 'Updates on the status of your Pax Populi class registration';
-        var emailContent = '{}<p> Hi {}!<br><br>You have been matched to a {} for the class you last registered for. You can now see your schedule on your dashboard.<br>{}</p>'.format(that.welcomeMessage, user.firstName, user.role.toLowerCase() === 'student'? 'tutor': 'student', that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>You have been matched to a {} for the class you last registered for. You can now see your schedule on your dashboard.<br>{}</p>'.format(newEmail.welcomeMessage, user.firstName, user.role.toLowerCase() === 'student'? 'tutor': 'student', newEmail.signature);
         sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -176,10 +177,10 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.sendReminderEmail = function (user, userSchedule, callback) {
+    newEmail.sendReminderEmail = function (user, userSchedule, callback) {
         var subject = 'Pax Populi Class Reminder';
         var partner = user.role.toLowerCase() === 'student'? 'tutor': 'student';
-        var emailContent = '{}<p> Hi {}!<br><br>You have an appointment scheduled with your {} in three days on {}. If you cannot make this appointment, please contact your {} as well as your coordinator.<br>{}</p>'.format(that.welcomeMessage, user.firstName, partner, utils.getFormatedNearestMeetingTime(userSchedule), partner, that.signature);
+        var emailContent = '{}<p> Hi {}!<br><br>You have an appointment scheduled with your {} in three days on {}. If you cannot make this appointment, please contact your {} as well as your coordinator.<br>{}</p>'.format(newEmail.welcomeMessage, user.firstName, partner, utils.getFormatedNearestMeetingTime(userSchedule), partner, newEmail.signature);
         sendEmail(user.email, subject, emailContent, callback);
     };
 
@@ -189,15 +190,15 @@ var Email = function() {
     * @param {Boolean} developmentMode - true if the app is in development mode, false otherwise
     * @param {Function} callback - the function to call after the email has been sent
     */
-    that.sendApprovalRequestEmail = function (user, developmentMode, admins, callback) {
-        that.createToken(user, false, function (err, user) {
+    newEmail.sendApprovalRequestEmail = function (user, developmentMode, admins, callback) {
+        newEmail.createToken(user, false, function (err, user) {
             if (err) {
                 return callback({success: false, message: err.message});
             }
             var count = 0;
             admins.forEach(function (admin) {
                 var subject = 'Pax Populi Scheduler Account Request from {} {}!'.format(user.firstName, user.lastName);
-                var content = that.makeApprovalRequestEmailContent(user, developmentMode, admin);
+                var content = newEmail.makeApprovalRequestEmailContent(user, developmentMode, admin);
                 sendEmail(admin.email, subject, content, function (err) {
                     if (err) {
                         callback(err);
@@ -219,13 +220,13 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.notifyAdmins = function (numMatches, admins, callback) {
+    newEmail.notifyAdmins = function (numMatches, admins, callback) {
         var count = 0;
         console.log('notifying admins');
         admins.forEach(function (admin) {
             var subject = 'New matches generated in Pax Populi Scheduler';
             var word = numMatches > 1 ? 'matches' : 'match';
-            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new {}. You can view them under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(that.welcomeMessage, admin.firstName, numMatches, word, that.signature);
+            var emailContent = '{}<p> Hi {}!<br><br>We have just generated {} new {}. You can view them under \"Pending Schedules\" on your dashboard. Please log in to approve/reject the matches before the start date of each class. If you fail to do so, the newly matched registrations will be moved back to the matching pool.<br>{}</p>'.format(newEmail.welcomeMessage, admin.firstName, numMatches, word, newEmail.signature);
             console.log('sending email...');
             sendEmail(admin.email, subject, emailContent, function (err) {
                 if (err) {
@@ -248,7 +249,7 @@ var Email = function() {
     * @return {Object} object - object.success is true if the email was sent
                                 successfully, false otherwise
     */
-    that.makeApprovalRequestEmailContent = function (user, developmentMode, admin) {
+    newEmail.makeApprovalRequestEmailContent = function (user, developmentMode, admin) {
         var link;
             if (developmentMode) {
                 link = 'http://localhost:3000/respond/{}/{}'.format(user.username, user.requestToken);
@@ -256,7 +257,7 @@ var Email = function() {
                 link = '{}/respond/{}/{}'.format((process.env.PRODUCTION_URL || config.productionUrl()), user.username, user.requestToken);
             }
         var role = user.role.toLowerCase() === 'administrator' ? 'an administrator': 'a {}'.format(user.role.toLowerCase());
-        var content = '{}<p>Hi {} {}!<br><br>'.format(that.welcomeMessage, admin.firstName, admin.lastName)
+        var content = '{}<p>Hi {} {}!<br><br>'.format(newEmail.welcomeMessage, admin.firstName, admin.lastName)
                             + '{} {} has just requested to join Pax Populi as {}. '.format(user.firstName, user.lastName, role)
                             + 'Below is {}\'s profile. To respond to this application, click on the "Respond to Request" button below.<br><ul>'.format(user.firstName)
                             + '<li>Full Name: {} {}</li>'.format(user.firstName, user.lastName)
@@ -284,12 +285,12 @@ var Email = function() {
                             + '<li>Interests: {}</li>'.format(user.interests);
             }                            
             content += '</ul><br><form action="{}"><input type="hidden" name="ref_path" value="{}"><input type="submit" value="Respond to Request"/></form>'.format(link, link)
-                            + '{}</p>'.format(that.signature);
+                            + '{}</p>'.format(newEmail.signature);
         return content;
     }
 
-    Object.freeze(that);
-    return that;
+    Object.freeze(newEmail);
+    return newEmail;
 };
 
 module.exports = Email();
