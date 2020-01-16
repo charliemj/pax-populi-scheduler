@@ -101,7 +101,7 @@ RegistrationSchema.statics.findRegistration = function (regId, user, callback){
         }
         else{
             if (registration === null){
-                callback(new Error("This registration doesn't belong this logged in user."));
+                callback(new Error("This registration doesn't belong to this logged in user."));
             }
             else{
                 callback(null, registration);
