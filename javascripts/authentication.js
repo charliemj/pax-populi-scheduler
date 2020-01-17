@@ -6,8 +6,9 @@ var enums = require('./enums.js');
 
 var Authentication = function() {
 
-    var that = Object.create(Authentication.prototype);
-
+    var newAuth = Object.create(Authentication.prototype); 
+    //newAuth is the object created each time a new authentication is requested
+    
     /**
     * Checks if the request has a defined session and correct authentication
     * If so, direct the user to the request route. Otherwise, direct the user
@@ -17,11 +18,11 @@ var Authentication = function() {
     * @param {Function} next - callback function
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
-    that.isAuthenticated = function (req, res, next) {
+    newAuth.isAuthenticated = function (req, res, next) {
         if (req.params.username == undefined && req.isAuthenticated() || 
                 req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
             // if the request is not user specific, give permission as long as the user is authenticated,
-            // otherwise, needs to check that user is requesting for himself
+            // otherwise, needs to check that user is requesting for themself
             next();
         } else if (req.isAuthenticated()) {
             next();
@@ -52,7 +53,7 @@ var Authentication = function() {
     * @param {Function} next - callback function
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
-    that.isAdministrator = function (req, res, next) {
+    newAuth.isAdministrator = function (req, res, next) {
         var user = req.session.passport.user;
         if (utils.isAdministrator(user.role)) {
             next();
@@ -79,7 +80,7 @@ var Authentication = function() {
     * @param  {Function} callback - the function that takes in an object and
     *                               is called once this function is done
     */
-    that.encryptPassword = function (password, callback) {
+    newAuth.encryptPassword = function (password, callback) {
         bcrypt.genSalt(function(err, salt) {
             if (err) {
                 return callback(err);
@@ -102,7 +103,7 @@ var Authentication = function() {
     *                               called once this function is done
     */
 
-    that.createUserJSON = function (data, callback) {
+    newAuth.createUserJSON = function (data, callback) {
         var role = data.userType.trim();
         role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
         var isTutor = utils.isTutor(role);
@@ -110,7 +111,7 @@ var Authentication = function() {
         var isAdminTutor = !utils.isRegularUser(role);
         var password = data.password.trim();
 
-        that.encryptPassword(password, function (err, hash) {
+        newAuth.encryptPassword(password, function (err, hash) {
             if (err) {
                 return err;
             }
@@ -118,7 +119,7 @@ var Authentication = function() {
             var userJSON = {username: data.username.trim().toLowerCase(),
                             password: hash,
                             role: role,
-                            email: data.email.trim(),
+                            email: data.email.trim(), //at some point this has to check to see that this isn't a .edu email
                             alternativeEmail: data.alternativeEmail.trim().length > 0 ? data.alternativeEmail.trim(): 'N/A',
                             firstName: data.firstName.trim(),
                             middleName: data.middleName.trim(),
@@ -150,12 +151,12 @@ var Authentication = function() {
             } else if (isStudent) {
                 userJSON['major'] = 'N/A';
             }
-            if (utils.isCoordinator(role)) {
+	    if (utils.isCoordinator(role)) {
                 var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
                 scopes.forEach(function (scope) {
                     if (data[scope]) {
-                        if (scope === 'schoolInCharge') {
-                            userJSON[scope] = utils.extractChosen(data[scope]);
+                        if (scope === 'schoolInCharge') { 
+                            userJSON[scope] = utils.extractChosen(data[scope]); 
                         } else {
                             userJSON[scope] = data[scope];
                         }   
@@ -167,8 +168,8 @@ var Authentication = function() {
         });
     }
 
-    Object.freeze(that);
-    return that;
+    Object.freeze(newAuth);
+    return newAuth;
 }
 
 module.exports = Authentication();
