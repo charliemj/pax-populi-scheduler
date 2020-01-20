@@ -16,3 +16,4 @@ runthepython.sh
 .idea/misc.xml
 .idea/jsLibraryMappings.xml
 .idea/dictionaries/jay.xml
+package-lock.json
