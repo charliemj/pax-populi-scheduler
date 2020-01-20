@@ -1,7 +1,7 @@
 {{#each users}}
 <div class='col-xs-12 col-ms-6 col-sm-4 col-md-3 col-lg-4 user-container tile-container' id='user-container-{{_id}}'>
   <div class='tile user-tile' name="user-{{_id}}" data-id='{{_id}}'>
-    <div class='tile-icon' style='float: left'><img class='icon' src="/images/user.gif"></img></div>
+    <div class='tile-icon' style='float: left'><img class='icon' src="/images/user.gif"/></div>
     <div class='user-header tile-header'>
       <a data-toggle="modal" data-target='#user-modal-{{_id}}'>
         <h4 class='tile-title'>{{#if fullName}}{{fullName}}{{else}}{{firstName}} {{lastName}}{{/if}}</h4>
@@ -25,8 +25,8 @@
     </div>
   </div>    
     <div>
-    <input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
-    <input id='requestToken-{{_id}}' type="hidden" value="{{requestToken}}"></input>
+        <input id='username-{{_id}}' type="hidden" value="{{username}}"/>
+        <input id='requestToken-{{_id}}' type="hidden" value="{{requestToken}}"/>
     <input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
     <center>
       {{#ifNot archived}}

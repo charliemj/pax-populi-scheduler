@@ -3,7 +3,8 @@
 	<div class='col-xs-12 col-ms-6 col-sm-6 col-md-6 col-lg-7 schedule-container tile-container' id='schedule-container-{{_id}}'>
 	  <div class='tile schedule-tile' name="schedule-{{_id}}" data-id='{{_id}}'>
 	  	<form>
-	  	<div class='tile-icon' style='float: left'><img class='icon' src="/images/schedule.gif" style="margin-left: 10px;"></img></div>
+	  	<div class='tile-icon' style='float: left'><img class='icon' src="/images/schedule.gif"
+                                                        style="margin-left: 10px;"/></div>
 	  	<div class='schedule-header tile-header'>
 	    	<table class="table table-hover" id='{{_id}}-profile'>
 			  <tbody>
@@ -55,9 +56,10 @@
 	    </div>
 	    </div>
 	    <div>
-			<input id='username-{{_id}}' type="hidden" value="{{username}}"></input>
+            <input id='username-{{_id}}' type="hidden" value="{{username}}"/>
 			<input id='csrf' type="hidden" name="_csrf" value="{{csrfToken}}">
-			<input type="submit" value="Approve" id='approve-schedule-button-{{_id}}' class='btn btn-info btn-hg approve-schedule-button'></input>
+            <input type="submit" value="Approve" id='approve-schedule-button-{{_id}}'
+                   class='btn btn-info btn-hg approve-schedule-button'/>
 			<button id='reject-schedule-button-{{_id}}' class='btn btn-danger btn-hg reject-schedule-button'>Reject</button>
 	    </div>
 	    </form>
