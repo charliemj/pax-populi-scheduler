@@ -1,15 +1,15 @@
-var dateFormat = require('dateformat');
+const dateFormat = require('dateformat');
 
-var Utils = function() {
+const Utils = function() {
 
-    var that = Object.create(Utils.prototype);
+    const utilityObject = Object.create(Utils.prototype);
 
-    var from_to = function (from, to, f) {
+    const from_to = function (from, to, f) {
         if (from > to) return;
         f(from); from_to(from+1, to, f);
     };
 
-    that.each = function (a, f) {
+    utilityObject.each = function (a, f) {
         from_to(0, a.length-1, function (i) {f(a[i]);});
     };
 
@@ -18,7 +18,7 @@ var Utils = function() {
     * @param {Date} date - date object to format
     * @return {String} a formatted date string mmm d, h:MM TT
     */
-    that.formatDate = function (date) {
+    utilityObject.formatDate = function (date) {
         return dateFormat(date, "mmm d, yyyy");
     };
 
@@ -29,7 +29,7 @@ var Utils = function() {
      * @param  {Integer}  to     the maximum integer value for number
      * @return {Boolean}         true if number is an integer from from to to; false otherwise
      */
-    var isFromToInt = function(number, from, to) {
+    const isFromToInt = function(number, from, to) {
         return Number.isInteger(number) && number >= from && number <= to;
     };
 
@@ -38,7 +38,7 @@ var Utils = function() {
     *                       of ["Coordinator", "Administrator", "Student", "Tutor"]
     * @return {Boolean} true if the role is "Student" or "Tutor" (case-insensitive)
     */
-    that.isRegularUser = function (role) {
+    utilityObject.isRegularUser = function (role) {
         return role.toLowerCase() !== 'administrator' && role.toLowerCase() !== 'coordinator';
     }
 
@@ -47,7 +47,7 @@ var Utils = function() {
     *                       of ["Coordinator", "Administrator", "Student", "Tutor"]
     * @return {Boolean} true if the role is "Student" (case-insensitive)
     */
-    that.isStudent = function (role) {
+    utilityObject.isStudent = function (role) {
         return role.toLowerCase() === 'student';
     }
 
@@ -56,7 +56,7 @@ var Utils = function() {
     *                       of ["Coordinator", "Administrator", "Student", "Tutor"]
     * @return {Boolean} true if the role is "Tutor" (case-insensitive)
     */
-    that.isTutor = function (role) {
+    utilityObject.isTutor = function (role) {
         return role.toLowerCase() === 'tutor';
     }
 
@@ -65,7 +65,7 @@ var Utils = function() {
     *                       of ["Coordinator", "Administrator", "Student", "Tutor"]
     * @return {Boolean} true if the role is "Administrator" (case-insensitive)
     */
-    that.isAdministrator = function (role) {
+    utilityObject.isAdministrator = function (role) {
         return role.toLowerCase() === 'administrator';
     }
 
@@ -74,7 +74,7 @@ var Utils = function() {
     *                       of ["Coordinator", "Administrator", "Student", "Tutor"]
     * @return {Boolean} true if the role is "Coordinator" (case-insensitive)
     */
-    that.isCoordinator = function (role) {
+    utilityObject.isCoordinator = function (role) {
         return role.toLowerCase() === 'coordinator';
     }
 
@@ -82,7 +82,7 @@ var Utils = function() {
     * @param {Array} array - array of strings to check
     * @return {Boolean} true if the array's first element is "Other" (case-insensitive)
     */
-    that.containsOther = function (array) {
+    utilityObject.containsOther = function (array) {
         return array[0].toLowerCase().trim() === 'other';
     }
 
@@ -91,8 +91,8 @@ var Utils = function() {
     * @return {String} the second element of the array if the first element is "Other" 
     *                  (case-insensitive), otherwise returns the first element
     */
-    that.extractChosen = function (array) {
-        if (that.containsOther(array)) {
+    utilityObject.extractChosen = function (array) {
+        if (utilityObject.containsOther(array)) {
             return array[1].trim();
         }
         return array[0].trim();
@@ -104,7 +104,7 @@ var Utils = function() {
     * @return {{Array}} an array of different set of schedules, each is an array of date, time
     *                  arrays of the form [yyyy-mm-dd, hh:mm]
     */
-    that.formatDates = function (schedules) {
+    utilityObject.formatDates = function (schedules) {
         return schedules.map(function (schedule) {
             return schedule.map(function (dateString) {
                         return dateString.split(' ');
@@ -116,7 +116,7 @@ var Utils = function() {
     * Returns a date object with hours set to 00:00:00
     */
     Date.prototype.withoutTime = function () {
-        var d = new Date(this);
+        let d = new Date(this);
         d.setHours(0, 0, 0, 0);
         return d;
     }
@@ -125,23 +125,22 @@ var Utils = function() {
     * Returns a date object with date set the first day of the year
     */
     Date.prototype.withoutDate = function () {
-        var d = new Date(this);
+        const d = new Date(this);
         d.setDate(0);
         return d;
     }
 
     /**
-    * @param {Array}} schedules - an array of different set of schedules,
-    *                  each is an array of date, time arrays of the form [yyyy-mm-dd, hh:mm]
+    * @param {Array} schedule - an array of date, time arrays of the form [yyyy-mm-dd, hh:mm], all contained in an array schedules
     * @return {String} datestring of the form ddd yyyy-mm-dd, hh:mm of the closest meeting time
     */
-    that.getFormatedNearestMeetingTime = function (schedule) {
-        var weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        var today = new Date();
-        for (var i=0; i < schedule.length; i++) {
-            var date = new Date(schedule[i][0]);
+    utilityObject.getFormattedNearestMeetingTime = function (schedule) {
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const today = new Date();
+        for (let i=0; i < schedule.length; i++) {
+            let date = new Date(schedule[i][0]);
             if (today.withoutTime() <= date.withoutTime()) {
-              var day = weekday[date.getDay()];
+              let day = daysOfWeek[date.getDay()];
                 return day + ' ' + schedule[i];
             }
         }
@@ -149,8 +148,8 @@ var Utils = function() {
  
     }
 
-    Object.freeze(that);
-    return that;
+    Object.freeze(utilityObject);
+    return utilityObject;
 };
 
 module.exports = Utils();

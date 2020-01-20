@@ -1,14 +1,14 @@
-var request = require('request');
-var config = require('./config.js');
-var bcrypt = require('bcrypt');
-var utils = require('./utils.js');
-var enums = require('./enums.js');
+const request = require('request');
+const config = require('./config.js');
+const bcrypt = require('bcrypt');
+const utils = require('./utils.js');
+const enums = require('./enums.js');
 
-var Authentication = function() {
+const Authentication = function() {
 
-    var newAuth = Object.create(Authentication.prototype); 
+    const newAuth = Object.create(Authentication.prototype);
     //newAuth is the object created each time a new authentication is requested
-    
+
     /**
     * Checks if the request has a defined session and correct authentication
     * If so, direct the user to the request route. Otherwise, direct the user
@@ -19,7 +19,7 @@ var Authentication = function() {
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
     newAuth.isAuthenticated = function (req, res, next) {
-        if (req.params.username == undefined && req.isAuthenticated() || 
+        if (req.params.username === undefined && req.isAuthenticated() ||
                 req.isAuthenticated() && req.params.username === req.session.passport.user.username) {
             // if the request is not user specific, give permission as long as the user is authenticated,
             // otherwise, needs to check that user is requesting for themself
@@ -42,11 +42,11 @@ var Authentication = function() {
                                 interests: enums.interests(),
                                 ref_path: req.query.ref_path});
         }
-    }
+    };
 
 
     /**
-    * Checks if the owner of the request is an admin. If so, direct 
+    * Checks if the owner of the request is an admin. If so, direct
     * the user to the request route. Otherwise, direct the user
     * @param {Object} req - request to check for authentication
     * @param {Object} res - response from the previous function
@@ -54,7 +54,7 @@ var Authentication = function() {
     * @return {Boolean} true if the request has the authenication, false otherwise
     */
     newAuth.isAdministrator = function (req, res, next) {
-        var user = req.session.passport.user;
+        const user = req.session.passport.user;
         if (utils.isAdministrator(user.role)) {
             next();
         } else {
@@ -72,7 +72,7 @@ var Authentication = function() {
                                 interests: enums.interests(),
                                 ref_path: req.query.ref_path});
         }
-    }
+    };
 
     /*
     * Encrypts the password using hashing and salting
@@ -104,19 +104,19 @@ var Authentication = function() {
     */
 
     newAuth.createUserJSON = function (data, callback) {
-        var role = data.userType.trim();
+        let role = data.userType.trim();
         role = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-        var isTutor = utils.isTutor(role);
-        var isStudent = utils.isStudent(role);
-        var isAdminTutor = !utils.isRegularUser(role);
-        var password = data.password.trim();
+        const isTutor = utils.isTutor(role);
+        const isStudent = utils.isStudent(role);
+        const isAdminTutor = !utils.isRegularUser(role);
+        const password = data.password.trim();
 
         newAuth.encryptPassword(password, function (err, hash) {
             if (err) {
                 return err;
             }
             // add the basic information
-            var userJSON = {username: data.username.trim().toLowerCase(),
+            const userJSON = {username: data.username.trim().toLowerCase(),
                             password: hash,
                             role: role,
                             email: data.email.trim(), //at some point this has to check to see that this isn't a .edu email
@@ -124,19 +124,19 @@ var Authentication = function() {
                             firstName: data.firstName.trim(),
                             middleName: data.middleName.trim(),
                             lastName: data.lastName.trim(),
-                            phoneNumber: data.phoneNumber.trim()}
+                            phoneNumber: data.phoneNumber.trim()};
 
             data.school ? data.tutorSchool = data.school : null;
             data.school ? data.studentSchool = data.school : null;
             data.interests ? data.interests.splice(-1,1): null;
 
             if (utils.isRegularUser(userJSON.role)) {
-                var additionalInfo = {  nickname: data.nickname.trim(),
+                const additionalInfo = {  nickname: data.nickname.trim(),
                                         gender: data.gender.trim(),
                                         dateOfBirth: new Date(data.dateOfBirth.trim()),
                                         skypeId: data.skypeId.trim().length > 0 ? data.skypeId.trim(): 'N/A',
-                                        school: isTutor ? data.tutorSchool : data.studentSchool,   
-                                        educationLevel: isTutor ? data.tutorEducationLevel.trim() : 
+                                        school: isTutor ? data.tutorSchool : data.studentSchool,
+                                        educationLevel: isTutor ? data.tutorEducationLevel.trim() :
                                                             data.studentEducationLevel.trim(),
                                         enrolled: data.enrolled === 'Yes',
                                         nationality: data.nationality.trim(),
@@ -145,31 +145,40 @@ var Authentication = function() {
                                         interests: data.interests,
                                         timezone: data.timezone };
                 Object.assign(userJSON, additionalInfo);
-            }   
+            }
             if (isTutor) {
                 userJSON['major'] = utils.extractChosen(data.major);
             } else if (isStudent) {
                 userJSON['major'] = 'N/A';
             }
-	    if (utils.isCoordinator(role)) {
-                var scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];
+
+      /** calls extractChosen because the coordinator in question could be
+      * unaffiliated/independent;
+      * if coordinator is independent, triggers else,
+      * sets scope to regionInCharge if user has a region (if data[regionInCharge] is truthy);
+      * if coordinator has countryInCharge instead,
+      * sets scope to the value of data[countryInCharge].
+      */
+
+      if (utils.isCoordinator(role)) {
+                const scopes = ['schoolInCharge', 'regionInCharge', 'countryInCharge'];//countryInCharge is not currently in use: there's no national coordinator
                 scopes.forEach(function (scope) {
                     if (data[scope]) {
-                        if (scope === 'schoolInCharge') { 
-                            userJSON[scope] = utils.extractChosen(data[scope]); 
+                        if (scope === 'schoolInCharge') {
+                            userJSON[scope] = utils.extractChosen(data[scope]);
                         } else {
                             userJSON[scope] = data[scope];
-                        }   
+                        }
                     }
                 });
             }
 
             callback(null, userJSON)
         });
-    }
+    };
 
     Object.freeze(newAuth);
     return newAuth;
-}
+};
 
 module.exports = Authentication();

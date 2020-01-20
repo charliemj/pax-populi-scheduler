@@ -1,45 +1,46 @@
-var Config = function() {
+const Config = function() {
 
- 	var that = Object.create(Config.prototype);
+ 	const configuration = Object.create(Config.prototype);
+ 	//Creates a new instance of the object Config called configuration
 
- 	that.emailAddress = function () {
+ 	configuration.emailAddress = function () {
  		return 'gmailAddressOfTheApp';
  	}
 
- 	that.emailPassword = function () {
+ 	configuration.emailPassword = function () {
  		return 'gmailPasswordOfTheApp';
  	}
 
- 	that.productionUrl = function () {
+ 	configuration.productionUrl = function () {
  		return 'http://productionURLOfTheApp'
  	}
 
- 	that.adminUsername = function () {
+ 	configuration.adminUsername = function () {
  		return 'superAdminUsername';
  	}
 
- 	that.adminFirstName = function () {
+ 	configuration.adminFirstName = function () {
  		return 'superAdminFirstName';
  	}
 
- 	that.adminLastName = function () {
+ 	configuration.adminLastName = function () {
  		return 'superAdminLastName';
  	}
 
- 	that.adminPhoneNumber = function () {
- 		return 0000000000;
+ 	configuration.adminPhoneNumber = function () {
+ 		return 5550000000;
  	}
 
- 	that.adminPassword = function () {
+ 	configuration.adminPassword = function () {
  		return 'superAdminPasswordForThisApp';
  	}
 
- 	that.adminEmailAddress = function () {
+ 	configuration.adminEmailAddress = function () {
  		return 'superAdminEmailAddress';
  	}
 
- 	Object.freeze(that);
- 	return that;
+ 	Object.freeze(configuration);
+ 	return configuration;
  };
 
 
