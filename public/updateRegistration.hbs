@@ -12,14 +12,14 @@
 <script src='/javascripts/registration.js'></script>
 <div class='tab-content'>
     {{#if onHold}}
-        You do not have the permisson to register for a class yet. You have to wait for either the next cycle or further notice from the adminstrator.
+        You do not have the permission to register for a class yet. You have to wait for either the next cycle or further notice from the adminstrator.
     {{else}}
     <h1>Update Your Registration</h1>
     <p>What you see below is the availability and registration information we have on file for you. If you need to make any changes, please do so, and then click "Save".</p>
     <div ng-app="updateRegistration">
         <div ng-controller="mainController">
             <div id="day-schedule"></div>
-            <!-- calander UI is populated here -->
+            <!-- calendar UI is populated here -->
             <div class="regError" id="availabiltyError"></div>
             <br>
             <form>
