@@ -1,6 +1,6 @@
-var Regexs = function() {
+const Regexs = function() {
 
-    var that = Object.create(Regexs.prototype);
+    const that = Object.create(Regexs.prototype); //TO-DO: Find a better name than "that" for the object all of regex.js' methods belong to.
 
 
     that.passwordPattern = function(){
