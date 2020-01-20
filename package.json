@@ -33,5 +33,21 @@
     "request": "^2.79.0",
     "serve-favicon": "~2.3.0",
     "virtualenv": "^0.3.1"
-  }
+  },
+  "description": "This app uses [Node.js](https://nodejs.org/en/), [MongoDB](https://www.mongodb.com/) (using [Mongoose](mongoosejs.com)), [Express.js](expressjs.com), [Angular.js](https://angularjs.org/), and [handlebars](handlebarsjs.com) templating.",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jayrhilton/pax-populi-scheduler.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jayrhilton/pax-populi-scheduler/issues"
+  },
+  "homepage": "https://github.com/jayrhilton/pax-populi-scheduler#readme"
 }
