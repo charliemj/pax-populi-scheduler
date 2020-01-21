@@ -1,15 +1,15 @@
-var mongoose = require("mongoose");
-var bcrypt = require('bcrypt');
-var ObjectId = mongoose.Schema.Types.ObjectId;
-var utils = require("../javascripts/utils.js");
-var email = require('../javascripts/email.js');
-var enums = require("../javascripts/enums.js");
-var config = require('../javascripts/config.js');
-var authentication = require('../javascripts/authentication.js');
-var validators = require("mongoose-validators");
-var regexs = require("../javascripts/regexs.js");
+const mongoose = require("mongoose");
+const bcrypt = require('bcrypt');
+const ObjectId = mongoose.Schema.Types.ObjectId;
+const utils = require("../javascripts/utils.js");
+const email = require('../javascripts/email.js');
+const enums = require("../javascripts/enums.js");
+const config = require('../javascripts/config.js');
+const authentication = require('../javascripts/authentication.js');
+const validators = require("mongoose-validators");
+const regexs = require("../javascripts/regexs.js");
 
-var UserSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
     username: {type: String, required: true, index: true},
     password: {type: String, required: true}, // should be just the hash
     verified: {type: Boolean, default: false},
@@ -83,7 +83,7 @@ UserSchema.path("verificationToken").validate(function(verificationToken) {
     if (!this.verificationToken) {
         return true;
     }
-    return this.verificationToken.length == enums.numTokenDigits();
+    return this.verificationToken.length === enums.numTokenDigits();
 }, "Verification token must have the correct number of digits");
 
 UserSchema.path("requestToken").validate(function(verificationToken) {
@@ -99,13 +99,13 @@ UserSchema.path("requestToken").validate(function(verificationToken) {
 * @param {Function} callback - the function that gets called after the schedules are fetched
 */
 UserSchema.statics.initializeSuperAdmin = function (callback) {
-    var that = this;
-    var username = process.env.SUPER_ADMIN_USERNAME || config.adminUsername();
-    var firstName = process.env.SUPER_ADMIN_FIRST_NAME || config.adminFirstName();
-    var lastName = process.env.SUPER_ADMIN_LAST_NAME || config.adminLastName();
-    var email = process.env.SUPER_ADMIN_ADDRESS || config.adminEmailAddress();
-    var phoneNumber = process.env.SUPER_ADMIN_PHONE_NUMBER || config.adminPhoneNumber();
-    var password = process.env.SUPER_ADMIN_PASSWORD || config.adminPassword();
+    const that = this;
+    const username = process.env.SUPER_ADMIN_USERNAME || config.adminUsername();
+    const firstName = process.env.SUPER_ADMIN_FIRST_NAME || config.adminFirstName();
+    const lastName = process.env.SUPER_ADMIN_LAST_NAME || config.adminLastName();
+    const email = process.env.SUPER_ADMIN_ADDRESS || config.adminEmailAddress();
+    const phoneNumber = process.env.SUPER_ADMIN_PHONE_NUMBER || config.adminPhoneNumber();
+    const password = process.env.SUPER_ADMIN_PASSWORD || config.adminPassword();
     that.findOne({firstName: firstName, lastName: lastName, email: email}, function (err, users) {
         if (err) {
             callback({success: false, message: err.message});
@@ -114,7 +114,7 @@ UserSchema.statics.initializeSuperAdmin = function (callback) {
                 if (err) {
                     return err;
                 } else {
-                    var userJSON = {username: username,
+                    const userJSON = {username: username,
                                     password: hash,
                                     role: "Administrator",
                                     email: email,
@@ -615,6 +615,6 @@ UserSchema.statics.findCoordinator = function (userId, callback) {
 
 
 
-var UserModel = mongoose.model("User", UserSchema);
+const UserModel = mongoose.model("User", UserSchema);
 
 module.exports = UserModel;

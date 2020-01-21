@@ -24,6 +24,7 @@
     "mocha": "^7.0.0",
     "mongoose": "^5.8.9",
     "mongoose-validator": "^2.1.0",
+    "mongoose-validators": "^0.1.0",
     "morgan": "~1.9.1",
     "nodemailer": "^2.6.4",
     "passport": "^0.3.2",

@@ -1,10 +1,10 @@
-var mongoose = require("mongoose");
-var validators = require("mongoose-validators");
-var enums = require('../javascripts/enums.js');
+const mongoose = require("mongoose");
+const validators = require("mongoose-validators");
+const enums = require('../javascripts/enums.js');
 
 // this enum object is intend to have only instance because its use is to
 // store the defaults for the signup forms
-var EnumSchema = mongoose.Schema({
+const EnumSchema = mongoose.Schema({
 	numTokenDigits: {type: Number, default: enums.numTokenDigits()},
 	minUsernameLength: {type: Number, default: enums.minUsernameLength()},
 	maxUsernameLength: {type: Number, default: enums.maxUsernameLength()},
@@ -21,72 +21,72 @@ var EnumSchema = mongoose.Schema({
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.userTypes.length == 0)
+  	if (this.userTypes.length === 0)
     	Array.prototype.push.apply(this.userTypes, enums.userTypes());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.genders.length == 0)
+  	if (this.genders.length === 0)
     	Array.prototype.push.apply(this.genders, enums.genders());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.confirmation.length == 0)
+  	if (this.confirmation.length === 0)
     	Array.prototype.push.apply(this.confirmation, enums.confirmation());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.studentSchools.length == 0)
+  	if (this.studentSchools.length === 0)
     	Array.prototype.push.apply(this.studentSchools, enums.studentSchools());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.tutorSchools.length == 0)
+  	if (this.tutorSchools.length === 0)
     	Array.prototype.push.apply(this.tutorSchools, enums.tutorSchools());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.studentEducationLevels.length == 0)
+  	if (this.studentEducationLevels.length === 0)
     	Array.prototype.push.apply(this.studentEducationLevels, enums.studentEducationLevels());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.tutorEducationLevels.length == 0)
+  	if (this.tutorEducationLevels.length === 0)
     	Array.prototype.push.apply(this.tutorEducationLevels, enums.tutorEducationLevels());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.majors.length == 0)
+  	if (this.majors.length === 0)
     	Array.prototype.push.apply(this.majors, enums.majors());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.interests.length == 0)
+  	if (this.interests.length === 0)
     	Array.prototype.push.apply(this.interests, enums.interests());
   	next();
 });
 
 EnumSchema.pre("save", function (next) {
-  	if (this.courses.length == 0)
+  	if (this.courses.length === 0)
     	Array.prototype.push.apply(this.courses, enums.courses());
   	next();
 });
 
 /**
-* Searches for an exisiting enum object in the database. If there is not one, initializes one
+* Searches for an existing enum object in the database. If there is not one, initializes one
 * using all the defaults in javascripts/enums.js
 * @param {Function} callback - the function that gets called after the schedules are fetched
 */
 EnumSchema.statics.initialize = function (callback) {
-	var that = this;
+	const that = this;
 	that.findOne({}, function (err, enums) {
         if (err) {
            	callback({success: false, message: err.message});
@@ -106,8 +106,8 @@ EnumSchema.statics.initialize = function (callback) {
 * @param {Function} callback - the function that gets called after the schedules are fetched
 */
 EnumSchema.methods.updateEnum = function (data, callback) {
-    var id = this._id;
-    var that = EnumModel;
+    const id = this._id;
+    const that = EnumModel;
     that.update(data, function (err, enums) {
         if (err) {
             callback({success: false, message: err.message});
@@ -123,6 +123,6 @@ EnumSchema.methods.updateEnum = function (data, callback) {
     });
 };
 
-var EnumModel = mongoose.model("Enum", EnumSchema);
+const EnumModel = mongoose.model("Enum", EnumSchema);
 
 module.exports = EnumModel;

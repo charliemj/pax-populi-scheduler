@@ -1,10 +1,10 @@
-var mongoose = require("mongoose");
-var validators = require("mongoose-validators");
-var ObjectId = mongoose.Schema.Types.ObjectId;
-var async = require('async');
-var User = require('../models/user.js');
-var email = require('../javascripts/email.js');
-var genderPrefs = ["MALE","FEMALE", "NONE"];
+const mongoose = require("mongoose");
+const validators = require("mongoose-validators");
+const ObjectId = mongoose.Schema.Types.ObjectId;
+const async = require('async');
+const User = require('../models/user.js');
+const email = require('../javascripts/email.js');
+const genderPrefs = ["MALE", "FEMALE", "NONE"];
 
 // availability are objects like
       // { '0': [ [ '23:00', '24:00' ] ], //Sunday from 11pm-12:00am
@@ -16,14 +16,14 @@ var genderPrefs = ["MALE","FEMALE", "NONE"];
       // '6': [[ '06:00', '08:30' ] } //Saturday from 6 am to 8:30am
 
 
-var RegistrationSchema = mongoose.Schema({
-    user: {type: ObjectId, ref:"User", required:true},
-    availability: {type: mongoose.Schema.Types.Mixed, required: true}, 
+const RegistrationSchema = mongoose.Schema({
+    user: {type: ObjectId, ref: "User", required: true},
+    availability: {type: mongoose.Schema.Types.Mixed, required: true},
     genderPref: {type: String, enum: genderPrefs, required: true},
     courses: {type: [String], required: true},
     earliestStartTime: {type: Date, required: true},
-    isMatched:{type: Boolean, required: true,  default: false},
-    dateAdded:{type: Date, default: Date.now}
+    isMatched: {type: Boolean, required: true, default: false},
+    dateAdded: {type: Date, default: Date.now}
 });
 
 //sets a registration to "matched" so that it is taken out of the scheduling pool
@@ -34,7 +34,7 @@ RegistrationSchema.methods.matched = function (callback) {
 
 /**
  * Creates a registration object for a user. 
- * @param {User Object} user - The user object of the user. 
+ * @param {Object} user - The user object of the user.
  * @param {String} genderPref - The new gender preference of the tutor/student the user has. 
  * @param {Array} availability - An array of times the user is available to meet (in their local times).
  * @param {Array} courses - An array of courses that the user wants to sign up for
@@ -124,7 +124,7 @@ RegistrationSchema.statics.deleteRegistration = function(regId, user, callback){
             callback(err);
         }
         else{
-        console.log("sucessfully deleted registration");
+        console.log("successfully deleted registration");
         callback(null);}
         
     });
@@ -148,7 +148,7 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
             callback(err);
         }
         else{
-            console.log("sucessfully updated registration");
+            console.log("successfully updated registration");
             callback(null, updatedRegistration); 
         }
     });
@@ -160,7 +160,7 @@ RegistrationSchema.statics.updateRegistration = function (user, regId, genderPre
  * @param {Function} callback - The function to execute after the registrations are marked as matched.
  */
 RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) {
-    var count = 0;
+    let count = 0;
     registrationIds.forEach(function (regId) {
         Registration.findOne({_id: regId}).populate('user').exec(function (err, registration) {
             if (err) {
@@ -181,7 +181,7 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
             }
         });
     });
-}
+};
 
 /*
  * Takes a series of registration IDs and marks them as unmatched
@@ -189,7 +189,7 @@ RegistrationSchema.statics.markAsMatched = function (registrationIds, callback) 
  * @param {Function} callback - The function to execute after the registrations are marked as matched.
  */
 RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback) {
-    var count = 0;
+    let count = 0;
     registrationIds.forEach(function (regId) {
         Registration.findOneAndUpdate({_id: regId}, {isMatched: false}, function(err, updateRegistration) {
             if (err) {
@@ -203,7 +203,7 @@ RegistrationSchema.statics.markAsUnmatched = function (registrationIds, callback
             }
         });
     });
-}
+};
 
 /*
  * Gets all unmatched registrations in the whole system
@@ -219,5 +219,5 @@ RegistrationSchema.statics.getUnmatchedRegistrations = function (callback) {
     });
 };
 
-var Registration = mongoose.model("Registration", RegistrationSchema);
+const Registration = mongoose.model("Registration", RegistrationSchema);
 module.exports = Registration;

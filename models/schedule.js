@@ -1,34 +1,34 @@
-var mongoose = require("mongoose");
-var validators = require("mongoose-validators");
-var ObjectId = mongoose.Schema.Types.ObjectId;
-var async = require('async');
-var PythonShell = require('python-shell');
-var CronJob = require('cron').CronJob;
-var dateFormat = require('dateformat');
-var User = require("../models/user.js"); 
-var utils = require("../javascripts/utils.js");
-var email = require('../javascripts/email.js');
-var Registration = require("../models/registration.js"); 
+const mongoose = require("mongoose");
+const validators = require("mongoose-validators");
+const ObjectId = mongoose.Schema.Types.ObjectId;
+const async = require('async');
+const PythonShell = require('python-shell');
+const CronJob = require('cron').CronJob;
+const dateFormat = require('dateformat');
+const User = require("../models/user.js");
+const utils = require("../javascripts/utils.js");
+const email = require('../javascripts/email.js');
+const Registration = require("../models/registration.js");
 
 
-var ScheduleSchema = mongoose.Schema({
-    student: {type: ObjectId, ref:"User", required:true},
-    tutor: {type: ObjectId, ref:"User", required:true},
-    possibleCourses: {type:[String], required:true},
-    studentPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
-    tutorPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
-    UTCPossibleSchedules: {type:mongoose.Schema.Types.Mixed, required:true},
-    studentReg: {type: ObjectId, ref:"Registration", required:true},
-    tutorReg: {type: ObjectId, ref:"Registration", required:true},
+const ScheduleSchema = mongoose.Schema({
+    student: {type: ObjectId, ref: "User", required: true},
+    tutor: {type: ObjectId, ref: "User", required: true},
+    possibleCourses: {type: [String], required: true},
+    studentPossibleSchedules: {type: mongoose.Schema.Types.Mixed, required: true},
+    tutorPossibleSchedules: {type: mongoose.Schema.Types.Mixed, required: true},
+    UTCPossibleSchedules: {type: mongoose.Schema.Types.Mixed, required: true},
+    studentReg: {type: ObjectId, ref: "Registration", required: true},
+    tutorReg: {type: ObjectId, ref: "Registration", required: true},
     adminApproved: {type: Boolean, required: true, default: false},
     course: {type: String},
     studentClassSchedule: {type: [[String]]},
     tutorClassSchedule: {type: [[String]]},
     UTCClassSchedule: {type: [[String]]},
-    firstDateTimeUTC: {type: [[String]]}, 
+    firstDateTimeUTC: {type: [[String]]},
     lastDateTimeUTC: {type: [[String]]},
-    studentCoord :{type: ObjectId, ref:"User"},
-    tutorCoord :{type: ObjectId, ref:"User"}   
+    studentCoord: {type: ObjectId, ref: "User"},
+    tutorCoord: {type: ObjectId, ref: "User"}
 });
 
 ScheduleSchema.path("course").validate(function(course) {
@@ -91,7 +91,7 @@ ScheduleSchema.statics.getMatches = function (callback) {
             return registration;
         });
 
-        var options = {
+        const options = {
             mode: 'json',
             pythonPath: '.env/bin/python2.7',
             scriptPath: './scheduler/',
@@ -103,7 +103,7 @@ ScheduleSchema.statics.getMatches = function (callback) {
                 throw err;
             }
             console.log('got matches');
-            var matches = outputs[0];
+            const matches = outputs[0];
             if (matches.length == 0) {
                 callback(null, []);
             } else {
@@ -125,23 +125,23 @@ ScheduleSchema.statics.getMatches = function (callback) {
 * notify the admins if there are the new matches
 */
 ScheduleSchema.statics.automateMatch = function () {
-    var schedulerJob = new CronJob({
+    const schedulerJob = new CronJob({
         cronTime: '00 00 17 * * 6',
-        onTick: function() {
+        onTick: function () {
             // runs every Sunday at 5pm
             Schedule.getMatches(function (err, matches) {
                 if (err) {
                     console.log('An error has occured', err.message);
                 } else {
                     var numMatches = matches.length;
-                    var message = 'Successfully generated ' +  numMatches + ' new ';
-                    message += numMatches > 1 ? 'matches!': 'match!'
+                    var message = 'Successfully generated ' + numMatches + ' new ';
+                    message += numMatches > 1 ? 'matches!' : 'match!'
                     console.log(message);
                     // only notify admins after finishing saving all matches
                     Schedule.notifyAdmins(matches.length, function (err) {
                         if (err) {
                             console.log(err);
-                        } else { 
+                        } else {
                             console.log('Successfully notified admins about weekly matches');
                         }
                     });
@@ -151,8 +151,7 @@ ScheduleSchema.statics.automateMatch = function () {
         start: false,
         timeZone: 'America/New_York'
     });
-    global.schedulerJob = schedulerJob;
-    global.schedulerJob.start();
+    schedulerJob.start();
 };
 
 /*
@@ -164,7 +163,7 @@ ScheduleSchema.statics.automateMatch = function () {
 *                               called once this function is done
 */
 ScheduleSchema.statics.saveSchedules = function (matches, callback) {
-    var count = 0;
+    let count = 0;
     console.log('number of matches', matches.length);
     matches.forEach(function (match) {
         // mark the matched registrations as unmatched
@@ -200,14 +199,14 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
                                         callback(null, matches);
                                     }
                                 });
-                            };
+                            }
                         }
                     });
                 });
             }
         });
     });
-}
+};
 
 /*
 * Creates a JSON for creating schedule object using the data provided
@@ -216,7 +215,7 @@ ScheduleSchema.statics.saveSchedules = function (matches, callback) {
 *                               called once this function is done
 */
 ScheduleSchema.statics.createScheduleJSON = function (match, callback) {
-    var scheduleJSON = {student: match.studentID,
+    const scheduleJSON = {student: match.studentID,
                         tutor: match.tutorID,
                         studentReg: match.studentRegID,
                         tutorReg: match.tutorRegID,
@@ -239,7 +238,7 @@ ScheduleSchema.statics.createScheduleJSON = function (match, callback) {
             });
         }
     });
-}
+};
 
 /*
 * Creates the schedule using the scheduleJSON provided
@@ -256,7 +255,7 @@ ScheduleSchema.statics.createSchedule = function (scheduleJSON, callback) {
             callback(null, schedule);
         }
     }); 
-}
+};
 
 /*
 * Creates and starts a cron job that will run on the first possible class meeting day
@@ -266,7 +265,7 @@ ScheduleSchema.statics.createSchedule = function (scheduleJSON, callback) {
 *                               called once this function is done
 */
 ScheduleSchema.statics.scheduleExpiredRemove = function (schedule, callback) {
-    var job = new CronJob(new Date(schedule.UTCPossibleSchedules[0][0][0]), function() {
+    const job = new CronJob(new Date(schedule.UTCPossibleSchedules[0][0][0]), function() {
         Schedule.find({_id: schedule._id}, function (err, schedule) {
             if (err) {
                 callback({success: false, message: err.message});
@@ -288,7 +287,7 @@ ScheduleSchema.statics.scheduleExpiredRemove = function (schedule, callback) {
       true, /* Start the job right now */
       'America/New_York' /* Time zone of this job. */
     );
-}       
+};
  
 /*
 * Finds admins and send emails to inform them about the new matches
@@ -310,7 +309,7 @@ ScheduleSchema.statics.notifyAdmins = function (numMatches, callback) {
         console.log('no new matches, admins not notified');
         callback(null);
     }
-}
+};
 
 /*
 * Approves the schedule with the given id and inform the student and tutor about the
@@ -343,17 +342,17 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
                     // inform the student and tutor
                     email.sendScheduleEmails(schedule.student, function (err) {
                         if (err) {
-                            callback({sucess: false, message: err.message});
+                            callback({success: false, message: err.message});
                         } else {
                             email.sendScheduleEmails(schedule.tutor, function (err) {
                                 if (err) {
-                                    callback({sucess: false, message: err.message});
+                                    callback({success: false, message: err.message});
                                 } else {
                                     Schedule.scheduleWeeklyReminder(schedule, function (err) {
                                         if (err) {
                                             console.log(err);
                                         }
-                                    })
+                                    });
                                     callback(null, updatedSchedule);
                                 }
                             });
@@ -364,7 +363,7 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
             }
         });
     }
-}
+};
 
 /*
 * Creates and starts a cron job that will send out emails to student and tutor
@@ -375,9 +374,9 @@ ScheduleSchema.statics.approveSchedule = function (scheduleId, scheduleIndex, co
 */
 ScheduleSchema.statics.scheduleWeeklyReminder = function (schedule, callback) {
     // send weekly emails three days ahead of meeting day
-    var dayOfWeek = new Date(schedule.firstDateTimeUTC[0]).getDay() - 3;
+    let dayOfWeek = new Date(schedule.firstDateTimeUTC[0]).getDay() - 3;
     dayOfWeek = dayOfWeek < 0 ? dayOfWeek + 7: dayOfWeek;
-    var emailJob = new CronJob({
+    const emailJob = new CronJob({
         cronTime: '00 00 17 * * ' + dayOfWeek,
         onTick: function() {
             // runs every week at 5pm
@@ -405,8 +404,8 @@ ScheduleSchema.statics.scheduleWeeklyReminder = function (schedule, callback) {
 */
 ScheduleSchema.statics.rejectSchedule = function (scheduleId, callback) {
     Schedule.findOne({ _id: scheduleId}, function(err, schedule) {
-        var studentRegId = schedule.studentReg;
-        var tutorRegId = schedule.tutorReg;
+        const studentRegId = schedule.studentReg;
+        const tutorRegId = schedule.tutorReg;
         if (err){
             callback({success: false, message: err.message});
         }
@@ -426,7 +425,7 @@ ScheduleSchema.statics.rejectSchedule = function (scheduleId, callback) {
             }); 
         }
     });
-}
+};
 
-var Schedule = mongoose.model("Schedule", ScheduleSchema);
+const Schedule = mongoose.model("Schedule", ScheduleSchema);
 module.exports = Schedule;
