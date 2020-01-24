@@ -65,7 +65,7 @@ registration.controller('mainController', ['$scope','$http', function($scope, $h
 
         var data = {_csrf:csrf, availability:availability, courses:courses, genderPref:genderPref, earliestStartTime:earliestStartTime};
 
-        $http.post('/registrations/' + username, data).then(
+        $http.post('/registrations/' + username, data).then( //post request is a request to submit data
             function (result){
                 var data = result.data;
                 if (data.success) {
